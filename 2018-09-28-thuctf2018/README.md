@@ -6,53 +6,53 @@ THUCTF2018-Writeup
 Pwn
 -------------
 
-- pwn2
-- pwn1
-- pwn4
+- [pwn2](pwn/pwn2.md)
+- [pwn1](pwn/pwn1.md)
+- [pwn4](pwn/pwn4.md)
 
 
 Web
 --------------
 
-- wdSimpleSQLv1-1
-- wdSimpleSQLv1-2
-- XSS1
-- XSS2
-- Flask
-- wdSimpleSQLv4
-- BabyWeb
+- [wdSimpleSQLv1-1](web/wdSimpleSQLv1-1.md)
+- [wdSimpleSQLv1-2](web/wdSimpleSQLv1-2.md)
+- [XSS1](web/XSS1.md)
+- [XSS2](web/XSS2.md)
+- [Flask](web/Flask.md)
+- [wdSimpleSQLv4](web/wdSimpleSQLv4.md)
+- [BabyWeb](web/BabyWeb.md)
 
 
 Crypto
 -------------------
 
-- easy rsa
-- polynomial
-- 101 DES
-- Primary Mathematics
-- Primary Mathematics Revenge
+- [easy rsa](crypto/easy_rsa.md)
+- [polynomial](crypto/polynomial.md)
+- [101 DES](crypto/101_DES.md)
+- [Primary Mathematics](crypto/Primary_Mathematics.md)
+- [Primary Mathematics Revenge](crypto/Primary_Mathematics_Revenge.md)
 
 
 Reverse
 ---------------------
 
-- Easy Reverse
-- User Auth
-- godaddy
+- [Easy Reverse](reverse/Easy_Reverse.md)
+- [User Auth](reverse/User_Auth.md)
+- [godaddy](reverse/godaddy.md)
 
 
 Misc
 ----------------------
 
-- Ruby Master - Level 1
-- Pixels
-- Othello
-- Ruby Master - Level 2
-- Ruby Master - Level 3
-- RedbudToken1 - Welcome
-- Format
-- Flow
-- Kasparov
+- [Ruby Master - Level 1](misc/Ruby_Master_Level_1.md)
+- [Pixels](misc/Pixels.md)
+- [Othello](misc/Othello.md)
+- [Ruby Master - Level 2](misc/Ruby_Master_Level_2.md)
+- [Ruby Master - Level 3](misc/Ruby_Master_Level_3.md)
+- [RedbudToken1 - Welcome](misc/RedbudToken1_Welcome.md)
+- [Format](misc/Format.md)
+- [Flow](misc/Flow.md)
+- [Kasparov](misc/Kasparov.md)
 
 一点感受和建议
 ====================
