@@ -28,7 +28,7 @@ r.send('\n')
 r.interactive()
 ```
 
-得到 `flag`:
+得到 `flag`:
 
 ```
 THUCTF{EnjoY_your_GAme_and_pwn_FOR_life_1on9!}
