@@ -19,7 +19,7 @@ Attachment: flow.zip
 PACIPH{edcFn0jXzdpdidl}
 ```
 
-接着分析 `network.pcapng` ，跟踪最后一个 TCP Stream ，得到它的内容：
+接着分析 `network.pcapng` ，跟踪最后一个 TCP Stream，得到它的内容：
 
 ```
 hey man

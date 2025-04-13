@@ -11,7 +11,7 @@ nc host ip
 解题步骤
 -------------
 
-首先，枚举来破译一个四位的 SHA256 PoW 。接着，需要和对方限时下赢 20 把。经测试，对方 AI 水平十分低，但是时间十分短，手动赢 20 把难以即使完成。于是写脚本，采用已有的 Stockfish AI 与之对战。对战脚本如下（[chess.py](chess.py)）：
+首先，枚举来破译一个四位的 SHA256 PoW。接着，需要和对方限时下赢 20 把。经测试，对方 AI 水平十分低，但是时间十分短，手动赢 20 把难以及时完成。于是写脚本，采用已有的 Stockfish AI 与之对战。对战脚本如下（[chess.py](chess.py)）：
 
 ```
 from __future__ import print_function

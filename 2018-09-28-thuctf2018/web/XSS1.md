@@ -11,7 +11,7 @@ http://host:port
 解题步骤
 -------------
 
-首先进去看了一下 CSP 限制的类型，为 `default-src 'self'; script-src 'self' 'unsafe-inline'` 。于是采用方法绕过了 CSP 的限制，拿到了 Cookie 。输入：
+首先进去看了一下 CSP 限制的类型，为 `default-src 'self'; script-src 'self' 'unsafe-inline'` 。于是采用方法绕过了 CSP 的限制，拿到了 Cookie。输入：
 
 ```
 <script type="text/javascript">

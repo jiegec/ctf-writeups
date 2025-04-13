@@ -19,7 +19,7 @@ Attachment: ruby_master.zip
 
 任务：
 
-level3.rb：
+level3.rb:
 
 ```
 require_relative 'restrict'
@@ -39,7 +39,7 @@ Restrict.seccomp
 STDOUT.puts get_flag(eval(input))
 ```
 
-level3_flag.rb：
+level3_flag.rb:
 
 ```
 # FLAG is THUCTF{CENSORED}

@@ -68,7 +68,7 @@ sql = "select username, subject, blog, description from bigcows where username =
 是典型的字符串拼接，可以注入。然后观察我们获取到结果的条件：
 
 1. 只能查到一条消息
-2. description （第四项）是一个 Base64 格式编码
+2. description（第四项）是一个 Base64 格式编码
 
 这里没有进行任何过滤，直接采用最常见的 `union select` 即可。
 
