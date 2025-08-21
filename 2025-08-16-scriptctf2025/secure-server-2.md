@@ -193,3 +193,5 @@ print(dec3 + k1 + k2 + k3 + k4)
 ```
 
 Get flag: `scriptCTF{s3cr37_m3ss4g3_1337!_7e4b3f8d}`
+
+P.S. According to the [official writeup](https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/tree/main/Crypto/Secure-Server-2), given `enc(enc(msg, k1), k2)` and `msg`, instead of enumerating all possible values of `(k1, k2)` pairs, we can use meet-in-the-middle attack: enumerate `k1` to find all `enc(msg, k1)`, enumerate k2 to find all `enc(msg, k1)` via `dec(enc(enc(msg, k1), k2), k2) = enc(msg, k1)`, then find the intersection of both enumeration results.
