@@ -1,6 +1,6 @@
 # Simple AI Bot
 
-Blind pwn suggested by @rosayxy.
+Blind pwn suggested by @Rosayxy.
 
 The input string goes through `printf(str)`:
 
