@@ -4,7 +4,7 @@ Link: https://play.scriptsorcerers.xyz/
 
 CTFTime: https://ctftime.org/event/2792
 
-Result: 4975 Points, 140th Place
+Result: 4975 Points, 139th Place
 
 Solved Challenges:
 

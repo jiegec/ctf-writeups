@@ -6,4 +6,4 @@
 * [2022.11.25 **HITCON CTF 2022**(111st place)](2022-11-25-hitconctf2022)
 * [2022.11.26 **GlacierCTF 2022**(19th place)](2022-11-26-glacierctf2022)
 * [2025.08.08 **WHY2025 CTF**(140th place)](2025-08-08-why2025)
-* [2025.08.16 **scriptCTF 2025**(140th place)](2025-08-16-scriptctf2025)
+* [2025.08.16 **scriptCTF 2025**(139th place)](2025-08-16-scriptctf2025)
