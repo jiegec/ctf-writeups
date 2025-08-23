@@ -108,3 +108,10 @@ for i in range(t):
     y = int(conn.recvline())
     shares.append((x, y))
 ```
+
+Or we can use sage [Ring.zeta()](https://doc.sagemath.org/html/en/reference/rings/sage/rings/ring.html#sage.rings.ring.Ring.zeta) to find the roots:
+
+```python
+R = Integers(2**256-189)
+root_list = R.zeta(29, all=True)
+```
