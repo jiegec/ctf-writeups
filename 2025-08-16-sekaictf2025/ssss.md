@@ -58,7 +58,7 @@ The problem is:
 3. the attacker can query $t$ points on the polynomial, then validates secret value
 4. the whole process is repeated at most twice
 
-Initially, I think it is impossible: we only have $t$ equations, but we have $t+1$ unknown coefficients to solve. Even if we consider both attempts, we have $2*t$ equations, but there are $2*t+1$ unknown efficients (the secret is shared between two equations). Still not solvable.
+Initially, I think it is impossible: we only have $t$ equations, but we have $t+1$ unknown coefficients to solve. Even if we consider both attempts, we have $2t$ equations, but there are $2t+1$ unknown efficients (the secret is shared between two equations). Still not solvable.
 
 I failed to solve it in the competition. After reading <https://github.com/project-sekai-ctf/sekaictf-2025/blob/main/crypto/ssss/solution/solve.sage> the official writeup, the solution is interesting and worth a writeup.
 
