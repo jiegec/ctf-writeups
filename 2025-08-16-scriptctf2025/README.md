@@ -1,4 +1,4 @@
-# scriptCTF 2025 CTF
+# scriptCTF 2025
 
 Link: https://play.scriptsorcerers.xyz/
 
