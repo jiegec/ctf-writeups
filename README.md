@@ -7,4 +7,4 @@
 * [2022.11.26 **GlacierCTF 2022**(19th place)](2022-11-26-glacierctf2022/README.md)
 * [2025.08.08 **WHY2025 CTF**(140th place)](2025-08-08-why2025/README.md)
 * [2025.08.16 **scriptCTF 2025**(139th place)](2025-08-16-scriptctf2025/README.md)
-* [2025.08.16 **SekaiCTF 2025**(733rd place)](2025-08-16-sekaictf2025/README.md)
+* [2025.08.16 **SekaiCTF 2025**(783rd place)](2025-08-16-sekaictf2025/README.md)
