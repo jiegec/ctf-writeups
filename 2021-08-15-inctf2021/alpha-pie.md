@@ -103,6 +103,7 @@ conn.interactive()
 
 solve.cpp:
 
+{% raw %}
 ```cpp
 #include <assert.h>
 #include <queue>
@@ -222,7 +223,8 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 ```
+{% endraw %}
 
 运行结束之后就可以看到 flag：
 
-inctf{G00d_Job_e33ac7bae54893252e60c0187e793ef5d13d7dfa85fafa7984f8753b591247b9}
+`inctf{G00d_Job_e33ac7bae54893252e60c0187e793ef5d13d7dfa85fafa7984f8753b591247b9}`
