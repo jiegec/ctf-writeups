@@ -8,4 +8,9 @@ Result: 39 Points, 783rd Place
 
 Solved Challenges:
 
-- Sanity Check
+- [Sanity Check](./sanity-check.md)
+
+Not solved challenges, but worth a writeup:
+
+- [My Flask App](./my-flask-app.md)
+- [SSSS](./ssss.md)

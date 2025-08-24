@@ -2,11 +2,11 @@
 
 I attend the competition individually.
 
-Link: https://scoreboard.hitconctf.com/campaigns/1
+Link: <https://scoreboard.hitconctf.com/campaigns/1>
 
-CTFTime: https://ctftime.org/event/1772
+CTFTime: <https://ctftime.org/event/1772>
 
 Solved challenges:
 
-- BabySSS
-- RCE
+- [BabySSS](./babysss.md)
+- [RCE](./rce.md)
