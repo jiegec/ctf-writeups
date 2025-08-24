@@ -86,6 +86,7 @@ Drink's ready! Shaken, not stirred:
 
 All bytes are xor-ed using the same key. Brute force:
 
+{% raw %}
 ```python
 text = b"wg`{{pgna}&J{!x&2fJWg`{{&g;;;_!x&fJWg`{{&gh"
 for ch in range(0, 256):
@@ -95,5 +96,6 @@ for ch in range(0, 256):
     if all(32 < d < 127 for d in s):
         print(bytes(s))
 ```
+{% endraw %}
 
 Get flag: `brunner{th3_n4m3's_Brunn3r...J4m3s_Brunn3r}`
