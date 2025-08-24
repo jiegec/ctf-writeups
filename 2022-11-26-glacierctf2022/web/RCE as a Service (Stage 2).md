@@ -25,6 +25,7 @@ if (fileSystemUsage) {
 
 Code template execute remotely:
 
+{% raw %}
 ```csharp
     var src = $@"
         using System;
@@ -39,6 +40,7 @@ Code template execute remotely:
             }}
         }}";
 ```
+{% endraw %}
 
 We can write `using S = System;` and `S.IO.File.ReadAllText` to circumvent the match, but `using S = System` can only be used in namespace.
 
