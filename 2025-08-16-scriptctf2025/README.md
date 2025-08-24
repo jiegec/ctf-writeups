@@ -52,3 +52,7 @@ Programming:
 Web:
 
 - [Renderer](./renderer.md)
+
+Not solved challenges, but worth a writeup:
+
+- [Plastic Shidle 2](./plastic-shield-2.md)
