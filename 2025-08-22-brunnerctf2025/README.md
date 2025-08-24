@@ -19,7 +19,7 @@ Crypto:
 - [Half-Baked](./half-baked.md)
 - [Peppernuts](./peppernuts.md)
 - [The Complicated Recipe](./the-complicated-recipe.md)
-- [The Cryptographic Kitchin!](./the-cryptographic-kitchen.md)
+- [The Cryptographic Kitchen!](./the-cryptographic-kitchen.md)
 
 Web:
 
