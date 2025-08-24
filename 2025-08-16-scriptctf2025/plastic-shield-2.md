@@ -97,7 +97,26 @@ for byte1 in range(256):
 
 I even validated that, under the same key and iv, the decrypted text is the same as the `plastic-shield-2` binary in the attachment.
 
-After the competition, after seeing others' writeup, e.g. <https://github.com/amritansha82/ScriptCTF-20225-Writeups/blob/c76393a94ba2c6fcf0e0ac1521d066795f056132/plastic_shield_2.md>, I realized that in order to get the flag, the key length is 16 bytes (AES-128), instead of 32 bytes (AES-256)!
+After the competition, after seeing others' writeup, e.g. <https://github.com/amritansha82/ScriptCTF-20225-Writeups/blob/c76393a94ba2c6fcf0e0ac1521d066795f056132/plastic_shield_2.md>, I realized that in order to get the flag, the key length is 16 bytes (AES-128), instead of 32 bytes (AES-256)! The [source code in the official writeup](https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/a7811d8fabf9fc1e48ce48cfbcc6bd29a65b783f/Rev/Plastic%20Shield%202/src/aes.h#L27-L42) verifies this:
+
+```c
+#define AES128 1
+//#define AES192 1
+#define AES256 1
+
+#define AES_BLOCKLEN 16 // Block length in bytes - AES is 128b block only
+
+#if defined(AES256) && (AES256 == 1)
+    #define AES_KEYLEN 32
+    #define AES_keyExpSize 240
+#elif defined(AES192) && (AES192 == 1)
+    #define AES_KEYLEN 24
+    #define AES_keyExpSize 208
+#else
+    #define AES_KEYLEN 16   // Key length in bytes
+    #define AES_keyExpSize 176
+#endif
+```
 
 Now bruteforcing works:
 
