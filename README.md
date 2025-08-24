@@ -2,7 +2,7 @@
 
 My individual team: <https://ctftime.org/team/208389>
 
-writups by CTF event:
+Writeups by CTF event:
 
 * [2018.09.28 **THUCTF 2018**(3rd place / 39 teams)](2018-09-28-thuctf2018/README.md)
 * [2019.01.27 **Codegate CTF 2019 Preliminary**](2019-01-27-codegate2019/README.md)
