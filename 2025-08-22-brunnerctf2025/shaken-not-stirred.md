@@ -67,6 +67,7 @@ else:
     printer("🫗 Oops! Shook your drink too hard and spilled it 🫗")
 ```
 
+{% raw %}
 ```
 🍸 Welcome to the Martini MiXOR 3000! 🍸
 
@@ -81,6 +82,7 @@ Adding ingredients to the shaker...
 Drink's ready! Shaken, not stirred:
 🍸 wg`{{pgna}&J{!x&2fJWg`{{&g;;;_!x&fJWg`{{&gh 🍸
 ```
+{% endraw %}
 
 All bytes are xor-ed using the same key. Brute force:
 
