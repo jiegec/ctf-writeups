@@ -135,8 +135,7 @@ There is a integer overflow:
 Attack:
 
 ```shell
-$ nc cake-flavour-shop.challs.brunnerne.xyz 33
-000
+$ nc cake-flavour-shop.challs.brunnerne.xyz 33000
 Welcome to Overflowing Delights!
 You have $15.
 
