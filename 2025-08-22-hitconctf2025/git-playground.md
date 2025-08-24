@@ -276,7 +276,7 @@ This is a sandbox where we cannot do many things. How to read environment variab
 
 First, prepare a VPS, write a file like this:
 
-``config
+```config
 [core]
         repositoryformatversion = 0
         filemode = true
@@ -308,7 +308,7 @@ git add .
 
 The `.git/config` has been replaced by our file:
 
-```
+```shell
 Enter your command: cat .git/config
 [core]
         repositoryformatversion = 0
@@ -322,7 +322,7 @@ Enter your command: cat .git/config
 
 Now, trigger the git filter again:
 
-```
+```shell
 touch test2.c
 git add .
 git diff
@@ -330,7 +330,7 @@ git diff
 
 You can find the flag in output:
 
-```
+```diff
 diff --git a/test2.c b/test2.c
 index 4e43e22..af90735 100644
 --- a/test2.c
