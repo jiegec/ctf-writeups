@@ -17,8 +17,8 @@ Attachment: math_problem2.zip
 
 这次的 `math_problem2.py` 和上次的略有不同：
 
-```
-import signal
+```python
+import signal
 
 
 def check(N):
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
 这次做了检查，并且添加了一点难度。看下论文，然后用 sage 实现了一下找正整数解的方法（[cubic.sage](cubic.sage)）：
 
-```
+```python
 import sys
 n = Integer(sys.argv[1])
 x, y = polygens(QQ, 'x,y')

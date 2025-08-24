@@ -11,7 +11,7 @@ Attachment: attach.zip
 
 阅读 `poly.py` 关键部分：
 
-```
+```python
 n = len(key) / 2
 encrypted = ''
 for c in flag:
@@ -23,7 +23,7 @@ for c in flag:
 
 已知 `flag` 为 `THUCTF{...}` 的形式，于是可以列出一个同余方程组，进行求解（[polysolve.sage](polysolve.sage)）：
 
-```
+```python
 R = IntegerModRing(257)
 string = "THUCTF{}"
 num = 6
