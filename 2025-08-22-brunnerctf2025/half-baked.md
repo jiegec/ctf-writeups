@@ -42,6 +42,3 @@ print(bytes.fromhex(value[2:]))
 ```
 
 Get flag: `brunner{s1ngl3_pr1m3_1s_d0ubl3_tr0ubl3}`
-
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-
