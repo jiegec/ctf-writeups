@@ -23,7 +23,7 @@ Example: If you found c4rr0t5, the flag should be submitted as brunner{c4rr0t5}.
 
 The numbers are small, solve discrete logarithm using sage:
 
-```sage
+```python
 p  = 14912432766367177751
 g  = 2784687438861268863
 h  = 8201777436716393968
