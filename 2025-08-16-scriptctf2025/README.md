@@ -6,6 +6,8 @@ CTFTime: <https://ctftime.org/event/2792>
 
 Result: 4975 Points, 139th Place
 
+![](./certificate.png)
+
 Solved Challenges:
 
 OSINT:
