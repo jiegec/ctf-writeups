@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 Writeups by CTF event:
 
+* [2025.08.29 **TFC CTF 2025**](2025-08-29-tfcctf2025/README.md)
 * [2025.08.29 **snakeCTF 2025 Quals**](2025-08-29-snakectf2025quals/README.md)
 * [2025.08.22 **HITCON CTF 2025**](2025-08-22-hitconctf2025/README.md)
 * [2025.08.22 **BrunnerCTF 2025**](2025-08-22-brunnerctf2025/README.md)
