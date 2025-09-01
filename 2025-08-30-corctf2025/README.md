@@ -26,3 +26,7 @@ Web:
 Reverse:
 
 - [yourock](./yourock.md)
+
+Not solved challenges:
+
+- [ssss](./ssss.md)
