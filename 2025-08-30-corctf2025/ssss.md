@@ -58,10 +58,11 @@ a_0 + a_1x_1 + a_2x_1^2 + a_3x_1^3 + \cdots + a_{14}x_1^{14} = y_1 \pmod p \\
 a_0 + a_1(-x_1) + a_2(-x_1)^2 - a_3(-x_1)^3 +\cdots + a_{14}(-x_1)^{14} = y_1' \pmod p \\
 2(a_1x_1 + a_3x_1^3 + \cdots + a_{13}x_1^{13}) = y_1 - y_1' \pmod p \\
 a_1 + a_3x_1^2 + \cdots + a_{13}x_1^{12} = (y_1 - y_1')/2/x_1 \pmod p \\
+a_1 + a_3(x_1^2) + a_5(x_1^2)^4 + \cdots + a_{13}(x_1^2)^6 = (y_1 - y_1')/2/x_1 \pmod p \\
 \end{gather*}
 $$
 
-This way, we only have 7 unknown coefficients: $a_0, a_3, \cdots, a_{13}$. We can get 7 equations by asking $7*2$ points on the polynomial, which exactly matches the requirement. The solution:
+This way, we only have 7 unknown coefficients of a 6-order polynomial: $a_0, a_3, \cdots, a_{13}$. We can get 7 equations by asking $7*2$ points on the polynomial, which exactly matches the requirement. The solution:
 
 ```python
 from pwn import *
