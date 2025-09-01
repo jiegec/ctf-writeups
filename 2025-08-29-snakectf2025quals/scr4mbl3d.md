@@ -148,4 +148,4 @@ if __name__ == "__main__":
                 print(data)
 ```
 
-Get flag: `snakeCTF{Ev3ry7hing_1s_34s13r_w1th_F3is7el_8dd17148a55cf01e}`
+Get flag: `snakeCTF{Ev3ry7hing_1s_34s13r_w1th_F3is7el_8dd17148a55cf01e}`.
