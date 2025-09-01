@@ -55,7 +55,7 @@ Since we want to compute the coefficient before $x$, we can eliminate the coeffi
 $$
 \begin{gather*}
 a_0 + a_1x_1 + a_2x_1^2 + a_3x_1^3 + \cdots + a_{14}x_1^{14} = y_1 \pmod p \\
-a_0 + a_1(-x_1) + a_2(-x_1)^2 - a_3(-x_1)^3 +\cdots + a_{14}(-x_1)^{14} = y_1' \pmod p \\
+a_0 + a_1(-x_1) + a_2(-x_1)^2 + a_3(-x_1)^3 +\cdots + a_{14}(-x_1)^{14} = y_1' \pmod p \\
 2(a_1x_1 + a_3x_1^3 + \cdots + a_{13}x_1^{13}) = y_1 - y_1' \pmod p \\
 a_1 + a_3x_1^2 + \cdots + a_{13}x_1^{12} = (y_1 - y_1')/2/x_1 \pmod p \\
 a_1 + a_3(x_1^2) + a_5(x_1^2)^4 + \cdots + a_{13}(x_1^2)^6 = (y_1 - y_1')/2/x_1 \pmod p \\
