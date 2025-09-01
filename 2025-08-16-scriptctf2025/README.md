@@ -4,6 +4,8 @@ Link: <https://play.scriptsorcerers.xyz/>
 
 CTFTime: <https://ctftime.org/event/2792>
 
+Official writeup: <https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/>
+
 Result: 4975 Points, 139th Place
 
 ![](./certificate.png)

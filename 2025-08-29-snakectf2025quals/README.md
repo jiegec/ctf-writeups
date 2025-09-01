@@ -4,6 +4,8 @@ Link: <https://2025.snakectf.org/>
 
 CTFTime: <https://ctftime.org/event/2817>
 
+Official writeup: <https://snakectf.org/writeups/2025-quals>
+
 Result: 150 Points, 122nd Place
 
 Solved Challenges:
