@@ -15,6 +15,7 @@ This is my first time to get First Blood and the only solve.
 
 Attachment contains the following code:
 
+{% raw %}
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,6 +133,7 @@ int main(int argc, const char * argv[]) {
 	exit(0);
 }
 ```
+{% endraw %}
 
 The code implements a custom DES implementaion that:
 
@@ -155,6 +157,7 @@ We are going forward 32 steps, back for one step, back for 32 steps and verify t
 
 Let's make a proof of concept locally, by using a small key (0x00004321 || 0x00005678) and attack locally:
 
+{% raw %}
 ```c
 #include <assert.h>
 #include <stdint.h>
@@ -411,6 +414,7 @@ int main(int argc, const char *argv[]) {
   return 0;
 }
 ```
+{% endraw %}
 
 Output:
 
