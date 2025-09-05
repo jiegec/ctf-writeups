@@ -799,6 +799,8 @@ guess key b3f7a549524bfce9
 done
 ```
 
+The whole time is longer: enumerate intermediate values first, then for each intermediate value, enumerate `key1` and for each `key1` enumerate `key2`. It's fortunate that each step only takes several minutes if you get it right in a proper machine.
+
 So the flag is `ENO{b3f7a549524bfce9}`. In summary:
 
 1. The slide attack reduces the attack complexity from `2^64` to `2^32`
