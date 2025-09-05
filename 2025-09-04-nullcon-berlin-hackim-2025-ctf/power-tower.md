@@ -37,7 +37,7 @@ However, computing the "power tower" is very slow:
 for p in primes: int_key = p**int_key
 ```
 
-Since we only need `int_key % n`, we can simplify `a ** b % c` to `a ** (b % euler_phi(c)) % c` to make `b` smaller. The process can be done recursively to compute the power tower off `primes[-1] ** (primes[-2] ** (primes[-3] ** ...)) % n`:
+Since we only need `int_key % n`, we can simplify `a ** b % c` to `a ** (b % euler_phi(c)) % c` to make `b` smaller. The process can be done recursively to compute the power tower of `primes[-1] ** (primes[-2] ** (primes[-3] ** ...)) % n`:
 
 ```python
 from Cryptodome.Cipher import AES
