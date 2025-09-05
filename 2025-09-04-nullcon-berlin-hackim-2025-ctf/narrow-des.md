@@ -13,6 +13,8 @@ nc 52.59.124.14 5031
 
 This is my first time to get First Blood and the only solve.
 
+![](first-blood.png)
+
 Attachment contains the following code:
 
 {% raw %}
