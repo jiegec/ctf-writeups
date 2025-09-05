@@ -4,7 +4,7 @@ Link: <https://ctf.nullcon.net/>
 
 CTFTime: <https://ctftime.org/event/2874>
 
-Result: xxx Points, xxxth Place
+Result: 2599 Points, 34th Place
 
 Solved Challenges:
 
