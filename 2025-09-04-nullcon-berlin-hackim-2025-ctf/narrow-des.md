@@ -155,7 +155,7 @@ The process is shown in the following figure, taken from [Slide Attack Figure 2]
 
 We are going forward 32 steps, back for one step, back for 32 steps and verify that going one step forward gives us the correct answer.
 
-Let's make a proof of concept locally, by using a small key (0x00004321 || 0x00005678) and attack locally:
+Let's make a proof of concept locally, by using a small key (`0x00004321 || 0x00005678`) and attack locally:
 
 {% raw %}
 ```c
