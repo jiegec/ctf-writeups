@@ -23,7 +23,7 @@ Crypto:
 
 - [Power tower](./power-tower.md)
 - [Simple ECDSA](./simple-ecdsa.md)
-- [decryption exceution service](./decryption-execution-service.md)
+- [decryption execution service](./decryption-execution-service.md)
 - [Field trip](./field-trip.md)
 - [Magnetic tape](./magntic-tape.md)
 - [Narrow DES](./narrow-des.md)
