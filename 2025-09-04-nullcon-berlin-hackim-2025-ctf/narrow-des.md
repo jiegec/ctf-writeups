@@ -450,6 +450,7 @@ possible key1 524bfce9
 
 This is not a large number, though. So I just bruteforced all these possiblities on a AMD EPYC server in parallel:
 
+{% raw %}
 ```c
 #include <assert.h>
 #include <stdint.h>
@@ -786,6 +787,7 @@ int main(int argc, const char *argv[]) {
   return 0;
 }
 ```
+{% endraw %}
 
 Get flag after ~1 minute if we know the correct intermediate value and `key1`:
 
