@@ -35,3 +35,7 @@ Reverse:
 Pwn:
 
 - [Fortispy 1 solved by @Rosayxy](https://rosayxy.github.io/pwning-thru-the-night/)
+
+Solved after the competitions:
+
+- [All Fortispy pwn challenges solved by @Rosayxy](https://rosayxy.github.io/pwning-thru-the-night/)
