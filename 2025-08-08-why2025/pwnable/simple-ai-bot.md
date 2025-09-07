@@ -1,5 +1,7 @@
 # Simple AI Bot
 
+Co-authors: @Rosayxy
+
 Blind pwn suggested by @Rosayxy.
 
 The input string goes through `printf(str)`:

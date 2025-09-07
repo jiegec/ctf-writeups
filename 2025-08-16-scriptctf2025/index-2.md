@@ -1,5 +1,7 @@
 # Index 2
 
+Co-authors: @Rosayxy
+
 ```
 This time, you get the file pointer, not the flag itself.
 ```

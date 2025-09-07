@@ -1,5 +1,7 @@
 # yourock
 
+Co-authors: @Rosayxy
+
 ```
 Forget Enigma, forget Caesar. The only cipher you need is 2009's infamous password dump.
 ```
@@ -10,7 +12,7 @@ Attachment contains a encoded text:
 charlie junior babygirl soccer qwerty 111111 000000 tigger jessica jasmine joseph 12345 tigger chelsea melissa 123123 mickey computer anthony chelsea brandon brandon matthew soccer bubbles playboy spongebob eminem ashley password ashley
 ```
 
-Decompiled `encode` program via IDA by @rosayxy:
+Decompiled `encode` program via IDA by @Rosayxy:
 
 ```c++
 // a1: result string, printed to encoded.rj

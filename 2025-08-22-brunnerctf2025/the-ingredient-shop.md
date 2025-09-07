@@ -1,4 +1,6 @@
-#  The Ingredient Shop
+# The Ingredient Shop
+
+Co-authors: @Rosayxy
 
 ```
 Difficulty: Medium
