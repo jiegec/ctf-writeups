@@ -34,4 +34,4 @@ Reverse:
 
 Pwn:
 
-- Fortispy 1 solved by @Rosayxy
+- [Fortispy 1 solved by @Rosayxy](https://rosayxy.github.io/pwning-thru-the-night/)
