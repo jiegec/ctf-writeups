@@ -21,7 +21,7 @@ for c in flag:
     encrypted += '%02x' % c
 ```
 
-已知 `flag` 为 `THUCTF{...}` 的形式，于是可以列出一个同余方程组，进行求解（[polysolve.sage](polysolve.sage)）：
+已知 `flag` 为 `THUCTF{...}` 的形式，于是可以列出一个同余方程组，进行求解（[polysolve.sage](polysolve.sage)）：
 
 ```python
 R = IntegerModRing(257)

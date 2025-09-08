@@ -17,4 +17,4 @@ To reduce backend pressure, we need you to finish a Proof of Work before playing
 
 这个 AI 特别傻，你必须很想让它赢，它才能赢。
 
-最终终于下输了，大概方法就是抢一些不是很好的位置。
+最终终于下输了，大概方法就是抢一些不是很好的位置。

