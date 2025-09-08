@@ -4,7 +4,7 @@ Link: <https://flagyard.com/events/18db1658-bae2-4b1c-9ec7-0a851b5df275>
 
 CTFTime: <https://ctftime.org/event/2876>
 
-Participated as a member of [Redbud](https://ctftime.org/team/20555).
+Participated as a member of [Redbud](https://ctftime.org/team/20555)
 
 Result: 1885 Points, 9th Place
 
