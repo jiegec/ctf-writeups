@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.09.07 **BlackHat MEA Qualification CTF 2025**](2025-09-07-blackhat-mea-ctf-quals-2025/README.md)
 * [2025.09.06 **ASIS CTF Quals 2025**](2025-09-06-asis-ctf-quals-2025/README.md)
 * [2025.09.06 **CRACCON CTF 2025**](2025-09-06-cracconctf2025/README.md)
 * [2025.09.05 **Imaginary CTF 2025**](2025-09-05-imaginary-ctf-2025/README.md)
