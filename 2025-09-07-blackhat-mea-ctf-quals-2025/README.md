@@ -6,7 +6,7 @@ CTFTime: <https://ctftime.org/event/2876>
 
 Participated as a member of [Redbud](https://ctftime.org/team/20555).
 
-Result: 1885 Points, 11st Place
+Result: 1885 Points, 9th Place
 
 Solved challenges that I involved:
 
