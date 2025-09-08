@@ -4,6 +4,8 @@ Link: <https://2025.imaginaryctf.org/>
 
 CTFTime: <https://ctftime.org/event/2799>
 
+Official writeups: <https://github.com/ImaginaryCTF/ImaginaryCTF-2025-Challenges>
+
 Result: 2200 Points, 124th Place
 
 Solved Challenges:
