@@ -1,0 +1,296 @@
+# checkwebshell
+
+```
+小明在日常工作的流量监控中发现一段比较有趣的流量，当他想要提取出来时发现一个有趣的信息，其中包含一个flag快来发现它。
+```
+
+Grep for `flag` in the pcap, we can find a PHP file in a HTTP response:
+
+```php
+<?php
+class SM4 {
+    const ENCRYPT = 1;
+    private $sk; 
+    private static $FK = [0xA3B1BAC6, 0x56AA3350, 0x677D9197, 0xB27022DC];
+    private static $CK = [
+        0x00070E15, 0x1C232A31, 0x383F464D, 0x545B6269,
+        0x70777E85, 0x8C939AA1, 0xA8AFB6BD, 0xC4CBD2D9,
+        0xE0E7EEF5, 0xFC030A11, 0x181F262D, 0x343B4249,
+        0x50575E65, 0x6C737A81, 0x888F969D, 0xA4ABB2B9,
+        0xC0C7CED5, 0xDCE3EAF1, 0xF8FF060D, 0x141B2229,
+        0x30373E45, 0x4C535A61, 0x686F767D, 0x848B9299,
+        0xA0A7AEB5, 0xBCC3CAD1, 0xD8DFE6ED, 0xF4FB0209,
+        0x10171E25, 0x2C333A41, 0x484F565D, 0x646B7279
+    ];
+    private static $SboxTable = [
+        0xD6, 0x90, 0xE9, 0xFE, 0xCC, 0xE1, 0x3D, 0xB7, 0x16, 0xB6, 0x14, 0xC2, 0x28, 0xFB, 0x2C, 0x05,
+        0x2B, 0x67, 0x9A, 0x76, 0x2A, 0xBE, 0x04, 0xC3, 0xAA, 0x44, 0x13, 0x26, 0x49, 0x86, 0x06, 0x99,
+        0x9C, 0x42, 0x50, 0xF4, 0x91, 0xEF, 0x98, 0x7A, 0x33, 0x54, 0x0B, 0x43, 0xED, 0xCF, 0xAC, 0x62,
+        0xE4, 0xB3, 0x1C, 0xA9, 0xC9, 0x08, 0xE8, 0x95, 0x80, 0xDF, 0x94, 0xFA, 0x75, 0x8F, 0x3F, 0xA6,
+        0x47, 0x07, 0xA7, 0xFC, 0xF3, 0x73, 0x17, 0xBA, 0x83, 0x59, 0x3C, 0x19, 0xE6, 0x85, 0x4F, 0xA8,
+        0x68, 0x6B, 0x81, 0xB2, 0x71, 0x64, 0xDA, 0x8B, 0xF8, 0xEB, 0x0F, 0x4B, 0x70, 0x56, 0x9D, 0x35,
+        0x1E, 0x24, 0x0E, 0x5E, 0x63, 0x58, 0xD1, 0xA2, 0x25, 0x22, 0x7C, 0x3B, 0x01, 0x0D, 0x2D, 0xEC,
+        0x84, 0x9B, 0x1E, 0x87, 0xE0, 0x3E, 0xB5, 0x66, 0x48, 0x02, 0x6C, 0xBB, 0xBB, 0x32, 0x83, 0x27,
+        0x9E, 0x01, 0x8D, 0x53, 0x9B, 0x64, 0x7B, 0x6B, 0x6A, 0x6C, 0xEC, 0xBB, 0xC4, 0x94, 0x3B, 0x0C,
+        0x76, 0xD2, 0x09, 0xAA, 0x16, 0x15, 0x3D, 0x2D, 0x0A, 0xFD, 0xE4, 0xB7, 0x37, 0x63, 0x28, 0xDD,
+        0x7C, 0xEA, 0x97, 0x8C, 0x6D, 0xC7, 0xF2, 0x3E, 0x1A, 0x71, 0x1D, 0x29, 0xC5, 0x89, 0x6F, 0xB7,
+        0x62, 0x0E, 0xAA, 0x18, 0xBE, 0x1B, 0xFC, 0x56, 0x36, 0x24, 0x07, 0x82, 0xFA, 0x54, 0x5B, 0x40,
+        0x8F, 0xED, 0x1F, 0xDA, 0x93, 0x80, 0xF9, 0x61, 0x1C, 0x70, 0xC3, 0x85, 0x95, 0xA9, 0x79, 0x08,
+        0x46, 0x29, 0x02, 0x3B, 0x4D, 0x83, 0x3A, 0x0A, 0x49, 0x06, 0x24, 0x1A, 0x47, 0x5C, 0x0D, 0xEA,
+        0x9E, 0xCB, 0x55, 0x20, 0x15, 0x8A, 0x9A, 0xCB, 0x43, 0x0C, 0xF0, 0x0B, 0x40, 0x58, 0x00, 0x8F,
+        0xEB, 0xBE, 0x3D, 0xC2, 0x9F, 0x51, 0xFA, 0x13, 0x3B, 0x0D, 0x90, 0x5B, 0x6E, 0x45, 0x59, 0x33
+    ];
+
+    public function __construct($key) {
+        $this->setKey($key);
+    }
+    public function setKey($key) {
+        if (strlen($key) != 16) {
+            throw new Exception("SM4");
+        }
+        $key = $this->strToIntArray($key);
+        $k = array_merge($key, [0, 0, 0, 0]);
+        for ($i = 0; $i < 4; $i++) {
+            $k[$i] ^= self::$FK[$i];
+        }
+        for ($i = 0; $i < 32; $i++) {
+            $k[$i + 4] = $k[$i] ^ $this->CKF($k[$i + 1], $k[$i + 2], $k[$i + 3], self::$CK[$i]);
+            $this->sk[$i] = $k[$i + 4];
+        }
+    }
+    public function encrypt($plaintext) {
+        $len = strlen($plaintext);
+        $padding = 16 - ($len % 16);
+        $plaintext .= str_repeat(chr($padding), $padding); 
+        $ciphertext = '';
+        for ($i = 0; $i < strlen($plaintext); $i += 16) {
+            $block = substr($plaintext, $i, 16);
+            $ciphertext .= $this->cryptBlock($block, self::ENCRYPT);
+        }
+        return $ciphertext;
+    }
+    private function cryptBlock($block, $mode) {
+        $x = $this->strToIntArray($block);
+
+        for ($i = 0; $i < 32; $i++) {
+            $roundKey = $this->sk[$i];
+            $x[4] = $x[0] ^ $this->F($x[1], $x[2], $x[3], $roundKey);
+            array_shift($x);
+        }
+        $x = array_reverse($x);
+        return $this->intArrayToStr($x);
+    }
+    private function F($x1, $x2, $x3, $rk) {
+        return $this->T($x1 ^ $x2 ^ $x3 ^ $rk);
+    }
+    private function CKF($a, $b, $c, $ck) {
+        return $a ^ $this->T($b ^ $c ^ $ck);
+    }
+    private function T($x) {
+        return $this->L($this->S($x));
+    }
+    private function S($x) {
+        $result = 0;
+        for ($i = 0; $i < 4; $i++) {
+            $byte = ($x >> (24 - $i * 8)) & 0xFF;
+            $result |= self::$SboxTable[$byte] << (24 - $i * 8);
+        }
+        return $result;
+    }
+    private function L($x) {
+        return $x ^ $this->rotl($x, 2) ^ $this->rotl($x, 10) ^ $this->rotl($x, 18) ^ $this->rotl($x, 24);
+    }
+    private function rotl($x, $n) {
+        return (($x << $n) & 0xFFFFFFFF) | (($x >> (32 - $n)) & 0xFFFFFFFF);
+    }
+    private function strToIntArray($str) {
+        $result = [];
+        for ($i = 0; $i < 4; $i++) {
+            $offset = $i * 4;
+            $result[$i] =
+                (ord($str[$offset]) << 24) |
+                (ord($str[$offset + 1]) << 16) |
+                (ord($str[$offset + 2]) << 8) |
+                ord($str[$offset + 3]);
+        }
+        return $result;
+    }
+    private function intArrayToStr($array) {
+        $str = '';
+        foreach ($array as $int) {
+            $str .= chr(($int >> 24) & 0xFF);
+            $str .= chr(($int >> 16) & 0xFF);
+            $str .= chr(($int >> 8) & 0xFF);
+            $str .= chr($int & 0xFF);
+        }
+        return $str;
+    }
+}
+try {
+    $key = "a8a58b78f41eeb6a";
+    $sm4 = new SM4($key);
+    $plaintext = "flag";
+    $ciphertext = $sm4->encrypt($plaintext);
+    echo  base64_encode($ciphertext) ; //VCWBIdzfjm45EmYFWcqXX0VpQeZPeI6Qqyjsv31yuPTDC80lhFlaJY2R3TintdQu
+} catch (Exception $e) {
+    echo $e->getMessage() ;
+}
+?>
+```
+
+We can decrypt the SM4 by copying the encryption code and reverse the order of keys applied:
+
+```php
+<?php
+class SM4 {
+    const ENCRYPT = 1;
+    private $sk; 
+    private static $FK = [0xA3B1BAC6, 0x56AA3350, 0x677D9197, 0xB27022DC];
+    private static $CK = [
+        0x00070E15, 0x1C232A31, 0x383F464D, 0x545B6269,
+        0x70777E85, 0x8C939AA1, 0xA8AFB6BD, 0xC4CBD2D9,
+        0xE0E7EEF5, 0xFC030A11, 0x181F262D, 0x343B4249,
+        0x50575E65, 0x6C737A81, 0x888F969D, 0xA4ABB2B9,
+        0xC0C7CED5, 0xDCE3EAF1, 0xF8FF060D, 0x141B2229,
+        0x30373E45, 0x4C535A61, 0x686F767D, 0x848B9299,
+        0xA0A7AEB5, 0xBCC3CAD1, 0xD8DFE6ED, 0xF4FB0209,
+        0x10171E25, 0x2C333A41, 0x484F565D, 0x646B7279
+    ];
+    private static $SboxTable = [
+        0xD6, 0x90, 0xE9, 0xFE, 0xCC, 0xE1, 0x3D, 0xB7, 0x16, 0xB6, 0x14, 0xC2, 0x28, 0xFB, 0x2C, 0x05,
+        0x2B, 0x67, 0x9A, 0x76, 0x2A, 0xBE, 0x04, 0xC3, 0xAA, 0x44, 0x13, 0x26, 0x49, 0x86, 0x06, 0x99,
+        0x9C, 0x42, 0x50, 0xF4, 0x91, 0xEF, 0x98, 0x7A, 0x33, 0x54, 0x0B, 0x43, 0xED, 0xCF, 0xAC, 0x62,
+        0xE4, 0xB3, 0x1C, 0xA9, 0xC9, 0x08, 0xE8, 0x95, 0x80, 0xDF, 0x94, 0xFA, 0x75, 0x8F, 0x3F, 0xA6,
+        0x47, 0x07, 0xA7, 0xFC, 0xF3, 0x73, 0x17, 0xBA, 0x83, 0x59, 0x3C, 0x19, 0xE6, 0x85, 0x4F, 0xA8,
+        0x68, 0x6B, 0x81, 0xB2, 0x71, 0x64, 0xDA, 0x8B, 0xF8, 0xEB, 0x0F, 0x4B, 0x70, 0x56, 0x9D, 0x35,
+        0x1E, 0x24, 0x0E, 0x5E, 0x63, 0x58, 0xD1, 0xA2, 0x25, 0x22, 0x7C, 0x3B, 0x01, 0x0D, 0x2D, 0xEC,
+        0x84, 0x9B, 0x1E, 0x87, 0xE0, 0x3E, 0xB5, 0x66, 0x48, 0x02, 0x6C, 0xBB, 0xBB, 0x32, 0x83, 0x27,
+        0x9E, 0x01, 0x8D, 0x53, 0x9B, 0x64, 0x7B, 0x6B, 0x6A, 0x6C, 0xEC, 0xBB, 0xC4, 0x94, 0x3B, 0x0C,
+        0x76, 0xD2, 0x09, 0xAA, 0x16, 0x15, 0x3D, 0x2D, 0x0A, 0xFD, 0xE4, 0xB7, 0x37, 0x63, 0x28, 0xDD,
+        0x7C, 0xEA, 0x97, 0x8C, 0x6D, 0xC7, 0xF2, 0x3E, 0x1A, 0x71, 0x1D, 0x29, 0xC5, 0x89, 0x6F, 0xB7,
+        0x62, 0x0E, 0xAA, 0x18, 0xBE, 0x1B, 0xFC, 0x56, 0x36, 0x24, 0x07, 0x82, 0xFA, 0x54, 0x5B, 0x40,
+        0x8F, 0xED, 0x1F, 0xDA, 0x93, 0x80, 0xF9, 0x61, 0x1C, 0x70, 0xC3, 0x85, 0x95, 0xA9, 0x79, 0x08,
+        0x46, 0x29, 0x02, 0x3B, 0x4D, 0x83, 0x3A, 0x0A, 0x49, 0x06, 0x24, 0x1A, 0x47, 0x5C, 0x0D, 0xEA,
+        0x9E, 0xCB, 0x55, 0x20, 0x15, 0x8A, 0x9A, 0xCB, 0x43, 0x0C, 0xF0, 0x0B, 0x40, 0x58, 0x00, 0x8F,
+        0xEB, 0xBE, 0x3D, 0xC2, 0x9F, 0x51, 0xFA, 0x13, 0x3B, 0x0D, 0x90, 0x5B, 0x6E, 0x45, 0x59, 0x33
+    ];
+
+    public function __construct($key) {
+        $this->setKey($key);
+    }
+    public function setKey($key) {
+        if (strlen($key) != 16) {
+            throw new Exception("SM4");
+        }
+        $key = $this->strToIntArray($key);
+        $k = array_merge($key, [0, 0, 0, 0]);
+        for ($i = 0; $i < 4; $i++) {
+            $k[$i] ^= self::$FK[$i];
+        }
+        for ($i = 0; $i < 32; $i++) {
+            $k[$i + 4] = $k[$i] ^ $this->CKF($k[$i + 1], $k[$i + 2], $k[$i + 3], self::$CK[$i]);
+            $this->sk[$i] = $k[$i + 4];
+        }
+    }
+    public function encrypt($plaintext) {
+        $len = strlen($plaintext);
+        $padding = 16 - ($len % 16);
+        $plaintext .= str_repeat(chr($padding), $padding); 
+        $ciphertext = '';
+        for ($i = 0; $i < strlen($plaintext); $i += 16) {
+            $block = substr($plaintext, $i, 16);
+            $ciphertext .= $this->cryptBlock($block, self::ENCRYPT);
+        }
+        return $ciphertext;
+    }
+    public function decrypt($plaintext) {
+        $len = strlen($plaintext);
+        $padding = 16 - ($len % 16);
+        $plaintext .= str_repeat(chr($padding), $padding); 
+        $ciphertext = '';
+        for ($i = 0; $i < strlen($plaintext); $i += 16) {
+            $block = substr($plaintext, $i, 16);
+            $ciphertext .= $this->decryptBlock($block);
+        }
+        return $ciphertext;
+    }
+    private function cryptBlock($block, $mode) {
+        $x = $this->strToIntArray($block);
+
+        for ($i = 0; $i < 32; $i++) {
+            $roundKey = $this->sk[$i];
+            $x[4] = $x[0] ^ $this->F($x[1], $x[2], $x[3], $roundKey);
+            array_shift($x);
+        }
+        $x = array_reverse($x);
+        return $this->intArrayToStr($x);
+    }
+    private function decryptBlock($block) {
+        $x = $this->strToIntArray($block);
+
+        for ($i = 0; $i < 32; $i++) {
+            $roundKey = $this->sk[31 - $i];
+            $x[4] = $x[0] ^ $this->F($x[1], $x[2], $x[3], $roundKey);
+            array_shift($x);
+        }
+        $x = array_reverse($x);
+        return $this->intArrayToStr($x);
+    }
+    private function F($x1, $x2, $x3, $rk) {
+        return $this->T($x1 ^ $x2 ^ $x3 ^ $rk);
+    }
+    private function CKF($a, $b, $c, $ck) {
+        return $a ^ $this->T($b ^ $c ^ $ck);
+    }
+    private function T($x) {
+        return $this->L($this->S($x));
+    }
+    private function S($x) {
+        $result = 0;
+        for ($i = 0; $i < 4; $i++) {
+            $byte = ($x >> (24 - $i * 8)) & 0xFF;
+            $result |= self::$SboxTable[$byte] << (24 - $i * 8);
+        }
+        return $result;
+    }
+    private function L($x) {
+        return $x ^ $this->rotl($x, 2) ^ $this->rotl($x, 10) ^ $this->rotl($x, 18) ^ $this->rotl($x, 24);
+    }
+    private function rotl($x, $n) {
+        return (($x << $n) & 0xFFFFFFFF) | (($x >> (32 - $n)) & 0xFFFFFFFF);
+    }
+    private function strToIntArray($str) {
+        $result = [];
+        for ($i = 0; $i < 4; $i++) {
+            $offset = $i * 4;
+            $result[$i] =
+                (ord($str[$offset]) << 24) |
+                (ord($str[$offset + 1]) << 16) |
+                (ord($str[$offset + 2]) << 8) |
+                ord($str[$offset + 3]);
+        }
+        return $result;
+    }
+    private function intArrayToStr($array) {
+        $str = '';
+        foreach ($array as $int) {
+            $str .= chr(($int >> 24) & 0xFF);
+            $str .= chr(($int >> 16) & 0xFF);
+            $str .= chr(($int >> 8) & 0xFF);
+            $str .= chr($int & 0xFF);
+        }
+        return $str;
+    }
+}
+try {
+    $key = "a8a58b78f41eeb6a";
+    $sm4 = new SM4($key);
+    $plaintext = $sm4->decrypt(base64_decode("VCWBIdzfjm45EmYFWcqXX0VpQeZPeI6Qqyjsv31yuPTDC80lhFlaJY2R3TintdQu"));
+    echo $plaintext;
+} catch (Exception $e) {
+    echo $e->getMessage() ;
+}
+?>
+```
+
+Get flag: `flag{1ac380d6-5820-4e1a-b40e-ddf1789f6b0d}`.
