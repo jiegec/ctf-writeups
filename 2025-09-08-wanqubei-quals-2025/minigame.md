@@ -22,7 +22,7 @@ r._free_wrapper(u), _(2, 1, 1672),
 o ? a.showResult("✓", "校验成功", "success") : a.showResult("✗", "校验失败", "fail");
 ```
 
-So it is saving some data to the heap of webassembly, and check its output. The decompiled wasm is:
+So it is saving some data to the heap of webassembly, and checks its output. The decompiled wasm is:
 
 ```c
 static const u8 data_segment_data_w2c__d0[] = {
