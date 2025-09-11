@@ -4,7 +4,7 @@ Link: <https://watctf.org>
 
 CTFTime: <https://ctftime.org/event/2854>
 
-Result: 1915 Points, 16th Place
+Result: 1921 Points, 16th Place
 
 Solved Challenges:
 
