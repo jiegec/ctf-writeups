@@ -71,7 +71,17 @@ while True:
     menu()
 ```
 
-The problem is: `k` is shared between signatures.
+The problem is: `k` is shared between signatures. Consider two signatures generated using the same `k`:
+
+- $\textrm{rpoint}_1 = \textrm{rpoint}_2 = k \textrm{gen}$
+- $r_1 = r_2 = \textrm{rpoint}_1.x \bmod n$
+- $s_1 = k^{-1} * (z_1 + r_1 \textrm{priv}) \bmod n$
+- $s_2 = k^{-1} * (z_2 + r_2 \textrm{priv}) \bmod n$
+
+The unknown values are $k$ and $\textrm{priv}$, but we have two equations, so we can solve them:
+
+- $s_1 - s_2 = k^{-1} (z_1 - z_2) \bmod n$
+- $k = (s_1 - s_2)^{-1} (z_1 - z_2) \bmod n$
 
 Ask DeepSeek to solve it:
 
