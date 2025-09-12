@@ -923,3 +923,11 @@ main = do
     print $ checkFlag $ map ord "\x00"
     print $ checkFlag2 $ map ord "\x00"
 ```
+
+How to transform:
+
+1. `flip f x y = flip f y x`
+2. `f . g = \x -> f (g x)`
+3. `ap f g = \x -> f x (g x)`
+
+Then manually simplify the lambda calculus.

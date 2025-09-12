@@ -4,6 +4,8 @@ Link: <https://watctf.org>
 
 CTFTime: <https://ctftime.org/event/2854>
 
+Official archive: <https://github.com/virchau13/watctf-f25-public>
+
 Result: 1921 Points, 16th Place
 
 Solved Challenges:
