@@ -570,7 +570,7 @@ object
 >> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]]
 ["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, <built-in method __subclasses__ of type object at 0x7efe341e6040>, <class '_sitebuiltins._Helper'>]
 # locate code.InterativeConsole class
-# enter help prompt, enter code, quit to return
+# enter help prompt, enter code to load code module, quit to return
 # the newly loaded code.InteractiveInterpreter is a subclass of object
 >> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()]
 [..., [..., <class 'code.InteractiveInterpreter'>, <class 'pydoc.TextDoc.docclass.<locals>.HorizontalRule'>, <class 'pydoc.TextDoc.docclass.<locals>.HorizontalRule'>]]
