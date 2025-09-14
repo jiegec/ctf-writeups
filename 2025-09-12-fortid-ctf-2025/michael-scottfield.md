@@ -390,6 +390,8 @@ p.sendline(b'os.system("cat flag.txt")')
 p.interactive()
 ```
 
+It works locally with Python 3.8/3.10/3.11/3.12/3.13 since the indices are probed dynamically. If we can't probe the Python version remotely, we can try different indices from common Python versions.
+
 ### Use pdb module
 
 The attack using pdb is similar: we only need to call `pdb.set_trace()`:
