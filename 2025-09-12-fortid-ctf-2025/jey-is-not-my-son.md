@@ -106,6 +106,8 @@ year = 2019
 test(name, year)
 ```
 
+Due to operator precedence, the second filter evaluates to `True or False and False`, which is always `True`. Then only the first filter is in effect.
+
 Through this, we can confirm that there is an entry called `flag` online. Then, we need to extract its year field. However, it is a string field, so we cannout return the integer directly. Instead, we use string comparison operator:
 
 ```python
