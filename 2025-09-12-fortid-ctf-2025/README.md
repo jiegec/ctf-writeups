@@ -34,3 +34,7 @@ Pwn:
 Web:
 
 - [Jey is not my son](./jey-is-not-my-son.md)
+
+Solved after competition:
+
+- [Michael Scottfield](./michael-scottfield.md)
