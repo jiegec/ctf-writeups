@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.09.12 **FortID CTF 2025**](2025-09-12-fortid-ctf-2025/README.md)
 * [2025.09.10 **WatCTF F25**](2025-09-10-watctf-f25/README.md)
 * [2025.09.07 **2025 湾区杯网络安全大赛初赛（院校组）**](2025-09-08-wanqubei-quals-2025/README.md)
 * [2025.09.07 **BlackHat MEA Qualification CTF 2025**](2025-09-07-blackhat-mea-ctf-quals-2025/README.md)
@@ -24,3 +25,9 @@ My individual team: <https://ctftime.org/team/208389>
 * [2021.08.15 **InCTF 2021**](2021-08-15-inctf2021/README.md)
 * [2019.01.27 **Codegate CTF 2019 Preliminary**](2019-01-27-codegate2019/README.md)
 * [2018.09.28 **THUCTF 2018**](2018-09-28-thuctf2018/README.md)
+
+## Private Writeups
+
+Competitions below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discus privately.
+
+* 2025.09.14 **Road to CyberBay CTF 2025**

@@ -4,7 +4,9 @@ Link: <https://defhawk.com/battleground/raid/craccon-ctf>
 
 CTFTime: <https://ctftime.org/event/2879>
 
-Result: 250 Points, 74th Place
+Official Writeup: <https://github.com/defHawk-tech/Official_Writeups/tree/main/CRACCON2025>
+
+Result: 250 Points, 74th(80th on CTFTime) Place
 
 Solved Challenges:
 
