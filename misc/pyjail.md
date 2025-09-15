@@ -115,7 +115,7 @@ Details [here](./pyjail/tbtl-ctf-2024-squeezing-tightly-on-arm.md).
 Requirements:
 
 1. No function call: Use `f"{license}" for license._Printer__setup in [function_to_call]]` to call `function_to_call`
-2. No builtins: Use `.__globals__["__builtins__"]` of the given function to access builtins
+2. No builtins: Use `.__builtins__` of the given function to access builtins dict, or `.__globals__["__builtins__"]` of the given function to access builtins module
 3. No assignment: Use `[a:=b]` for assignment
 
 Details [here](./pyjail/uiuctf-2024-astea.md).

