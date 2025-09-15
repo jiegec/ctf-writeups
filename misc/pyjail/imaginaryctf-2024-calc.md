@@ -33,7 +33,7 @@ Requirements:
 2. Input should match regex: Use `1,` to bypass since it is not a full match
 3. Audit hook: Add signal handler, raise signal and change content of the audit hook to bypass
 
-This writeup is inspired by [ICTF 2024 - All PyJails 『ANY %』on Shy blog](https://blog.antoine.rocks/%F0%9F%91%A9%E2%80%8D%F0%9F%8F%ABwriteups/ictf%202024%20-%20all%20pyjails/).
+This writeup is inspired by [ICTF 2024 - All PyJails 『ANY %』on Shy blog](https://blog.antoine.rocks/%F0%9F%91%A9%E2%80%8D%F0%9F%8F%ABwriteups/ictf%202024%20-%20all%20pyjails/). It is nicely written, you are strongly encouraged to read it.
 
 If we launch shell directly, the audit hook will immediately kill the process.
 
