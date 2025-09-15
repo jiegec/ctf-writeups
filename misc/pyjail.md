@@ -54,3 +54,13 @@ Requirements:
 5. No builtins: Use `().__class__.__base__.__subclasses__()`
 
 Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
+
+## ImaginaryCTF 2024 ok_nice
+
+Requirements:
+
+1. No numbers: Use `True` as 1
+2. Exception side channel: Use integer division by zero to guess each character
+3. `len(set(input)) <= 17`: Reuse characters already appeared
+
+Details [here](./pyjail/imaginaryctf-2024-ok-nice.md).
