@@ -70,7 +70,7 @@ Requirements:
 
 Details [here](./pyjail/imaginaryctf-2024-ok-nice.md).
 
-# NTUA_H4CK 2024 Snekbox
+## NTUA_H4CK 2024 Snekbox
 
 Requirements:
 
@@ -79,7 +79,7 @@ Requirements:
 
 Details [here](./pyjail/ntua-h4ck-2024-snekbox.md).
 
-# ImaginaryCTF 2024 calc
+## ImaginaryCTF 2024 calc
 
 Requirements:
 
