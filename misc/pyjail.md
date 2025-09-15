@@ -22,7 +22,7 @@ Requirements:
 
 Details [here](../2025-09-12-fortid-ctf-2025/michael-scottfield.md)
 
-## UofTCTF 2025 Jail Zero
+## UofTCTF 2024 Jail Zero
 
 ```python
 def check(code):
