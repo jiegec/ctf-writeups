@@ -1,6 +1,8 @@
 # Writeups by solution
 
-* Table of contents
+Table of contents:
+
+* TOC
 {:toc}
 
 ## AI

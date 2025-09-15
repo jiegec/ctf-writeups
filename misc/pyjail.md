@@ -4,7 +4,9 @@ References:
 
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
 
-* Table of contents
+Table of contents:
+
+* TOC
 {:toc}
 
 ## WHY2025 CTF TitleCase
