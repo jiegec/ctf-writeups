@@ -97,7 +97,7 @@
     - [Other Python jail](../pyjail.md)
 - Shell jail:
     - [Pager !/bin/sh](../2025-08-22-hitconctf2025/git-playground.md)
-- Peal jail:
+- Perl jail:
     - [Newline to bypass regex](../2025-09-05-imaginary-ctf-2025/pearl.md)
     - [Pipe operator to execute command and get output](../2025-09-05-imaginary-ctf-2025/pearl.md)
 - Environment variable:
