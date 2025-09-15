@@ -3,6 +3,7 @@
 References:
 
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
+- [pyjail collection](https://github.com/jailctf/pyjail-collection)
 
 Table of contents:
 
@@ -88,3 +89,13 @@ Requirements:
 3. Audit hook: Add signal handler, raise signal and change content of the audit hook to bypass
 
 Details [here](./pyjail/imaginaryctf-2024-calc.md).
+
+## GDG Algiers 2022 Type_it
+
+Requirements:
+
+1. No non-ascii characters
+2. No blacklisted characters
+3. Prone to string injection
+
+Details [here](./pyjail/gdg-algiers-2022-type-it.md).
