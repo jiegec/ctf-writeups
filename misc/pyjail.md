@@ -255,7 +255,7 @@ Requirements:
 4. No spaces: Use `\r` to bypass while making `input()` happy
 4. No builtins: Use `().__class__.__base__.__subclasses__()`
 
-First, we need to find the familiar classes we want, e.g. `_sitebuiltins._Helper` from `().__class__.__base__.__subclasses__()`. However, we cannot use `()`, so to invoke the function, we need to:
+First, we need to find the familiar classes we want, e.g. `_sitebuiltins._Helper` from `().__class__.__base__.__subclasses__()`. However, we cannot use `()`, so to invoke the function, inspired by [misc/PySysMagic writeup](https://starlit.melyr.space/posts/l3akctf-2024/pysysmagic/), we need to:
 
 1. Assign `_.__class_getitem__` to `type.__subclasses__` using `[None for _.__class_getitem__ in [type.__subclasses__]]`
 2. Use `_[[].__class__.__base__]` to invoke `().__class__.__base__.__subclasses__()`: because `_` is the class, so `_[arg]` is essentially `_.__class__getitem__(arg)`
