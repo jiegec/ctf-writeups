@@ -1,5 +1,13 @@
 # Python jail
 
+## WHY2025 CTF TitleCase
+
+Visit [here](../2025-08-08-why2025/misc/title-case.md).
+
+## FortID CTF 2025 Michael Scottfield
+
+Visit [here](../2025-09-12-fortid-ctf-2025/michael-scottfield.md)
+
 ## UofTCTF 2025 Jail Zero
 
 ```python
