@@ -73,3 +73,13 @@ Requirements:
 2. Blacklisted dangerous functions: Use `globals()[function_name]` to bypass
 
 Details [here](./pyjail/ntua-h4ck-2024-snekbox.md).
+
+# ImaginaryCTF 2024 calc
+
+Requirements:
+
+1. Input is a expression: Use list comprehension to execute multiple statements
+2. Input should match regex: Use `1,` to bypass since it is not a full match
+3. Audit hook: Add signal handler, raise signal and change content of the audit hook to bypass
+
+Details [here](./pyjail/imaginaryctf-2024-calc.md).
