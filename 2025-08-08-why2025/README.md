@@ -43,3 +43,7 @@ Web:
 - [Planets](./web/planets.md)
 - [Shoe Shop 1.0](./web/shoe-shop-1.0.md)
 - [WHY2025 CTF Times](./web/why2025-ctf-times.md)
+
+Solved after the competition:
+
+- [TitleCase](./misc/title-case.md)

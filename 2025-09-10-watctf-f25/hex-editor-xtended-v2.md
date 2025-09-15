@@ -212,7 +212,7 @@ int main() {
 It allows us to read/write arbitrary files except for `/secret.txt`. However, we can change the content of memory via `/proc/self/mem`:
 
 ```shell
-$  ssh hexed@challs.watctf.org -p 2022
+$ ssh hexed@challs.watctf.org -p 2022
 Could not chdir to home directory /home/hexed: No such file or directory
 Welcome to HEX (HEX Editor Xtended) v8.5 (bugs patched!)
 Run 'help' for help

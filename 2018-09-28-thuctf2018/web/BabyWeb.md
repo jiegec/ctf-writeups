@@ -31,7 +31,7 @@ if(!empty($_GET['url'])){
 } 
 ```
 
-显然是一个 `SSRF(Server Side Request Forge)` 了。用 `file:///` 协议随便看了些文件，没找到什么有用的信息。然后打开 `robots.txt` ：
+显然是一个 `SSRF(Server Side Request Forge)` 了。用 `file:///` 协议随便看了些文件，没找到什么有用的信息。然后打开 `robots.txt` ：
 
 ```
 User-agent: *
@@ -65,7 +65,7 @@ foreach ($serverList as $host) {
 2. 在 POST 中传 body
 3. 通过 body 中 hacker 参数打开一个反弹 shell
 
-这些不能通过 `http://` 完成，但是通过 `gopher://` 协议，我们可以手动构造一个 `HTTP POST` 请求。
+这些不能通过 `http://` 完成，但是通过 `gopher://` 协议，我们可以手动构造一个 `HTTP POST` 请求。
 
 ```
 转义前：

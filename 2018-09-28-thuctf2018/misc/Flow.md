@@ -13,7 +13,7 @@ Attachment: flow.zip
 
 解压缩，得到两个文件： `keyboard.pcap` 和 `network.pcapng` 。
 
-首先打开 `keyboard.pcap` ，可以得到一系列的键盘事件。按照 [CTF Series: Forensics](https://bitvijays.github.io/LFC-Forensics.html) 中的指示可以知道输入的内容为：
+首先打开 `keyboard.pcap` ，可以得到一系列的键盘事件。按照 [CTF Series: Forensics](https://bitvijays.github.io/LFC-Forensics.html) ([Archive](https://web.archive.org/web/20180113115328/https://bitvijays.github.io/LFC-Forensics.html)) 中的指示可以知道输入的内容为：
 
 ```
 PACIPH{edcFn0jXzdpdidl}

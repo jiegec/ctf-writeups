@@ -26,6 +26,10 @@ My individual team: <https://ctftime.org/team/208389>
 * [2019.01.27 **Codegate CTF 2019 Preliminary**](2019-01-27-codegate2019/README.md)
 * [2018.09.28 **THUCTF 2018**](2018-09-28-thuctf2018/README.md)
 
+## Writeups by solution
+
+Enter [here](./misc/solution.md).
+
 ## Private Writeups
 
 Competitions below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discus privately.
