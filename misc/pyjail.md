@@ -99,3 +99,13 @@ Requirements:
 3. Prone to string injection
 
 Details [here](./pyjail/gdg-algiers-2022-type-it.md).
+
+## TBTL CTF 2024 Squeezing Tightly On Arm
+
+Requirements:
+
+1. No `'`: Use `"` for strings
+2. Some characters may appear only once: save intermediate values to locals
+3. No builtins: Use `().__class__.__base__.__subclasses__()` to bypass
+
+Details [here](./pyjail/tbtl-ctf-2024-squeezing-tightly-on-arm.md).
