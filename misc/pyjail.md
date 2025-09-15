@@ -4,6 +4,9 @@ References:
 
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
 
+* Table of contents
+{:toc}
+
 ## WHY2025 CTF TitleCase
 
 Use unicode bypass to avoid `str.title()`.
