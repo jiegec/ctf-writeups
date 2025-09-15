@@ -1,5 +1,8 @@
 # Writeups by solution
 
+* Table of contents
+{:toc}
+
 ## AI
 
 - Jailbreak:
