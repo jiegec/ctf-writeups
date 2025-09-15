@@ -64,3 +64,12 @@ Requirements:
 3. `len(set(input)) <= 17`: Reuse characters already appeared
 
 Details [here](./pyjail/imaginaryctf-2024-ok-nice.md).
+
+# NTUA_H4CK 2024 Snekbox
+
+Requirements:
+
+1. No non-ascii characters
+2. Blacklisted dangerous functions: Use `globals()[function_name]` to bypass
+
+Details [here](./pyjail/ntua-h4ck-2024-snekbox.md).
