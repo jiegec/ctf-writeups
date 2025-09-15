@@ -6,11 +6,21 @@ References:
 
 ## WHY2025 CTF TitleCase
 
+Use unicode bypass to avoid `str.title()`.
+
 Visit [here](../2025-08-08-why2025/misc/title-case.md).
 
 ## FortID CTF 2025 Michael Scottfield
 
-Visit [here](../2025-09-12-fortid-ctf-2025/michael-scottfield.md)
+Requirements:
+
+1. Length <= 500: Easy to achieve
+2. Allow `()` but no parameters: Use `pdb.set_trace()` or `code.InteractiveConsole().interact()`
+3. No strings: Use docstrings and `str[index]` to create strings
+3. No numbers: Use `True` as 1
+4. No builtins: Use `().__class__.__base__.__subclasses__()`
+
+Details [here](../2025-09-12-fortid-ctf-2025/michael-scottfield.md)
 
 ## UofTCTF 2025 Jail Zero
 
@@ -37,12 +47,12 @@ code = input(">>> ")
 safe_eval(code)
 ```
 
-Filters:
+Requirements:
 
-1. no alphabetic: use [Unicode Block “Mathematical Alphanumeric Symbols”](https://www.compart.com/en/unicode/block/U+1D400) to bypass
-2. no numbers: use `(''=='')` as 1
-3. no double underscores: use [FULLWIDTH LOW LINE](https://unicode-explorer.com/c/FF3F)
-4. no builtins: use `().__class__.__base__.__subclasses__()`
+1. No alphabetic: Use [Unicode Block “Mathematical Alphanumeric Symbols”](https://www.compart.com/en/unicode/block/U+1D400) to bypass
+2. No numbers: Use `(''=='')` as 1
+3. No double underscores: Use [FULLWIDTH LOW LINE](https://unicode-explorer.com/c/FF3F)
+4. No builtins: Use `().__class__.__base__.__subclasses__()`
 
 Then, we can use existing way to get to `code.InteractiveConsole().interact()`:
 
@@ -164,8 +174,8 @@ print(eval(code, {"__builtins__": None}, {}) if len(code := input("jail> ")) <= 
 
 Requirements:
 
-1. Length <= 100
-2. Allow `()` but no parameters
+1. Length <= 100: Try hard to reduce input length
+2. Allow `()` but no parameters: Use `pdb.set_trace()`
 3. No builtins: Use `().__class__.__base__.__subclasses__()`
 
 Steps:
