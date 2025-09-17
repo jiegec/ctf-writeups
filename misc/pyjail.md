@@ -61,12 +61,12 @@ Requirements:
 
 Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
 
-## ImaginaryCTF 2024 ok_nice
+## ImaginaryCTF 2024 ok-nice
 
 Requirements:
 
 1. No numbers: Use `True` as 1
-2. Exception side channel: Use integer division by zero to guess each character
+2. Exception side channel: Use integer division by zero or array out of bounds to guess each character
 3. `len(set(input)) <= 17`: Reuse characters already appeared
 
 Details [here](./pyjail/imaginaryctf-2024-ok-nice.md).

