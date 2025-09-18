@@ -132,3 +132,11 @@ Requirements:
 6. No sys module: Use `<class 'os._wrap_close'>` to find system
 
 Details [here](./pyjail/tcp1p-ctf-2024-typically-not-a-revenge.md).
+
+## TCP1P CTF 2024 functional
+
+Requirements:
+
+1. Call functions with zero argument, or return value of another function, and all function names should match `[ad-z]+`
+
+Details [here](./pyjail/tcp1p-ctf-2024-functional.md).
