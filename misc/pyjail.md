@@ -28,6 +28,16 @@ Requirements:
 
 Details [here](../2025-09-12-fortid-ctf-2025/michael-scottfield.md).
 
+## UIUCTF 2025 Astea
+
+Requirements:
+
+1. No function call: Use `f"{license}" for license._Printer__setup in [function_to_call]]` to call `function_to_call`
+2. No builtins: Use `.__builtins__` of the given function to access builtins dict, or `.__globals__["__builtins__"]` of the given function to access builtins module
+3. No assignment: Use `[a:=b]` for assignment
+
+Details [here](./pyjail/uiuctf-2024-astea.md).
+
 ## UofTCTF 2024 Jail Zero
 
 Requirements:
@@ -48,18 +58,6 @@ Requirements:
 3. No builtins: Use `().__class__.__base__.__subclasses__()` to find `sys`
 
 Details [here](./pyjail/seccon-2024-quals-1linepyjail.md).
-
-## TCP1P CTF 2023 PyMagic
-
-Requirements:
-
-1. No `()`: Use `class.__class_getitem__` and `class[]` to bypass
-2. No strings: Use docstrings and `str[index]` to create strings
-3. No numbers: Use `True` as 1
-4. No spaces: Use `\r` to bypass while making `input()` happy
-5. No builtins: Use `().__class__.__base__.__subclasses__()`
-
-Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
 
 ## ImaginaryCTF 2024 ok-nice
 
@@ -90,16 +88,6 @@ Requirements:
 
 Details [here](./pyjail/imaginaryctf-2024-calc.md).
 
-## GDG Algiers 2022 Type_it
-
-Requirements:
-
-1. No non-ascii characters
-2. No blacklisted characters
-3. Prone to string injection
-
-Details [here](./pyjail/gdg-algiers-2022-type-it.md).
-
 ## TBTL CTF 2024 Squeezing Tightly On Arm
 
 Requirements:
@@ -109,16 +97,6 @@ Requirements:
 3. No builtins: Use `().__class__.__base__.__subclasses__()` to bypass
 
 Details [here](./pyjail/tbtl-ctf-2024-squeezing-tightly-on-arm.md).
-
-## UIUCTF 2025 Astea
-
-Requirements:
-
-1. No function call: Use `f"{license}" for license._Printer__setup in [function_to_call]]` to call `function_to_call`
-2. No builtins: Use `.__builtins__` of the given function to access builtins dict, or `.__globals__["__builtins__"]` of the given function to access builtins module
-3. No assignment: Use `[a:=b]` for assignment
-
-Details [here](./pyjail/uiuctf-2024-astea.md).
 
 ## TCP1P CTF 2024 typically not a revenge
 
@@ -140,3 +118,25 @@ Requirements:
 1. Call functions with zero argument, or return value of another function, and all function names should match `[ad-z]+`
 
 Details [here](./pyjail/tcp1p-ctf-2024-functional.md).
+
+## TCP1P CTF 2023 PyMagic
+
+Requirements:
+
+1. No `()`: Use `class.__class_getitem__` and `class[]` to bypass
+2. No strings: Use docstrings and `str[index]` to create strings
+3. No numbers: Use `True` as 1
+4. No spaces: Use `\r` to bypass while making `input()` happy
+5. No builtins: Use `().__class__.__base__.__subclasses__()`
+
+Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
+
+## GDG Algiers 2022 Type_it
+
+Requirements:
+
+1. No non-ascii characters
+2. No blacklisted characters
+3. Prone to string injection
+
+Details [here](./pyjail/gdg-algiers-2022-type-it.md).
