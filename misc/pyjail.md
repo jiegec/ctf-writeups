@@ -79,15 +79,6 @@ Requirements:
 
 Details [here](./pyjail/imaginaryctf-2024-ok-nice.md).
 
-## NTUA_H4CK 2024 Snekbox
-
-Requirements:
-
-1. No non-ascii characters
-2. Blacklisted dangerous functions: Use `globals()[function_name]` to bypass
-
-Details [here](./pyjail/ntua-h4ck-2024-snekbox.md).
-
 ## ImaginaryCTF 2024 calc
 
 Requirements:
@@ -97,6 +88,16 @@ Requirements:
 3. Audit hook: Add signal handler, raise signal and change content of the audit hook to bypass
 
 Details [here](./pyjail/imaginaryctf-2024-calc.md).
+
+## NTUA_H4CK 2024 Snekbox
+
+Requirements:
+
+1. No non-ascii characters
+2. Blacklisted dangerous functions: Use `globals()[function_name]` to bypass
+
+Details [here](./pyjail/ntua-h4ck-2024-snekbox.md).
+
 
 ## TBTL CTF 2024 Squeezing Tightly On Arm
 
