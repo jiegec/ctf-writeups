@@ -28,7 +28,17 @@ Requirements:
 
 Details [here](../2025-09-12-fortid-ctf-2025/michael-scottfield.md).
 
-## UIUCTF 2025 Astea
+## LACTF 2025 farquaad
+
+Requirements:
+
+1. Only printable characters
+2. No `e` or `E`: Use `list(x.__dict__)[index]` to find strings with `e` in it and call it via `x.__dict__[list(x.__dict__)[index]](args)`
+3. No builtins: Use `().__class__.__mro__[1].__subclasses__()`
+
+Details [here](./pyjail/lactf-2025-farquaad.md).
+
+## UIUCTF 2024 Astea
 
 Requirements:
 
