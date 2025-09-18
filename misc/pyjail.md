@@ -119,3 +119,16 @@ Requirements:
 3. No assignment: Use `[a:=b]` for assignment
 
 Details [here](./pyjail/uiuctf-2024-astea.md).
+
+## TCP1P CTF 2024 typically not a revenge
+
+Requirements:
+
+1. No numbers: Use `arr[[]is[]]` for `arr[0]`, `arr[not[]is[]]` for `arr[1]`, `arr[not[]is[]:][not[]is[]]` for `arr[2]`
+2. No parens: Use `[obj[arg] for obj.__class_getitem in [function_to_call]]` to call function
+3. No assignments or commas: Use `[... for a in [b] for c in [d]]`
+4. No spaces: Use `\f` i.e. form feed
+5. No builtins: Use `[].__class__.__base__.__subclasses__()`
+6. No sys module: Use `<class 'os._wrap_close'>` to find system
+
+Details [here](./pyjail/tcp1p-ctf-2024-typically-not-a-revenge.md).
