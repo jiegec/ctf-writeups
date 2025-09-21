@@ -4,7 +4,7 @@ Link: <https://ctf.secso.cc/challenges>
 
 CTFTime: <https://ctftime.org/event/2902>
 
-Result: 6334 Points, 5th Place
+Result: 6319 Points, 5th Place
 
 Solved Challenges:
 
