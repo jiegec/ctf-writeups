@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.09.19 **K17 CTF 2025**](2025-09-19-k17-ctf-2025/README.md)
 * [2025.09.12 **FortID CTF 2025**](2025-09-12-fortid-ctf-2025/README.md)
 * [2025.09.10 **WatCTF F25**](2025-09-10-watctf-f25/README.md)
 * [2025.09.07 **2025 湾区杯网络安全大赛初赛（院校组）**](2025-09-08-wanqubei-quals-2025/README.md)
