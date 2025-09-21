@@ -50,5 +50,5 @@ Web:
 
 Pwn solved by @Rosayxy:
 
-- u get me write
-- singular hole, 3rd solve
+- [u get me write](./u-get-me-write.md)
+- [singular hole](./singular-hole.md)
