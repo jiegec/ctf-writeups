@@ -69,7 +69,7 @@ while True:
 
 Initially, it seems unbreakable. However, the homomorphic proerty of Paillier crypto system holds under modulo n. The first trick, `cha cha left` multiplies 256 without modulo. So, if we enumerate i until `flag * (2**i) * 256 != flag * (2 ** i) * 256 mod n`, we know that `flag * (2 ** i) * 256 >= n`. It is somewhat similar to the parity oracle attack.
 
-Next, we can add an `offset` to `flag` to make it smaller, and make a better estimate using `(flag - offset) * (2 ** i) * 256 >= n` oracle by adding `n // 256 // (2 ** i)` to `offset`.
+Next, we can subtract an `offset` from `flag` to make it smaller, and make a better estimate using the `(flag - offset) * (2 ** i) * 256 >= n` oracle by adding `n // 256 // (2 ** i)` to `offset`. Eventually `flag - offset` is small enough and `flag` is almost `offset`, except for the lowest byte, which is always `}`.
 
 Attack script:
 
