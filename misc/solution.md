@@ -16,6 +16,7 @@ Table of contents:
     - [Small n](../2018-09-28-thuctf2018/crypto/easy_rsa.md)
     - [Small e](../2025-08-16-scriptctf2025/rsa-1.md)
     - [Factorable n](../2025-08-22-brunnerctf2025/half-baked.md)
+    - [Small d](../2025-09-19-k17-ctf-2025/worsehelp.md)
 - Discrete logarithm:
     - [Baby-step giant-step](../2025-09-08-wanqubei-quals-2025/new-trick.md)
     - [Pohlig-Hellman](../2025-09-04-nullcon-berlin-hackim-2025-ctf/field-trip.md)
@@ -65,8 +66,10 @@ Table of contents:
 
 ## Misc
 
-- Image Steganography:
+- Image steganography:
     - [StegSolve](../2018-09-28-thuctf2018/misc/Format.md)
+- Text steganography:
+    - [Zero width characters](../2025-09-19-k17-ctf-2025/discord.md)
 - Representations:
     - [Minecraft](../2025-08-16-scriptctf2025/enchant.md)
     - [Zeckendorf representation](../2025-08-22-brunnerctf2025/pie-recipe.md)
@@ -119,12 +122,18 @@ Table of contents:
     - [dex2jar + JD-GUI](../2025-09-05-imaginary-ctf-2025/weird-app.md)
 - Memory dump:
     - [Dump memory in debugger](../2025-09-12-fortid-ctf-2025/rev-from-the-past.md)
+- Validation bypass:
+    - [Patch conditional jump instruction](../2025-09-19-k17-ctf-2025/bait-and-switch.md)
+- PyInstaller:
+    - [pyinstxtractor](../2025-09-19-k17-ctf-2025/jumping.md)
 
 ## Web
 
 - XSS:
     - [Inline JavaScript](../2018-09-28-thuctf2018/web/XSS1.md)
     - [SSRF in JavaScript](../2018-09-28-thuctf2018/web/XSS2.md)
+    - [HTML injection](../2025-09-19-k17-ctf-2025/autofill.md)
+    - [PDF.js vulnerability](../2025-09-19-k17-ctf-2025/pwnable-document-format.md)
 - GraphQL:
     - [Schema introspection](../2022-11-26-glacierctf2022/web/FlagCoin%20Stage%201.md)
 - CURL:
@@ -157,3 +166,7 @@ Table of contents:
     - [Relative path](../2025-09-07-blackhat-mea-ctf-quals-2025/hash-factory.md)
 - bcrypt:
     - [Length truncation to 72 bytes](../2025-09-05-imaginary-ctf-2025/passwordless.md)
+- DNS:
+    - [DNS rebinding attack](../2025-09-19-k17-ctf-2025/janus.md)
+- Side channel:
+    - [Timing side channel for password validation](../2025-09-19-k17-ctf-2025/vault.md)
