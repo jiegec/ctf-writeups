@@ -459,7 +459,15 @@ Plus count: 10
 Length: 218
 ```
 
-Using 10 `+` allows us to use two more in the rest part.
+Using 10 `+` allows us to use two more in the rest part. Each character is computed from:
+
+1. `F`: `min(str(()in()))`
+2. `l`: `chr(len(str(open))+ord(min(str(not()))))`
+3. `a`: `chr(max(range(ord(max(bin(int()))))))`
+4. `g`: `chr(len(str(set()))+ord(max(bin(int()))))`
+5. `.`: `chr(len(str(chr))+len(str(chr)))`
+6. `t`: `max(str(int))`
+7. `x`: `max(str(hex))`
 
 Now the next thing is to extract the result from file. If the flag file contains flag in its first line, we are done. However, the flag is separated in many lines, and the only thing that can handle iterator is `set()`, which makes it hard to recover the flag.
 
