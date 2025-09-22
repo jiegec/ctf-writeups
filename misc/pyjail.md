@@ -10,6 +10,21 @@ Table of contents:
 * TOC
 {:toc}
 
+## CrewCTF 2025 Bytecode Bonanza - Basics
+
+Requirements:
+
+1. Limit to the following opcodes in Python 3.9:
+    1. POP_TOP: pop top element
+    2. DUP_TOP: duplicate top element
+    3. UNARY_INVERT: invert top element
+    4. BINARY_ADD: pop two elements, push the sum of them
+    5. POP_JUMP_IF_TRUE: pop top element, jump to target if element is true (non-zero)
+    6. EXTENDED_ARG: construct 16 bit argument for the next op
+2. Implement three functions: `a-b`, `1337` and `a*b`
+
+Details [here](./pyjail/crewctf-2025-bytecode-bonanza-basics.md).
+
 ## WHY2025 CTF TitleCase
 
 Use unicode bypass to avoid `str.title()`.
