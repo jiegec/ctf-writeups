@@ -14,7 +14,7 @@ Table of contents:
 
 Requirement:
 
-1. Only alphabetic characeters, parentheses and plus sign: use plus sign to construct string, generator syntax and function call
+1. Only alphabetic characters, parentheses and plus sign: use plus sign to construct string, generator syntax and function call
 2. Limited builtins and count of `+`: search for a short combination to create the intended string
 
 Details [here](./pyjail/crewctf-2025-pyfuck.md).
