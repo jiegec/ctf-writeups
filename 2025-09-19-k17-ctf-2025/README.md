@@ -22,7 +22,7 @@ Beginner:
 - [daily re](./daily-re.md)
 - [ezwins](./ezwins.md)
 - [jumping](./jumping.md)
-- [dinner](./dinner.png)
+- [dinner](./dinner.md)
 - [vault](./vault.md)
 
 Misc:
