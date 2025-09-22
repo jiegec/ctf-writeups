@@ -505,7 +505,7 @@ for ch in sent[1:] + "\n":
 
 Note that the number of bytes sent must be accurate, otherwise it will fail with StopIteration error or the result will be truncated. We can increase the length until it fails.
 
-There is a little trick that maintains the file object and allow you to call `next` on it: `for (y) in (set(generator))` so that y becomes the only element computed by the generater so that y becomes the only element computed by the generator.
+There is a little trick that maintains the file object and allow you to call `next` on it: `for (y) in (set(generator))` so that y becomes the only element computed by the generator.
 
 Flag: `crew{mult1l1n3_fl@gs_4r3_4_r34l_p41n}`.
 
