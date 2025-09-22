@@ -511,7 +511,7 @@ Flag: `crew{mult1l1n3_fl@gs_4r3_4_r34l_p41n}`.
 
 # Method 2. Combine line with range(38)
 
-Alternatively, instead of combining with text read from stdin, we can combine it with range(38), which should do the similar thing. The rest part is similar. The method is used by @nikost, @Leonardo and @Muhammed. on Discord.
+Alternatively, instead of combining with text read from stdin, we can combine it with range(38), which should do the similar thing. But it requires more length, so a shorter way to find `Flag.txt` is required. The rest part is similar. The method is used by @nikost, @Leonardo and @Muhammed. on Discord.
 
 ```python
 from pwn import *
