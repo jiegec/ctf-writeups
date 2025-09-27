@@ -46,6 +46,7 @@ Table of contents:
     - [USB keyboard events](../2018-09-28-thuctf2018/misc/Flow.md)
     - [TLS key injection](../2025-08-22-brunnerctf2025/the-secret-brunsviger.md)
     - [USB SCSI data extraction](../2025-09-04-nullcon-berlin-hackim-2025-ctf/usbstorage.md)
+    - [Hostname extraction from NetBIOS](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
 - Microsoft Word:
     - [Visual Basic](../2025-08-08-why2025/forensics/painted-black.md)
 - Editor history:
@@ -60,7 +61,14 @@ Table of contents:
 - Shell:
     - [Find files by date and time](../2025-08-30-corctf2025/nintendo-sswitch.md)
 - Windows:
-    - [NTUSER.DAT extraction](../2025-09-05-imaginary-ctf-2025/obfuscated-1.md)
+    - [NTUSER.DAT registry extraction using MiTeC Windows Registry Recovery](../2025-09-05-imaginary-ctf-2025/obfuscated-1.md)
+    - [C:\Windows\System32\winevt\logs\*.evtx files extraction using evtx_dump](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
+    - [C:\Windows\System32\config\* registry dump using reged or hivexregedit](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
+    - [NTFS $Extend\$J USN journal dump using USN-Journal-Parser](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+    - [Find recently accessed files via C:\Users\$USER\AppData\Roaming\Microsoft\Windows\Recent\*.lnk using lnkinfo](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+    - [Registry key modification time recovery via regipy](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+- Linux:
+    - [Linux memory dump analysis using volatility3](../2025-09-22-holmes-ctf-2025/the-tunnel-without-walls.md)
 - TightVNC:
     - [VNC password extraction](../2025-09-05-imaginary-ctf-2025/obfuscated-1.md)
 

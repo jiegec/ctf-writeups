@@ -60,3 +60,4 @@ Web:
 Not solved challenges, but worth a writeup:
 
 - [Plastic Shield 2](./plastic-shield-2.md)
+- [Modulo](./modulo.md)

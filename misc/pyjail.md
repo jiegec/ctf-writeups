@@ -62,6 +62,17 @@ Requirements:
 
 Details [here](./pyjail/lactf-2025-farquaad.md).
 
+## scriptCTF 2025 Modulo
+
+Requirements:
+
+1. No builtins: use `().__class__.__base__.__subclasses__()[os_wrap_index].__init__.__globals__["system"]("sh")`
+2. No lowercase letters except `c`, only allow `%` binary op: use `"%c%c" % (97, 98)` to construct strings
+3. No integers: use `()<((),)` as `1`, use `-~x` as `x+1`
+4. No `.`: use `getattr(A, "B")` as `A.B`
+
+Details [here](../2025-08-16-scriptctf2025/modulo.md).
+
 ## UIUCTF 2024 Astea
 
 Requirements:
@@ -71,6 +82,25 @@ Requirements:
 3. No assignment: Use `[a:=b]` for assignment
 
 Details [here](./pyjail/uiuctf-2024-astea.md).
+
+## jailCTF 2024 filterd
+
+Requirement:
+
+1. Input length <= 14: raise input length limit on the fly
+2. Blacklisted builtins: reuse existing function to re-evaluate
+
+Details [here](./pyjail/jailctf-2024-filterd.md).
+
+## jailCTF 2024 no-nonsense
+
+Requirements:
+
+1. No `([=])`: call functions using decorators, `@exec\n@input\nclass a: pass`
+2. AST name does not appear in input: use unicode bypass
+3. No newlines: use `\r` instead of `\n` for multiline code
+
+Details [here](./pyjail/jailctf-2024-no-nonsense.md).
 
 ## UofTCTF 2024 Jail Zero
 
@@ -175,3 +205,11 @@ Requirements:
 3. Prone to string injection
 
 Details [here](./pyjail/gdg-algiers-2022-type-it.md).
+
+## ImaginaryCTF Round 23 June 2022 Stackless Jail
+
+Requirements:
+
+1. Function can only use at most one stack element: use `CALL_FUNCTION` instead of `CALL_METHOD`, i.e. use `B = A.method; C = B()` instead of `A.method()`
+
+Details [here](./pyjail/imaginaryctf-round-23-stackless-jail.md).

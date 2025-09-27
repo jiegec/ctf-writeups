@@ -16,6 +16,9 @@ WARNING: One or more files failed to extract: either no utility was found or it'
 Got an encrypted zip, use fcrackzip to find its password:
 
 ```shell
+# -u: use unzip to weed out wrong password
+# -D: use a dictionary
+# -p: use string as initial password/file
 $ fcrackzip -u -D -p ~/rockyou.txt _avocado.jpg.extracted/188F7.zip"
 PASSWORD FOUND!!!!: pw == impassive3428
 ```

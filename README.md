@@ -4,6 +4,8 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.09.25 **HackornCTF 2025 Quals**](2025-09-25-hackornctf-2025-quals/README.md)
+* [2025.09.22 **Holmes CTF 2025**](2025-09-22-holmes-ctf-2025/README.md)
 * [2025.09.19 **K17 CTF 2025**](2025-09-19-k17-ctf-2025/README.md)
 * [2025.09.12 **FortID CTF 2025**](2025-09-12-fortid-ctf-2025/README.md)
 * [2025.09.10 **WatCTF F25**](2025-09-10-watctf-f25/README.md)
