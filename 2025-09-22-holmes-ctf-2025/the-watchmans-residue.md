@@ -150,7 +150,44 @@ In `TeamViewer15_LogFile.log`:
 Among the tools that the attacker staged was a browser credential harvesting tool. Find out how long it ran before it was closed? (Answer in milliseconds) (number)
 ```
 
-Not solved.
+Not solved in the competition.
+
+From <https://hackmd.io/M1pkjdotRUC5LuUwqiJYtw#The-Watchmans-Residue>, the solution is:
+
+```
+This is the most painfull question besides all of other question XDD, for answering this question at the end we analyze the NTUSER.dat registry to answer the question. this is the registry path that we analyze NTUSER.DAT:Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist
+
+For the context this registry file (Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist) is a Windows Registry key that tracks user interaction with programs and shortcuts from the Windows Explorer shell
+
+Q11 Answer: 8000
+```
+
+The corresponding registry field:
+
+```shell
+$ /sbin/reged -x $PWD/TRIAGE_IMAGE_COGWORK-CENTRAL/C/Users/Cogwork_Admin/NTUSER.DAT HKEY_LOCAL_MACHINE \\ user.reg
+$ cat user.reg
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\{CEBFF5CD-ACE2-4F4F-9178-9926F41749EA}\Count]
+"{S38OS404-1Q43-42S2-9305-67QR0O28SP23}\\Grzc\\fnsr\\jrooebjfrecnffivrj\\JroOebjfreCnffIvrj.rkr"=hex:00,00,00,00,01,00,00,00,01,00,00,00,bd,1f,00,00,00,\
+  00,80,bf,00,00,80,bf,00,00,80,bf,00,00,80,bf,00,00,80,bf,00,00,80,bf,00,00,\
+  80,bf,00,00,80,bf,00,00,80,bf,00,00,80,bf,ff,ff,ff,ff,30,02,26,7b,ba,11,dc,\
+  01,00,00,00,00
+```
+
+The file name is rot13 of `{F38BF404-1D43-42F2-9305-67DE0B28FC23}\\Temp\\safe\\webbrowserpassview\\WebBrowserPassView.exe`. If we use [Registry Explorer](https://ericzimmerman.github.io/#!index.md) to read the `NTUSER.DAT`, it can parse the data for us:
+
+![](./the-watchmans-residue-q11.png)
+
+According to <https://github.com/EricZimmerman/RegistryPlugins/blob/master/RegistryPlugin.UserAssist/UserAssist.cs>, the format of the field is:
+
+1. the key is rot13 of the file name
+2. the data:
+    1. offset 4-8: run
+    2. offset 8-12: focus count
+    3. offset 12-16: focus time in ms
+    4. offset 60-68: last run timestamp
+
+Here to focus time is `bd,1f,00,00`, which is `0x1fbd`(8125). So the accurate answer should be 8125, but somehow the tool truncated the low part.
 
 ## Question #12
 
@@ -158,7 +195,31 @@ Not solved.
 The attacker executed a OS Credential dumping tool on the system. When was the tool executed? (YYYY-MM-DD HH:MM:SS)
 ```
 
-Not solved.
+Not solved in the competition.
+
+From <https://hackmd.io/M1pkjdotRUC5LuUwqiJYtw#The-Watchmans-Residue>, the solution is:
+
+```
+    To answer Q12, we first analyzed which staged file was an OS credential-dumping tool and determined that mimikatz is a widely used credential-dumping utility. After identifying this, we parsed the $J file in the Extend directory. We analyzed the $J file because the provided filesystem did not include the $MFT or any .pf files. In that parsed $J file we can see the .pf file for the mimikatz.exe
+
+mimikatz
+
+    For the context, $J file is a file that records all changes made to files and directories on an NTFS volume (create, delete, rename, modify, etc.), stored in the USN Change Journal at C:\$Extend\$UsnJrnl. It acts as an append-only log of filesystem activity. .pf file is a file that stores Windows Prefetch data, located in C:\Windows\Prefetch\. It contains information about how an application was executed (path, run count, last run time, accessed DLLs/resources) to help Windows speed up subsequent launches.
+
+Q12 Answer: 2025-08-20 10:07:08
+```
+
+In our locally dumped usn journal:
+
+```shell
+$ git clone git@github.com:PoorBillionaire/USN-Journal-Parser.git
+$ cd USN-Journal-Parser
+$ python3 usnparser/usn.py -f ../TRIAGE_IMAGE_COGWORK-CENTRAL/C/\$Extend/\$J -o usn.txt
+$ cat usn.txt | grep kdbx
+2025-08-20 10:07:08.174475 | MIMIKATZ.EXE-A6294E76.pf | ARCHIVE NOT_CONTENT_INDEXED | FILE_CREATE
+2025-08-20 10:07:08.174475 | MIMIKATZ.EXE-A6294E76.pf | ARCHIVE NOT_CONTENT_INDEXED | DATA_EXTEND FILE_CREATE
+2025-08-20 10:07:08.174475 | MIMIKATZ.EXE-A6294E76.pf | ARCHIVE NOT_CONTENT_INDEXED | DATA_EXTEND FILE_CREATE CLOSE
+```
 
 ## Question #13
 
