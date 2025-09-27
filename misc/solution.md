@@ -17,6 +17,7 @@ Table of contents:
     - [Small e](../2025-08-16-scriptctf2025/rsa-1.md)
     - [Factorable n](../2025-08-22-brunnerctf2025/half-baked.md)
     - [Small d](../2025-09-19-k17-ctf-2025/worsehelp.md)
+    - [Same m and n, different e](../2025-09-26-iran-tech-olympics-ctf-2025/techras.md)
 - Discrete logarithm:
     - [Baby-step giant-step](../2025-09-08-wanqubei-quals-2025/new-trick.md)
     - [Pohlig-Hellman](../2025-09-04-nullcon-berlin-hackim-2025-ctf/field-trip.md)
@@ -78,12 +79,16 @@ Table of contents:
     - [StegSolve](../2018-09-28-thuctf2018/misc/Format.md)
 - Text steganography:
     - [Zero width characters](../2025-09-19-k17-ctf-2025/discord.md)
+- Audio steganography:
+    - [Sonic visualizer](../2025-09-26-iran-tech-olympics-ctf-2025/rider.md)
 - Representations:
     - [Minecraft](../2025-08-16-scriptctf2025/enchant.md)
     - [Zeckendorf representation](../2025-08-22-brunnerctf2025/pie-recipe.md)
     - [EBCDIC](../2025-08-22-brunnerctf2025/the-great-mainframe-bake-off.md)
 - Font:
     - [Ligature](../2025-08-29-tfcctf2025/font-leagues.md)
+- Side channel:
+    - [Blind execution with time side channel](../2025-09-26-iran-tech-olympics-ctf-2025/koori.md)
 
 ## Pwn
 
@@ -110,6 +115,7 @@ Table of contents:
 - Python jail:
     - [Unicode bypass](../2025-08-08-why2025/misc/title-case.md)
     - [Without builtins and digits](../2025-09-12-fortid-ctf-2025/michael-scottfield.md)
+    - [Access sys module from datetime.sys](../2025-09-26-iran-tech-olympics-ctf-2025/vibe-web-mail.md)
     - [Other Python jails](./pyjail.md)
 - Shell jail:
     - [Pager !/bin/sh](../2025-08-22-hitconctf2025/git-playground.md)
@@ -130,6 +136,7 @@ Table of contents:
     - [dex2jar + JD-GUI](../2025-09-05-imaginary-ctf-2025/weird-app.md)
 - Memory dump:
     - [Dump memory in debugger](../2025-09-12-fortid-ctf-2025/rev-from-the-past.md)
+    - [Dump arguments of library functions with ltrace](../2025-09-26-iran-tech-olympics-ctf-2025/badmode.md)
 - Validation bypass:
     - [Patch conditional jump instruction](../2025-09-19-k17-ctf-2025/bait-and-switch.md)
 - PyInstaller:
