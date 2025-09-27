@@ -151,7 +151,6 @@ Flag: `ASIS{The_Enigma_cipher_was_a_system_created_using_electromechanical_machi
 Only after getting the flag, I realize that it is an implementation of Enigma. 2nd solve:
 
 ```
-
 First 3 solves
 WTN
 solved in 0d 12h 7m 24s
