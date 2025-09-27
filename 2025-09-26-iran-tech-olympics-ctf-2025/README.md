@@ -4,7 +4,7 @@ Link: <https://ctf.olympics.tech/challenges>
 
 CTFTime: <https://ctftime.org/event/2775>
 
-Result: xxx Points, xxth Place
+Result: 2209 Points, 15th Place
 
 Solved Challenges:
 
