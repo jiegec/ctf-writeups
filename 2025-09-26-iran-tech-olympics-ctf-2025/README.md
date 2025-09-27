@@ -42,3 +42,7 @@ Misc:
 - [Welcome](./welcome.md)
 - [Badmode](./badmode.md)
 - [Koori](./koori.md)
+
+Not solved in competition:
+
+- [Vibe Web Mail](./vibe-web-mail.md)
