@@ -115,7 +115,7 @@ Table of contents:
 - Python jail:
     - [Unicode bypass](../2025-08-08-why2025/misc/title-case.md)
     - [Without builtins and digits](../2025-09-12-fortid-ctf-2025/michael-scottfield.md)
-    - [Access sys module from datetime.sys](../2025-09-26-iran-tech-olympics-ctf-2025/vibe-web-mail.md)
+    - [Access sys module from datetime.sys for Python <= 3.11](../2025-09-26-iran-tech-olympics-ctf-2025/vibe-web-mail.md)
     - [Other Python jails](./pyjail.md)
 - Shell jail:
     - [Pager !/bin/sh](../2025-08-22-hitconctf2025/git-playground.md)
