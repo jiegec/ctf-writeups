@@ -2,6 +2,8 @@
 
 Link: <https://ctf.hackthebox.com/event/2536>
 
+Official Writeup: <https://github.com/hackthebox/holmes-2025>
+
 Result: 8725 Points, 329th Place, 63/65 Flags
 
 Solved Challenges:
