@@ -36,7 +36,7 @@ Output:
 239 aqbq.wchtysqsengakhhhjs.com
 ```
 
-Following the patterns of each column (e.g. first column is `x...y...z...`, second column is `c...e...`, third column is `aslewpibaslewpib...`), the next domain starting with `asis` is:
+Following the patterns of each column (e.g. first column is `x...y...a...`, second column is `c...e...`, third column is `aslewpibaslewpib...`), the next domain starting with `asis` is:
 
 ```
 246 asis.wgstheqjannhkvshme.com
