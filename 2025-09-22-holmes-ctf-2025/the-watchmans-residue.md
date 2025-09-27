@@ -187,7 +187,7 @@ According to <https://github.com/EricZimmerman/RegistryPlugins/blob/master/Regis
     3. offset 12-16: focus time in ms
     4. offset 60-68: last run timestamp
 
-Here to focus time is `bd,1f,00,00`, which is `0x1fbd`(8125). So the accurate answer should be 8125, but somehow the tool truncated the low part.
+Here the focus time is `bd,1f,00,00`, which is `0x1fbd`(8125). So the accurate answer should be 8125, but somehow the tool truncated the low part.
 
 ## Question #12
 
