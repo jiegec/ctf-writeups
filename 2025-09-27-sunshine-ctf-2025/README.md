@@ -4,7 +4,7 @@ Link: <https://2025.sunshinectf.org/challenges>
 
 CTFTime: <https://ctftime.org/event/2863>
 
-Result: xxxx Points, xxth Place
+Result: 4254 Points, 33rd Place
 
 Solved Challenges:
 
