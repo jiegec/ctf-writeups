@@ -21,7 +21,7 @@ Disallow: /fetch
 # internal SSRF testing tool requires special auth header to be set to 'true'
 ```
 
-Try differnt auth headers:
+Try different auth headers:
 
 ```python
 import requests
