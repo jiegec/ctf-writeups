@@ -8,6 +8,7 @@ We've intercepted a satellite control program but can't crack the authentication
 
 Decompile in IDA:
 
+{% raw %}
 ```c
 __int64 __fastcall main(int a1, char **a2, char **a3)
 {
@@ -28,6 +29,7 @@ __int64 __fastcall main(int a1, char **a2, char **a3)
   return 0;
 }
 ```
+{% endraw %}
 
 The flag is the result of `sprintf`.
 
