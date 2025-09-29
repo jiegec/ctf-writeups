@@ -75,7 +75,7 @@ It says `Request failed: Missing template parameter`, so the next step is templa
 ```
 {% endraw %}
 
-It does work. Then, we only need to read flag out from the directory:
+It does work. Then, we only need to read flag out from the local directory:
 
 {% raw %}
 ```python

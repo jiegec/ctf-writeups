@@ -494,7 +494,7 @@ There is a hash function named `gimli`. The process is implemented in `@gimli_ha
 2. call @gimli_absorb
 3. call @gimli_hash_final
 
-Then, it computes hash for some data, and computes hash for user input and compare the two. Therefore, we need to recover the original input of the compared hash. The code is in `some_func1`, where it calls several `@gimli_hash_init`, `@gimli_absorb`, etc. Initialy, I try to set breakpoint on `@gimli_absorb`, but it misses the bytes from `@gimli_absorb_byte`
+Then, it computes hash for some data, and computes hash for user input and compare the two. Therefore, we need to recover the original input of the compared hash. The code is in `some_func1`, where it calls several `@gimli_hash_init`, `@gimli_absorb`, etc. Initialy, I try to set breakpoint on `@gimli_absorb`, but it misses the bytes from `@gimli_absorb_byte`.
 
 Therefore, we use the debugger to find the `A1` parameter of `@gimli_absorb_byte`, one byte by one byte:
 
