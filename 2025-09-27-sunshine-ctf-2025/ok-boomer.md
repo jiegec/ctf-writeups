@@ -4,7 +4,7 @@
 7778866{844444777_7446666633_444777_26622244433668}
 ```
 
-Since the flog starts with `sun{`, we know that:
+Since the flag starts with `sun{`, we know that:
 
 1. 777 -> s
 2. 88 -> u

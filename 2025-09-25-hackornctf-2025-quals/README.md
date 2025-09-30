@@ -4,7 +4,7 @@ Link: <https://hackornctf.secpen.org/challenges>
 
 CTFTime: <https://ctftime.org/event/2919>
 
-Result: xxx Points, xxth Place
+Result: 790 Points, 143rd Place
 
 Solved Challenges:
 

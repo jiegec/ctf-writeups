@@ -65,8 +65,8 @@ Table of contents:
     - [NTUSER.DAT registry extraction using MiTeC Windows Registry Recovery](../2025-09-05-imaginary-ctf-2025/obfuscated-1.md)
     - [C:\Windows\System32\winevt\logs\*.evtx files extraction using evtx_dump](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
     - [C:\Windows\System32\config\* registry dump using reged or hivexregedit](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
-    - [NTFS $Extend\$J USN journal dump using USN-Journal-Parser](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
-    - [Find recently accessed files via C:\Users\$USER\AppData\Roaming\Microsoft\Windows\Recent\*.lnk using lnkinfo](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+    - [NTFS \$Extend\$J USN journal dump using USN-Journal-Parser](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+    - [Find recently accessed files via C:\Users\\$USER\AppData\Roaming\Microsoft\Windows\Recent\*.lnk using lnkinfo](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
     - [Registry key modification time recovery via regipy](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
 - Linux:
     - [Linux memory dump analysis using volatility3](../2025-09-22-holmes-ctf-2025/the-tunnel-without-walls.md)
@@ -89,15 +89,19 @@ Table of contents:
     - [Ligature](../2025-08-29-tfcctf2025/font-leagues.md)
 - Side channel:
     - [Blind execution with time side channel](../2025-09-26-iran-tech-olympics-ctf-2025/koori.md)
+- PDF:
+    - [Decompress /FlateDecode via qpdf](../2025-09-27-sunshine-ctf-2025/pretty-delicious-food.md)
 
 ## Pwn
 
 - Stack buffer overflow:
     - [Override return address to system](../2018-09-28-thuctf2018/pwn/pwn1.md)
     - [Return oriented programming](../2025-09-05-imaginary-ctf-2025/babybof.md)
+    - [Run shellcode on stack](../2025-09-27-sunshine-ctf-2025/daytona.md)
 - Format string:
     - [Blind printf arbitrary memory read](../2025-08-08-why2025/pwnable/simple-ai-bot.md)
     - [Override return address](../2025-08-22-brunnerctf2025/the-ingredient-shop.md)
+    - [Random address write](../2025-09-27-sunshine-ctf-2025/jupiter.md)
 - Out of bounds read/write:
     - [Arbitrary memory read](../2025-08-16-scriptctf2025/index.md)
 - Arbitrary file access:
@@ -141,6 +145,8 @@ Table of contents:
     - [Patch conditional jump instruction](../2025-09-19-k17-ctf-2025/bait-and-switch.md)
 - PyInstaller:
     - [pyinstxtractor](../2025-09-19-k17-ctf-2025/jumping.md)
+- BPF:
+    - [Use bpftool to dump bpf program and maps](../2025-09-27-sunshine-ctf-2025/warp.md)
 
 ## Web
 
@@ -157,11 +163,13 @@ Table of contents:
     - [php://filter for arbitrary file read](../2025-08-22-brunnerctf2025/brunsviger-huset.md)
     - [More than 1000 input variables](../2025-09-07-blackhat-mea-ctf-quals-2025/cute-csp.md)
 - Flask:
-    - [Jinja template injection](../2018-09-28-thuctf2018/web/Flask.md)
+    - [Jinja template injection to leak data](../2018-09-28-thuctf2018/web/Flask.md)
+    - [Jinja template injection to RCE](../2025-09-27-sunshine-ctf-2025/web-forge.md)
     - [Debugger PIN leak](../2025-08-16-sekaictf2025/my-flask-app.md)
 - SQL injection:
     - [Enumerate and read from unknown tables](../2018-09-28-thuctf2018/web/wdSimpleSQLv1-1.md)
     - [Arbitrary file read](../2018-09-28-thuctf2018/web/wdSimpleSQLv1-2.md)
+    - [Use UNION SELECT to query extra data](../2025-09-27-sunshine-ctf-2025/lunar-shop.md)
 - Json query injection:
     - [Blind recovery of hidden string](../2025-09-12-fortid-ctf-2025/jey-is-not-my-son.md)
 - MongoDB:
