@@ -494,9 +494,9 @@ There is a hash function named `gimli`. The process is implemented in `@gimli_ha
 2. call @gimli_absorb
 3. call @gimli_hash_final
 
-Then, it computes hash for some data, and computes hash for user input and compare the two. Therefore, we need to recover the original input of the compared hash. The code is in `some_func1`, where it calls several `@gimli_hash_init`, `@gimli_absorb`, etc. Initialy, I try to set breakpoint on `@gimli_absorb`, but it misses the bytes from `@gimli_absorb_byte`.
+The program computes the hash of flag and compares it to the hash of the user's input. To bypass this, we recover the secret by reverse-engineering the hashing process in `some_func1`, which initializes the hash with `@gimli_hash_init` and absorbs data using `@gimli_absorb` and related functions. Initially, attempting to set a breakpoint on `@gimli_absorb` missed the individual bytes absorbed via `@gimli_absorb_byte`.
 
-Therefore, we use the debugger to find the `A1` parameter of `@gimli_absorb_byte`, one byte by one byte:
+Therefore, we use the debugger to find the `A1` parameter of `@gimli_absorb_byte`, byte by byte:
 
 ```shell
 $ ./runpeg --debug AccessCode.peg
@@ -572,11 +572,11 @@ Next instructions:
         04F4.0000: STB     [A2],A3
 ```
 
-If we convert the values of `A1` to text, we got:
+Converting the values of `A1` (in hex) to ASCII yields:
 
 ```python
 >>> bytes.fromhex("73756e")
 b'sun'
 ```
 
-In this way, we can recover the input flag eventually: `sun{th3_fun_p4r7_15_nEAR}`.
+By repeatedly stepping through the debugger and collecting the `A1` values, we recover the flag: `sun{th3_fun_p4r7_15_nEAR}`.

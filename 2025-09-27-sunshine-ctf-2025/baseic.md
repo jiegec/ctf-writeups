@@ -4,7 +4,7 @@
 The space base is in danger and we lost the key to get in!
 ```
 
-Decomple in IDA:
+Decompile in IDA:
 
 ```c
 __int64 __fastcall main(int a1, char **a2, char **a3)
@@ -46,7 +46,7 @@ __int64 __fastcall main(int a1, char **a2, char **a3)
 }
 ```
 
-The code compares the base64 encoded input with `c3Vue2MwdjNyMW5nX3VyX0I0NTM1fQ==`, solve:
+The program checks if the base64-encoded input matches the expected string. Decode the target: `c3Vue2MwdjNyMW5nX3VyX0I0NTM1fQ==`
 
 ```shell
 echo "c3Vue2MwdjNyMW5nX3VyX0I0NTM1fQ==" | base64 -d
