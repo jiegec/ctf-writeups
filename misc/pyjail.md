@@ -3,7 +3,8 @@
 References:
 
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
-- [pyjail collection](https://github.com/jailctf/pyjail-collection)
+- [Pyjail collection](https://github.com/jailctf/pyjail-collection)
+- [A collection of pyjails](https://github.com/salvatore-abello/pyjail/tree/main)
 
 Table of contents:
 
