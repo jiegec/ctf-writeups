@@ -4,6 +4,8 @@ Link: <https://ctf.secso.cc/challenges>
 
 CTFTime: <https://ctftime.org/event/2902>
 
+Official Writeups: <https://github.com/unswsecsoc/2025-k17-ctf>
+
 Result: 6319 Points, 5th Place
 
 Solved Challenges:
@@ -52,3 +54,11 @@ Pwn solved by @Rosayxy:
 
 - [u get me write](./u-get-me-write.md)
 - [singular hole](./singular-hole.md)
+
+Thanks for the writeup prize!
+
+```
+Our official write-ups are now online hosted in our repository here. Congratulations to jiegec for winning the writeup prize, you can see their writeups here: https://jia.je/ctf-writeups/2025-09-19-k17-ctf-2025/.
+
+We'll see you all again next for our CTF next year!
+```
