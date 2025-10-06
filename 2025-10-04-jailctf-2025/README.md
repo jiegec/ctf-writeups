@@ -21,6 +21,7 @@ Not solved in competition:
 
 - [brainfudge](./brainfudge.md)
 - [flag lottery](./flag-lottery.md)
+- [impossible](../misc/pyjail/jailctf-2025-impossible.md)
 - [one](../misc/pyjail/jailctf-2025-one.md)
 - [primal](../misc/pyjail/jailctf-2025-primal.md)
 - [seven7seven](./seven7seven.md)

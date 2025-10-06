@@ -11,6 +11,16 @@ Table of contents:
 * TOC
 {:toc}
 
+## jailCTF 2025 impossible
+
+Requirements:
+
+1. No parens: use `obj.__class__.__getitem__ = func` and `obj[arg]` to call function
+2. No spaces or equal signs: use `[[]for[a]in[[b]]]` instead of `a = b`
+3. No strings: set `obj.__class__.__getattr__ = __import__` and `obj.os` to import `os`
+
+Details [here](./pyjail/jailctf-2025-impossible.md).
+
 ## jailCTF 2025 one
 
 Requirements:

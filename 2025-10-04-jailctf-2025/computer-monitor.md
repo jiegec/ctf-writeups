@@ -27,7 +27,7 @@ sm.register_callback(2, sm.events.CALL, exit_hook)
 exec(code, {}, {})
 ```
 
-It attachs `BRANCH` and `CALL` hooks to our code. However, `import` is not restried. Following [pyjail cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/), we can get shell if we have access to environ and `import`:
+It attachs `BRANCH` and `CALL` hooks to our code. However, `import` is not restricted. Following [pyjail cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/), we can get shell if we have access to environ and `import`:
 
 ```python
 from pwn import *
