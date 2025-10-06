@@ -128,3 +128,5 @@ Steps:
 5. Get shell
 
 Flag: `jail{this_python_ain't_so_scary_anymore_when_defanged_73ef638f5110dc0660d01a}`.
+
+An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf).

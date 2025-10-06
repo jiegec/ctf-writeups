@@ -42,3 +42,5 @@ p.interactive()
 ```
 
 Flag: `jail{i_am_proto_your_security_is_my_motto_install_me_on_your_computer_to_protect_your_data_better_f6b37a6e6d0b0af2b5da77a61cd0af7c}`.
+
+An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf).

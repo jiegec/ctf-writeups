@@ -41,3 +41,5 @@ p.interactive()
 ```
 
 Flag: `jail{stderr_leak_5fd787f079eb69e}`.
+
+An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf).

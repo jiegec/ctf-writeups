@@ -109,3 +109,5 @@ p.interactive()
 ```
 
 Flag: `jail{but_does_your_desk_calculator_have_rce?_5c9cff7b71fc447d}`.
+
+An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf).

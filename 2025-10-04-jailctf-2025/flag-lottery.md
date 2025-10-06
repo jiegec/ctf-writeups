@@ -105,3 +105,18 @@ p.interactive()
 A possibility is to use `_` for the array of length 128, and use `_[1:][1:]` to construct an array of length 125. However, we cannot represent array of length 129 or greater.
 
 Another primitive is `[[]][condition]`, so that if the `condition` evaluates to True, an exception is raised.
+
+After the competition ends, solutions are posted on Discord:
+
+```
+@minaminao
+
+I used >[]^
+just curious, are there any other solutions? https://gist.github.com/minaminao/a4ef6c022bf9b129e52145500476cd21
+```
+
+So the idea is:
+
+1. find the first byte of the secret, by shifting `_[0]` by some bits, e.g. `_[0]>>1>>1`, then toggling one bit from it: `[_[0]>>1>>1][0]^1` and comparing it with itself: `[_[0]>>1>>1][0]^1>[_[0]>>1>>1][0]`, finally converting the condition to exception side channel: `[[]][[_[0]>>1>>1][0]^1>[_[0]>>1>>1][0]]`; if it raises exception, we know that the bit was 0, so that toggling the bit makes it larger
+2. the second byte can be found in the same way, since we can do the same thing to `_[1]`
+3. now that we know `_[0]` and `_[1]`, we can use them to deduce other bytes, for example, `_[_[0]]`, `_[_[1]]`, `_[_[0]^_[1]]` etc; the process is the same as in previous steps
