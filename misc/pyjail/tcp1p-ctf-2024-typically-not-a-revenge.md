@@ -44,7 +44,7 @@ exec(code + user_input, {'unsafe_builtins': unsafe_builtins}, {})
 Requirements:
 
 1. No numbers: Use `arr[[]is[]]` for `arr[0]`, `arr[not[]is[]]` for `arr[1]`, `arr[not[]is[]:][not[]is[]]` for `arr[2]`
-2. No parens: Use `[obj[arg] for obj.__class_getitem in [function_to_call]]` to call function
+2. No parens: Use `[class[arg] for class.__class_getitem__ in [function_to_call]]` to call function
 3. No assignments or commas: Use `[... for a in [b] for c in [d]]`
 4. No spaces: Use `\f` i.e. form feed
 5. No builtins: Use `[].__class__.__base__.__subclasses__()`
