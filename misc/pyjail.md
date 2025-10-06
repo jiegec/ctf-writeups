@@ -11,6 +11,16 @@ Table of contents:
 * TOC
 {:toc}
 
+## jailCTF 2025 primal
+
+Requirements:
+
+1. No `eta`: no getattr/setattr, use `obj[name]` to access fields
+2. No builtins: use `().__reduce_ex__(2)[0].__globals__['__builtins__']['__import__']('os')` to get os
+3. Words should have prime length: use `'aa'.__len__()` for `2`, use `\xXX` in strings
+
+Details [here](./pyjail/jailctf-2025-primal.md).
+
 ## CrewCTF 2025 pyfuck
 
 Requirement:
