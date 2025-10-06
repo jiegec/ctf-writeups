@@ -17,6 +17,11 @@ Solved Challenges:
 - [modelscanjail](./modelscanjail.md)
 - [rustjail](./rustjail.md)
 
+Not solved in competition:
+
+- [one](../misc/pyjail/jailctf-2025-one.md)
+- [primal](../misc/pyjail/jailctf-2025-primal.md)
+
 Not solved, but made more or less progress:
 
 - [brainfudge](./brainfudge.md)

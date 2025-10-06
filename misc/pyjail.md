@@ -11,6 +11,15 @@ Table of contents:
 * TOC
 {:toc}
 
+## jailCTF 2025 one
+
+Requirements:
+
+1. Only one `.`: use lambda function to reuse `value.__getattribute__` call
+2. No builtins: use `().__setattr__.__objclass__.__subclasses__()[os_index].__init__.__globals__['system']('sh')` to get shell
+
+Details [here](./pyjail/jailctf-2025-one.md).
+
 ## jailCTF 2025 primal
 
 Requirements:
