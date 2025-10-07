@@ -129,4 +129,4 @@ Steps:
 
 Flag: `jail{this_python_ain't_so_scary_anymore_when_defanged_73ef638f5110dc0660d01a}`.
 
-An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf).
+An elegant and simple solution is provided by @mirelgigel at [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupjailctf): `0,type('',(),{'\x5f\x5frepr\x5f\x5f':lambda s:open('flag.txt').read()})()`, which creates a type with `__repr__` defined. A similar one is provided by @flocto on Discord: `1,[u:=chr(95)*2,e:=help,setattr(type(e),u+'repr'+u,lambda*a:exec(input()))]`.
