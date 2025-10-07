@@ -49,14 +49,15 @@ Table of contents:
 
 ### Get shell
 
-- `breakpoint()`
-- `pdb.set_trace()`
-- `code.interact()`
-- `code.InteractiveConsole().interact()`
-- `_osx_support._read_output(cmd)`
 - `_aix_support._read_cmd_output(cmd)`
-- `pydoc.tempfile_pager(text, cmd)`
+- `_osx_support._read_output(cmd)`
+- `breakpoint()`
+- `code.InteractiveConsole().interact()`
+- `code.interact()`
+- `doctest.debug_script(src)`
+- `pdb.set_trace()`
 - `pydoc.pipe_pager(text, cmd)`
+- `pydoc.tempfile_pager(text, cmd)`
 
 ## jailCTF 2025 impossible
 
