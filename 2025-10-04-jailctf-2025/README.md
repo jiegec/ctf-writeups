@@ -4,7 +4,7 @@ Link: <https://ctf.pyjail.club/challs>
 
 CTFTime: <https://ctftime.org/event/2737>
 
-Result: xx Points, xxth Place
+Result: 1595 Points, 14th Place
 
 Solved Challenges:
 
