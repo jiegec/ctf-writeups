@@ -4,6 +4,8 @@ Link: <https://ctf.pyjail.club/challs>
 
 CTFTime: <https://ctftime.org/event/2737>
 
+Offical Writeup: <https://github.com/jailctf/challenges-2025>
+
 Result: 1595 Points, 14th Place
 
 Solved Challenges:
