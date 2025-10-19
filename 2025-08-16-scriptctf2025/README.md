@@ -31,7 +31,7 @@ Reverse:
 
 Pwn:
 
-- [Index](./index.md)
+- [Index](./index-1.md)
 - [Index-2](./index-2.md)
 
 Misc:
