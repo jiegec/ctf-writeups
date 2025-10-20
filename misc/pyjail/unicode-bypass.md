@@ -1,6 +1,6 @@
 # Unicode bypass
 
-Common characters:
+## Common bypass
 
 - [Unicode Block "Mathematical Alphanumeric Symbols"](https://www.compart.com/en/unicode/block/U+1D400)
     - `A` -> [`𝐀` (U+1D400)](https://www.compart.com/en/unicode/U+1D400)
@@ -17,6 +17,53 @@ Common characters:
     - `ix` -> [`ⅸ` (U+2178)](https://www.compart.com/en/unicode/U+2178)
     - `xi` -> [`ⅺ` (U+217A)](https://www.compart.com/en/unicode/U+217A), e.g. `eⅺt`
     - `xii` -> [`ⅻ` (U+217B)](https://www.compart.com/en/unicode/U+217B)
+
+# Reduce length
+
+Sometimes we can reduce length by unicode bypass:
+
+```python
+import unicodedata
+import string
+from collections import defaultdict
+
+mapping = defaultdict(list)
+for ch in range(0x110000):
+    nfkc_text = unicodedata.normalize("NFKC", chr(ch))
+    if all(c in string.printable for c in nfkc_text):
+        mapping[nfkc_text].append(chr(ch))
+
+
+def find_shortest(s):
+    res = []
+    for i in range(len(s)):
+        # case 1: no mapping happened
+        if i > 0:
+            new_res = res[i - 1] + s[i]
+        else:
+            new_res = s[i]
+        # case 2: a suffix of length j is mapped
+        for j in range(2, i + 2):
+            part = s[i - j + 1 : i + 1]
+            if part in mapping:
+                if i - j + 1 > 0:
+                    temp = res[i - j] + mapping[part][0]
+                else:
+                    temp = mapping[part][0]
+                # found better solution
+                if len(temp) < len(new_res):
+                    new_res = temp
+        res.append(new_res)
+    return res[-1]
+
+
+for function in __builtins__.__dict__:
+    res = find_shortest(function)
+    if len(res) < len(function):
+        print(function, res, f"{len(res)} < {len(function)}")
+```
+
+## Full mapping
 
 Print all characters that map to ascii printables after NFKC normalization:
 
