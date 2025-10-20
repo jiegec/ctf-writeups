@@ -40,6 +40,8 @@ Table of contents:
     - [Parameter recover](../2025-09-06-cracconctf2025/ecg.md)
 - ECDSA:
     - [Reused k](../2025-09-10-watctf-f25/curve-desert.md)
+- Python random number generator
+    - [Solve MT19937 using known bits](./pyrand.md)
 
 ## Forensics
 
