@@ -13,6 +13,10 @@ Table of contents:
 
 ## cheatsheet
 
+### Unicode bypass
+
+See [details](./pyjail/unicode-bypass.md).
+
 ### Assign to variables
 
 - `a=1` in exec

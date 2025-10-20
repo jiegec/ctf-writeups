@@ -32,4 +32,4 @@ Code: len=a
 flag{1_2_3_4_5_6_7_8_9_10_exploit!_12_13_...}
 ```
 
-The length of `a=exit` is 6, but using `ⅺ` reduces it to 5. Then, `exit(flagbuf)` is called to print the flag.
+The length of `a=exit` is 6, but using [`ⅺ` (Unicode U+217A)](https://www.compart.com/en/unicode/U+217A) reduces it to 5. Then, `exit(flagbuf)` is called to print the flag.
