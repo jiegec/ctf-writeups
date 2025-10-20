@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.10.18 **2025 第九届“强网杯”全国网络安全挑战赛线上初赛**](2025-10-18-qiangwangbei-quals-2025/README.md)
 * [2025.10.18 **Hack.lu CTF 2025**](2025-10-18-hacklu-ctf-2025/README.md)
 * [2025.10.04 **jailCTF 2025**](2025-10-04-jailctf-2025/README.md)
 * [2025.09.27 **SunshineCTF 2025**](2025-09-27-sunshine-ctf-2025/README.md)
