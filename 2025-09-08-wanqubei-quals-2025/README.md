@@ -6,7 +6,7 @@ Participated as a member of [Redbud](https://ctftime.org/team/20555) aka GBACCTe
 
 Result: 2184 Points, 3rd Place
 
-Solved challenges that I involved:
+Solved challenges that I involved in:
 
 Forensics:
 

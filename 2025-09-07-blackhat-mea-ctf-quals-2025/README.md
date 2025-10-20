@@ -8,7 +8,7 @@ Participated as a member of [Redbud](https://ctftime.org/team/20555)
 
 Result: 1885 Points, 9th Place
 
-Solved challenges that I involved:
+Solved challenges that I involved in:
 
 Web:
 

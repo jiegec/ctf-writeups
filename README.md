@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.10.18 **Hack.lu CTF 2025**](2025-10-18-hacklu-ctf-2025/README.md)
 * [2025.10.04 **jailCTF 2025**](2025-10-04-jailctf-2025/README.md)
 * [2025.09.27 **SunshineCTF 2025**](2025-09-27-sunshine-ctf-2025/README.md)
 * [2025.09.26 **Iran Tech Olympics CTF 2025 Quals**](2025-09-26-iran-tech-olympics-ctf-2025/README.md)
