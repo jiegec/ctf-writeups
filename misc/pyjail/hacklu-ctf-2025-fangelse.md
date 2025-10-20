@@ -19,7 +19,7 @@ while True:
 
 Requirements:
 
-1. No more than 5 characters: use `exit(flagbuf)` to leak flag, use `a=exit;len=a` to override function in two steps, use `ⅺ` for `xi` to break the length limitation
+1. No more than 5 characters: use `exit(flagbuf)` to leak flag, use `a=exit;len=a` to override function in two steps, use `ⅺ` for `xi` to break the length limitation; alternatively, set `len=all` to bypass length check
 
 Solution by @moritz on Discord:
 
