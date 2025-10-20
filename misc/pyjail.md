@@ -61,6 +61,14 @@ Table of contents:
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
+## Hack.lu CTF 2025 FÄNGELSE
+
+Requirements:
+
+1. No more than 5 characters: use `exit(flagbuf)` to leak flag, use `a=exit;len=a` to override function in two steps, use `ⅺ` for `xi` to break the length limitation
+
+Details [here](./pyjail/hacklu-ctf-2025-fangelse.md).
+
 ## jailCTF 2025 impossible
 
 Requirements:

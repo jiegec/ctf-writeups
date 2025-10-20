@@ -4,6 +4,8 @@ Link: <https://2025.sunshinectf.org/challenges>
 
 CTFTime: <https://ctftime.org/event/2863>
 
+Official Writeups: <https://github.com/SunshineCTF/SunshineCTF-2025-Public>
+
 Result: 4254 Points, 33rd Place
 
 Solved Challenges:

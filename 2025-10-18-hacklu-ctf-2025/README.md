@@ -17,3 +17,7 @@ Misc:
 - [codebullar](./codebullar.md)
 - [gissningslek](./gissningslek.md)
 - [zigbakvam](./zigbakvam.md)
+
+Not solved in competition:
+
+- [fangelse](../misc/pyjail/hacklu-ctf-2025-fangelse.md)
