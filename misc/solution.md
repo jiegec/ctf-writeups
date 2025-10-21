@@ -106,6 +106,8 @@ Table of contents:
     - [Random address write](../2025-09-27-sunshine-ctf-2025/jupiter.md)
 - Out of bounds read/write:
     - [Arbitrary memory read](../2025-08-16-scriptctf2025/index.md)
+    - [Arbitrary memory write to stdin->_IO_buf_base](https://jia.je/kb/software/glibc_file.html?h=file#stdin-_io_buf_base)
+    - [File stream oriented programming (FSOP)](https://jia.je/kb/software/glibc_file.html?h=file#_3)
 - Arbitrary file access:
     - [Access memory via /proc/self/mem](../2025-09-10-watctf-f25/hex-editor-xtended-v2.md)
 - Integer overflow:
