@@ -17,13 +17,13 @@ void main() {
 
 We can write data to `stdout` and `stderr`, which allows for file stream oriented programming, specifically [house of apple 2](https://www.roderickchan.cn/zh-cn/house-of-apple-%E4%B8%80%E7%A7%8D%E6%96%B0%E7%9A%84glibc%E4%B8%ADio%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95-2/).
 
-Heavily insprired by [BlackHat MEA 2025 Writeup - pwn by @Rosayxy](https://rosayxy.github.io/blackhat-mea-2025-writeup-pwn/), but uses a modified house of apple 2 instead of house of cat.
+Heavily inspired by [BlackHat MEA 2025 Writeup - pwn by @Rosayxy](https://rosayxy.github.io/blackhat-mea-2025-writeup-pwn/), but uses a modified house of apple 2 instead of house of cat.
 
 Steps:
 
 1. Override the lowest byte of `stdout._IO_write_base` to zero, so that internal data of `stdout` is leaked via stdout
 2. Based on leaked data, we know the base address of libc, construct the house of apple 2 payload using the libc base address with some modifications:
-    1. `scanf` stops when `0x20` is encountered, so `fake_file->file._flags` is set to `"aa;sh\x00"` instead of the typical `" sh\x00"`
+    1. `scanf` stops when `0x20` is encountered, so `fake_file->file._flags` is set to `"aa;sh\x00"` instead of the typical `"\x20sh\x00"`
     2. the offset of `_wide_vtable` within `fake_file->file._wide_data` is 0xE0, which overflows the input limitation of `%224s`; so we point `fake_file->file._wide_data` to `fake_file - 0x10` instead
 3. Send the payload to get shell
 
