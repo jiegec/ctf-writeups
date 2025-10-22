@@ -65,7 +65,7 @@ payload = flat(
 )
 ```
 
-Modified paylaod for this challenge:
+Modified payload for this challenge:
 
 ```python
 payload = flat(
