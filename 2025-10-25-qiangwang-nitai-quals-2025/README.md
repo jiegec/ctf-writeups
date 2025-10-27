@@ -2,6 +2,10 @@
 
 Link: <https://challenge.xctf.org.cn>
 
+News: <https://adworld.xctf.org.cn/contest/assess?hash=519c8a5a-9c12-11f0-a39b-000c297261bb>
+
+Website: <https://nest.pmlabs.com.cn/#/internationalEliteChallenge>
+
 CTFTime: <https://ctftime.org/event/2952>
 
 Participated as a member of Redbud in the competition.
