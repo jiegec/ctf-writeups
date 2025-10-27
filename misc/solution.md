@@ -38,6 +38,7 @@ Table of contents:
     - [Find odd-degree coefficients](../2025-08-30-corctf2025/ssss.md)
 - Linear congruential generator
     - [Parameter recover](../2025-09-06-cracconctf2025/ecg.md)
+    - [Recover different types of LCG](./lcg.md)
 - ECDSA:
     - [Reused k](../2025-09-10-watctf-f25/curve-desert.md)
 - Python random number generator
