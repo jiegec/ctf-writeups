@@ -76,6 +76,10 @@ assert wiener(e, n) == d
 print("Success")
 ```
 
+CTF challenges:
+
+- [K17 CTF 2025 worsehelp](../2025-09-19-k17-ctf-2025/worsehelp.md)
+
 ## Known n and p-q
 
 Since $n = pq$, so $n=p(p-(p-q))$, $p^2-(p-q)p-n=0$, solve the quadratic equation to find $p$.
@@ -104,6 +108,11 @@ def attack(n, diff):
 assert attack(n, diff) == p
 print("Success")
 ```
+
+CTF challenges:
+
+- [Hack The Boo CTF 2025 Leaking for Answers](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
+
 
 ## Known n, small e, pow(phi, -1, n) * d % n
 
@@ -164,6 +173,11 @@ def attack(n, e, known):
 assert attack(n, e, known) == p
 print("Success")
 ```
+
+CTF challenges:
+
+- [Hack The Boo CTF 2025 Leaking for Answers](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
+
 
 ## Known n, e, d
 
@@ -241,6 +255,10 @@ res = attack(n, e, d)
 assert res == p or res == q
 print("Success")
 ```
+
+CTF challenges:
+
+- [Hack The Boo CTF 2025 Leaking for Answers](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
 
 ### Small e
 
@@ -321,6 +339,10 @@ res = attack(n, A, B)
 assert res == p or res == q
 print("Success")
 ```
+
+CTF challenges:
+
+- [Hack The Boo CTF 2025 Leaking for Answers](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
 
 ## Known n, MSB bits of p
 

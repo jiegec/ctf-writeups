@@ -499,3 +499,7 @@ def test(lsb: bool):
 test(False)
 test(True)
 ```
+
+## CTF challenges
+
+- [Qiangwang Mimic Quals 2025 FMS](../2025-10-25-qiangwang-nitai-quals-2025/FMS.md)
