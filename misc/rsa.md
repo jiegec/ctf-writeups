@@ -321,3 +321,59 @@ res = attack(n, A, B)
 assert res == p or res == q
 print("Success")
 ```
+
+## Known n, MSB bits of p
+
+If we know n, and MSB bits of p: `p // (2 ** shift)`, we can recover $p$ using Coppersmith's attack: find small roots of the equation $p * (2 ** shift) + x = 0 \pmod N$ modulo some factor $b$ of $N$, which is $p$ here.
+
+Note the parameter selection:
+
+1. $b = p \ge N^{\beta}$, so $N^{\beta}$ should be less than $p$. We don't know $p$, but since $p$ and $q$ are of the same bit length, $\beta$ should be about 0.5
+2. $\epsilon$ determines the range of $x$ found, smaller $\epsilon$ means larger $x$ allowed, but takes more time; lower $\epsilon$ until you find a solution in a reasonable time; for example, in the following example, $\epsilon=0.05$ gives no solution, but $\epsilon=0.04$ solves in 0.5s, $\epsilon=0.01$ solves in 7s.
+
+```python
+from sage.all import *
+from Crypto.Util.number import *
+
+p = getPrime(512)
+q = getPrime(512)
+n = p * q
+shift = 233
+known = p // (2**shift)
+
+
+def attack(n, known, shift):
+    # https://latticehacks.cr.yp.to/rsa.html
+    # modulo n
+    R = Zmod(n)["x"]
+    x = R.gens()[0]
+
+    # find small root of equation a + x = 0 (mod p)
+    # x = the missing LSB bits
+    # Coppersmith attack
+    f = known * (Integer(1) << shift) + x
+
+    # small root bound: |x| < 2^shift
+    # returns small roots of this polynomial modulo some factor b of N
+    # where b >= N^{beta}, which is p
+    # we don't know p, but it should be around sqrt(n)
+    for beta in range(40, 50):
+        # test beta from 0.4 to 0.5
+        beta = beta / 100
+        # smaller epsilon finds larger root, but takes longer time
+        roots = f.small_roots(X=1 << shift, beta=beta, epsilon=0.02)
+        if len(roots) >= 1:
+            break
+
+    # roots[0] is x, compute p
+    # may fail in some cases
+    p = int(roots[0]) + known * (2**shift)
+    q = n // p
+    assert p * q == n
+    return p
+
+
+res = attack(n, known, shift)
+assert res == p or res == q
+print("Success")
+```
