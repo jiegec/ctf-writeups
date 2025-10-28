@@ -2,7 +2,7 @@
 
 Reference: [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
 
-Problem: for unknown integer $p$, we are given some $pq + r$, where $p$ and $r$ are integers and $r$ are small: $|r| < 2^{\rho}$. If without the $r$ term, we can simply compute GCD to recover $p$. However, $r$ makes it approximate.
+Problem: for unknown integer $p$, we are given some $pq + r$, where $p$ and $r$ are integers and $r$ are small: $\mathrm{abs}(r) < 2^{\rho}$. If without the $r$ term, we can simply compute GCD to recover $p$. However, $r$ makes it approximate.
 
 ## Simultaneous Diophantine approximation approach (SDA)
 
