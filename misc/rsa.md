@@ -324,11 +324,13 @@ print("Success")
 
 ## Known n, MSB bits of p
 
-If we know n, and MSB bits of p: `p // (2 ** shift)`, we can recover $p$ using Coppersmith's attack: find small roots of the equation $p * (2 ** shift) + x = 0 \pmod N$ modulo some factor $b$ of $N$, which is $p$ here.
+If we know n, and MSB bits of p: `p // (2 ** shift)`. There exists some small integer $x$ where $\lfloor p / 2^{\mathrm{shift}} \rfloor (2 ^ {\mathrm{shift}}) + x = 0 \pmod p$
+
+We can recover $p$ using Coppersmith's attack: find small roots of the equation $\lfloor p / (2^{\mathrm{shift}}) \rfloor 2 ^ {\mathrm{shift}} + x = 0 \pmod N$ modulo some factor $b$ of $N$, which should be $p$ here.
 
 Note the parameter selection:
 
-1. $b = p \ge N^{\beta}$, so $N^{\beta}$ should be less than $p$. We don't know $p$, but since $p$ and $q$ are of the same bit length, $\beta$ should be about 0.5
+1. $b = p \ge N^{\beta}$, so $N^{\beta}$ should be less than $p$. We don't know $p$, but since $p$ and $q$ are of the same bit length, $\beta$ should be about 0.5, maybe smaller
 2. $\epsilon$ determines the range of $x$ found, smaller $\epsilon$ means larger $x$ allowed, but takes more time; lower $\epsilon$ until you find a solution in a reasonable time; for example, in the following example, $\epsilon=0.05$ gives no solution, but $\epsilon=0.04$ solves in 0.5s, $\epsilon=0.01$ solves in 7s.
 
 ```python
