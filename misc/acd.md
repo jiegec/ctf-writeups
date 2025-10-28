@@ -2,11 +2,11 @@
 
 Reference: [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
 
-Problem: for unknown integer $p$, we are given some $pq + r$, where $p$ and $r$ are integers and $r$ are small: $\mathrm{abs}(r) < 2^{\rho}$. If without the $r$ term, we can simply compute GCD to recover $p$. However, $r$ makes it approximate.
+Problem: for unknown integer $p$, we are given some $pq + r$, where $q$ and $r$ are integers and $r$ are small: $\mathrm{abs}(r) < 2^{\rho}$. If without the $r$ term, we can simply compute GCD of many $pq$ to recover $p$. However, $r$ makes it approximate.
 
 ## Simultaneous Diophantine approximation approach (SDA)
 
-We have $x_i = pq_i + r_i$ for $1 \le i \le t$ where $r_i$ is small. Then $x_i/x_0 \approx q_i/q_0$. If we can find $q_0$, then we can compute $r_0 = x_i \bmod q_0$ and $p = (x_0 - r_0) / q_0$.
+We have $x_i = pq_i + r_i$ for $0 \le i \le t$ where $r_i$ is small. Then $x_i/x_0 \approx q_i/q_0$. If we can find $q_0$, then we can compute $r_0 = x_i \bmod q_0$ and $p = (x_0 - r_0) / q_0$.
 
 To find $q_0$ where there is approximation for all $x_i/x_0 \approx q_i/q_0$ equations, construct lattice:
 
@@ -16,7 +16,7 @@ $v_1 = (0, -x_0, 0, \cdots, 0)$
 
 $v_t = (0, 0, 0, \cdots, -x_0)$
 
-Run LLL reduction on the vectors, then we can recover $q_0$ by dividing the first entry by $2^{\rho+1}$.
+Run LLL reduction on the vectors. It will find the approximations of $q_i$ for us: $q_0v_0+q_1v_1+\cdots+q_tv_t$ is a short vector. Then we can recover $q_0$ by dividing the first entry by $2^{\rho+1}$.
 
 Code:
 
