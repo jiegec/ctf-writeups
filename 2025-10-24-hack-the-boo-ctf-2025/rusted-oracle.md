@@ -62,7 +62,7 @@ int machine_decoding_sequence()
 }
 ```
 
-Patch the call to `system` to nop sequences. Then, input `Corwin Vell` to get flag:
+Patch the call to `sleep` to nop sequences. Then, input `Corwin Vell` to get flag:
 
 ```shell
 $ ./rusted_oracle

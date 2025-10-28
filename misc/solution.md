@@ -18,6 +18,11 @@ Table of contents:
     - [Factorable n](../2025-08-22-brunnerctf2025/half-baked.md)
     - [Small d](../2025-09-19-k17-ctf-2025/worsehelp.md)
     - [Same m and n, different e](../2025-09-26-iran-tech-olympics-ctf-2025/techras.md)
+    - [N and c has common factors](../2025-10-18-qiangwangbei-quals-2025/check-little.md)
+    - [Known n, p-q](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
+    - [Known n, e, phi^{-1}*d mod n](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
+    - [Known n, e, d](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
+    - [Known n, pow(p, -q, q), pow(q, -p, p)](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
 - Discrete logarithm:
     - [Baby-step giant-step](../2025-09-08-wanqubei-quals-2025/new-trick.md)
     - [Pohlig-Hellman](../2025-09-04-nullcon-berlin-hackim-2025-ctf/field-trip.md)
@@ -38,11 +43,14 @@ Table of contents:
     - [Find odd-degree coefficients](../2025-08-30-corctf2025/ssss.md)
 - Linear congruential generator
     - [Parameter recover](../2025-09-06-cracconctf2025/ecg.md)
+    - [Recover truncated LCG with LSB bits known](../2025-10-25-qiangwang-nitai-quals-2025/FMS.md)
     - [Recover different types of LCG](./lcg.md)
 - ECDSA:
     - [Reused k](../2025-09-10-watctf-f25/curve-desert.md)
 - Python random number generator
     - [Solve MT19937 using known bits](./pyrand.md)
+- C random number generator
+    - [Enumerate seed to recover](../2025-10-26-xctf-final-2025/tch3s.md)
 
 ## Forensics
 
@@ -130,6 +138,7 @@ Table of contents:
     - [Other Python jails](./pyjail.md)
 - Shell jail:
     - [Pager !/bin/sh](../2025-08-22-hitconctf2025/git-playground.md)
+    - [Arithmetic evaluation](../2025-10-18-hacklu-ctf-2025/)
 - Perl jail:
     - [Newline to bypass regex](../2025-09-05-imaginary-ctf-2025/pearl.md)
     - [Pipe operator to execute command and get output](../2025-09-05-imaginary-ctf-2025/pearl.md)
@@ -154,6 +163,8 @@ Table of contents:
     - [pyinstxtractor](../2025-09-19-k17-ctf-2025/jumping.md)
 - BPF:
     - [Use bpftool to dump bpf program and maps](../2025-09-27-sunshine-ctf-2025/warp.md)
+- Side channel:
+    - [Use loop count as side channel to recover flag](../2025-10-25-qiangwang-nitai-quals-2025/hyperjump.md)
 
 ## Web
 
