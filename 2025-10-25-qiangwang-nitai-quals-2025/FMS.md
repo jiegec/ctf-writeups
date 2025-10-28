@@ -104,7 +104,7 @@ if __name__ == "__main__":
             print("Invalid option!")
 ```
 
-本题需要通过多轮 Verification code，恢复出一个 Truncated LCG Generator 的 Seed，然后得到 admin 密码，登录成功后，再计算出 key 和 iv，对 flag 进行解密。Truncated LCG Generator 的求解见 [之前的总结](../misc/lcg.md)。
+本题需要通过多轮 Verification code，恢复出一个 Truncated LCG Generator 的 Seed，然后回滚 seed 再重新生成随机数从而得到 admin 密码，登录成功后，再生成随机数来计算出 key 和 iv，对 flag 进行解密。Truncated LCG Generator 的求解见 [之前的总结](../misc/lcg.md)。
 
 攻击代码：
 
@@ -248,7 +248,8 @@ p.sendline(b"READ FLAG")
 enc = bytes.fromhex(p.recvline().decode().strip())
 
 # generate key
-# compute state before generation key and iv
+# compute state before generation of key and iv
+# note the extra 4 when logging in
 state = seed
 for i in range(len(nums) + 4):
     state = (a * state + b) % modulus
