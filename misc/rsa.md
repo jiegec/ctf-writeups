@@ -402,6 +402,10 @@ assert res == p or res == q
 print("Success")
 ```
 
+CTF challenges:
+
+- [litt1e](../2025-10-26-xctf-final-2025/litt1e.md)
+
 ## Known n, close p and q
 
 If $p$ and $q$ are very close (e.g. $q$ is the smallest prime larger than $p$), the diff can be very small. We can enumerate the diff and solve $p$ and $q$.

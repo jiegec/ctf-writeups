@@ -12,3 +12,7 @@ Solved challenges that I involved in:
 
 - [lel](./lel.md)
 - [tch3s](./tch3s.md)
+
+Half solved:
+
+- [litt1e](./litt1e.md)

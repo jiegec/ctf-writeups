@@ -82,3 +82,7 @@ res = sda_attack(known, limit)
 print(f"Got result:", res != None)
 print(f"Result correct:", res == p)
 ```
+
+CTF challenges:
+
+- [litt1e](../2025-10-26-xctf-final-2025/litt1e.md)
