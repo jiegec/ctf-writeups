@@ -1,5 +1,10 @@
 # Solving RSA private key
 
+Table of contents:
+
+* TOC
+{:toc}
+
 ## Small N
 
 If N is small, we can factor it directly. We can solve RSA200 in ~2s:

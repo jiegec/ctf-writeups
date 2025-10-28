@@ -2,6 +2,11 @@
 
 LCG: generate random numbers of the form: $x_{i+1} = (ax_i + b) \bmod p$
 
+Table of contents:
+
+* TOC
+{:toc}
+
 ## Recover vanilla LCG
 
 Reference: <https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator>
