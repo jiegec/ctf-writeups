@@ -324,13 +324,13 @@ print("Success")
 
 ## Known n, MSB bits of p
 
-If we know n, and MSB bits of p: `p // (2 ** shift)`. There exists some small integer $x$ where $\lfloor p / 2^{\mathrm{shift}} \rfloor (2 ^ {\mathrm{shift}}) + x = 0 \pmod p$
+If we know n, and MSB bits of p: `p // (2 ** shift)`. There exists some small integer $x$ where $\lfloor p / 2^{\mathrm{shift}} \rfloor 2 ^ {\mathrm{shift}} + x = 0 \pmod p$
 
-We can recover $p$ using Coppersmith's attack: find small roots of the equation $\lfloor p / (2^{\mathrm{shift}}) \rfloor 2 ^ {\mathrm{shift}} + x = 0 \pmod N$ modulo some factor $b$ of $N$, which should be $p$ here.
+We can recover $p$ using Coppersmith's attack: find small roots of the equation $\lfloor p / 2^{\mathrm{shift}} \rfloor 2 ^ {\mathrm{shift}} + x = 0 \pmod N$ modulo some factor $b$ of $N$, which should be $p$ here.
 
-Note the parameter selection on [sage's implementation of small_roots](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots):
+Note the parameter selection (beta and epsilon) on [sage's implementation of small_roots](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots):
 
-1. $b = p \ge N^{\beta}$, so $N^{\beta}$ should be less than $p$. We don't know $p$, but since $p$ and $q$ are of the same bit length, $\beta$ should be about 0.5, maybe smaller
+1. $b = p \ge N^{\beta}$, so $N^{\beta}$ should be less than $p$. We don't know $p$, but since $p$ and $q$ are of the same bit length, $\beta$ should be about 0.5, often smaller to ensure the inequality
 2. $\epsilon$ determines the range of $x$ found, smaller $\epsilon$ means larger $x$ allowed, but takes more time; lower $\epsilon$ until you find a solution in a reasonable time; for example, in the following example, $\epsilon=0.05$ gives no solution, but $\epsilon=0.04$ solves in 0.5s, $\epsilon=0.01$ solves in 7s.
 
 ```python
@@ -379,3 +379,7 @@ res = attack(n, known, shift)
 assert res == p or res == q
 print("Success")
 ```
+
+## Known n, close p and q
+
+If $p$ and $q$ are very close (e.g. $q$ is the smallest prime larger than $p$), the diff can be very small. We can enumerate the diff and solve $p$ and $q$.
