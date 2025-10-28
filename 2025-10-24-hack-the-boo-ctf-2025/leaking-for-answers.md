@@ -12,7 +12,7 @@ Since $ed = 1 \bmod \phi$, so there is a $k$ where $ed = \phi k+1$, so $\phi^{-1
 
 The $k$ is small, because $e$ is not large. So we can enumerate $k$ until we find $\phi$. Given $\phi$, we know that $\phi = pq - p - q + 1$ and $n = pq$, so $p + q = n + 1 - \phi$, $p (p + q - p) = n$, $-p^2 + (p + 1) * p - n = 0$, solve the quadratic equation to find $p$.
 
-Third equation, given $n$, $e$ and $d$, use [existing code](gist.github.com/ddddavidee/b34c2b67757a54ce75cb) to solve.
+Third equation, given $n$, $e$ and $d$, use [existing code](https://gist.github.com/ddddavidee/b34c2b67757a54ce75cb) to solve.
 
 Fourth question, given $n$, `pow(p, -q, q)` and `pow(q, -p, p)`. By Fermat's little theorm, `pow(p, -q, q)` equals to inverse of $p$ modulo $q$. Let `A=pow(p, -q, q)`, `B=pow(q, -p, p)`, so $Ap = 1 \pmod q$ and $Bq = 1 \pmod p$, then $Ap+Bq = 1 \pmod p$ and $Ap+Bq = 1 \pmod q$, $Ap+Bq = 1 \pmod n$, since $A<q$ and $B<q$, so $Ap+Bq=n+1$ is the only solution. Then, we can solve $p$ from the quadratic equation $A p^2 - (n+1)p + Bn = 0$.
 

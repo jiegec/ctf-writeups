@@ -46,7 +46,7 @@ print(f"{e = }")
 print(f"{n = }")
 ```
 
-If we can make `r` small, then `d` will be small to. To make `r` small, try different possibilities of the equations below:
+If we can make `r` small, then `d` will be small too. To make `r` small, try different possibilities of the equations below:
 
 ```
 a**2+b**2+3*a+3*b+a*b == 1*(2*a*b + 7)

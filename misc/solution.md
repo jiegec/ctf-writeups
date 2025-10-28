@@ -23,6 +23,7 @@ Table of contents:
     - [Known n, e, phi^{-1}*d mod n](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
     - [Known n, e, d](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
     - [Known n, pow(p, -q, q), pow(q, -p, p)](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
+    - [Solving p, q for diffent known valuese](./rsa.md)
 - Discrete logarithm:
     - [Baby-step giant-step](../2025-09-08-wanqubei-quals-2025/new-trick.md)
     - [Pohlig-Hellman](../2025-09-04-nullcon-berlin-hackim-2025-ctf/field-trip.md)
