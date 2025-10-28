@@ -52,6 +52,8 @@ Table of contents:
     - [Solve MT19937 using known bits](./pyrand.md)
 - C random number generator
     - [Enumerate seed to recover](../2025-10-26-xctf-final-2025/tch3s.md)
+- Approximate Common Divisor
+    - [Algorithms for Approximate Common Divisor Problem](./acd.md)
 
 ## Forensics
 
