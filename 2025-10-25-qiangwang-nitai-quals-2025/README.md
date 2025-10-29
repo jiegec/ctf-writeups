@@ -16,3 +16,7 @@ Solved challenges that I involved in:
 
 - [HyperJump](./hyperjump.md)
 - [FMS](./FMS.md)
+
+Writeup by authors:
+
+- [Ciallo_Encrypt](https://2hi5hu.cn/archives/Ciallo_Encrypt)
