@@ -33,7 +33,7 @@ if all([chall() for chall in [one, two, three]]):
 本题要考察三个问题的求解：
 
 1. 给定 $n$ 以及 $p$ 的 MSB，求解 $p$，可以用 Coppersmith 求解
-2. 给定若干个 $p$ 的倍数加上小随机数后的结果（外加 $n$ 是 $p$ 的整数倍），求解 $p$，这是一个 [Approximate Common Divisor](../misc/acd.md) 问题，可以用 Simultaneous Diophantine approximation approach (SDA) 方法求解
+2. 给定若干个 $p$ 的倍数加上小随机数后的结果（外加 $n$ 是 $p$ 的整数倍），求解 $p$，这是一个 [Partial Approximate Common Divisor](../misc/acd.md) 问题，可以用 Simultaneous Diophantine approximation approach (SDA) 方法求解
 3. 给定若干个 $x_i$ 以及对应的 $(x_i + \alpha)^{-1}$ 的 LSB，求解 $\alpha$，这是 Modular Inverse Hidden Number Problem 的变种，把 MSB 换成了 LSB，目前还不知道如何求解
 
 目前的求解代码：
