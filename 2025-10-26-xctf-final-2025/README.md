@@ -13,6 +13,10 @@ Solved challenges that I involved in:
 - [lel](./lel.md)
 - [tch3s](./tch3s.md)
 
+Not solved in challenges:
+
+- [4sa](./4sa.md)
+
 Half solved:
 
 - [litt1e](./litt1e.md)
