@@ -116,7 +116,7 @@ def sda_attack(known, limit):
         r_0 = known_new[0] % q_0
 
         assert (known_new[0] - r_0) % q_0 == 0
-        p = abs(known_new[0] - r_0) // q_0
+        p = abs((known_new[0] - r_0) // q_0)
 
         # validate
         bad = False
