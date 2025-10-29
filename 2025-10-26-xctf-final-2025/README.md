@@ -13,7 +13,7 @@ Solved challenges that I involved in:
 - [lel](./lel.md)
 - [tch3s](./tch3s.md)
 
-Not solved in challenges:
+Not solved in competitions:
 
 - [4sa](./4sa.md)
 
