@@ -54,6 +54,8 @@ Table of contents:
     - [Enumerate seed to recover](../2025-10-26-xctf-final-2025/tch3s.md)
 - Approximate Common Divisor
     - [Algorithms for Approximate Common Divisor Problem](./acd.md)
+- Modular Inverse Hidden Number Problem
+    - [Algorithms for MIHNP](./mihnp.md)
 
 ## Forensics
 
