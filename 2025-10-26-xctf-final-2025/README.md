@@ -16,7 +16,4 @@ Solved challenges that I involved in:
 Not solved in competitions:
 
 - [4sa](./4sa.md)
-
-Half solved:
-
 - [litt1e](./litt1e.md)

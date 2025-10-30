@@ -4,6 +4,10 @@ Modular Inverse Hidden Number Problem (MIHNP):
 
 Given prime $p$, $\alpha$ is a hidden integer in $\mathbb{Z}_p$. We are given $n$ random integers $x_1, x_2, \cdots, x_n$ and corresponding $\mathrm{MSB}_k(1/(\alpha+x_i))$: the MSB bits of modular inverse of $\alpha + x_i$.
 
+CTF challenges:
+
+- [litt1e](../2025-10-26-xctf-final-2025/litt1e.md)
+
 ## Approach 1
 
 Here is the first approach in paper [The Modular Inversion Hidden Number Problem](https://www.iacr.org/archive/asiacrypt2001/22480036.pdf). We are given:
