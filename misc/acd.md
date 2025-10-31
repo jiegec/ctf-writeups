@@ -27,66 +27,87 @@ Run LLL reduction on the vectors. It will find the approximations of $q_i$ for u
 Code:
 
 ```python
-from sage.all import *
-from Crypto.Util.number import *
+from Crypto.Util.number import getPrime
 import random
 
-p = getPrime(512)
-limit = 2**200
-known = [random.randrange(1, p) * p + random.randrange(1, limit) for i in range(5)]
 
+def matrix_lll(matrix: list[list[int]], transform: bool = False):
+    """
+    Compute LLL reduction on the given matrix.
 
-def sda_attack(known, limit):
-    # Simultaneous Diophantine approximation approach (SDA)
+    Args:
+        matrix (list[list[int]]): the row-major two-dimensional integer matrix
+        transform (bool): return transformation matrix if True
 
-    # try to use different elements as x_0
-    for k in range(len(known)):
-        known_new = known.copy()
-        known_new[0], known_new[k] = known_new[k], known_new[0]
+    Returns:
+        LLL-reduced matrix and optionally the transformation matrix
+    """
+    try:
+        from flint import fmpz_mat
 
-        # create matrix
-        # limit*2,  x_1,  x_2, ...,  x_t
-        #       0, -x_0, ...
-        #       0,    0, -x_0, ...
-        #       ...
-        #       0,    0,       ..., -x_0
-        size = len(known_new)
-        matrix = [[0] * size for _ in range(size)]
-        matrix[0][0] = limit * 2
-        for i in range(len(known_new) - 1):
-            matrix[0][i + 1] = known_new[i + 1]
-            matrix[i + 1][i + 1] = -known_new[0]
+        B = fmpz_mat(matrix)
+        return B.lll(transform=transform)
+    except ImportError:
+        from sage.all import Matrix
 
         B = Matrix(matrix)
-        reduced = B.LLL()
-
-        # recover q_0
-        assert reduced[0][0] % (limit * 2) == 0
-        q_0 = reduced[0][0] // (limit * 2)
-        r_0 = known_new[0] % q_0
-
-        assert (known_new[0] - r_0) % q_0 == 0
-        p = abs((known_new[0] - r_0) // q_0)
-
-        # validate
-        bad = False
-        for k in known:
-            if k % p >= limit:
-                # bad guess
-                bad = True
-                break
-
-        if bad:
-            continue
-
-        return p
-
-    return None
+        return B.LLL(transformation=transform)
 
 
-res = sda_attack(known, limit)
+def sda(x: list[int], rho: int) -> int | None:
+    """
+    Solve ACD problem using Simultaneous Diophantine Approximation from
+    [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
+
+    Args:
+        x (list[int]): an array of known x_i = pq_i + r_i
+        rho (int): the log2 bound of r_i, i.e. |r_i| < 2 ** rho
+
+    Returns:
+        the recovered p, or None for failure
+    """
+
+    # Simultaneous Diophantine approximation approach (SDA)
+
+    # step 1:
+    # create matrix
+    # 2^{rho+1},  x_2,  x_3, ...,  x_t
+    #         0, -x_1, ...
+    #         0,    0, -x_1, ...
+    #         ...
+    #         0,    0,       ..., -x_1
+    t = len(x)
+    matrix = [[0] * t for _ in range(t)]
+    matrix[0][0] = 2 ** (rho + 1)
+    for i in range(t - 1):
+        matrix[0][i + 1] = x[i + 1]
+        matrix[i + 1][i + 1] = -x[0]
+
+    # step 2:
+    # use lll reduction
+    # reduced vector: (q_12^{rho+1}, q_1x_2-q_2x_1, ..., q_1x_t-q_tx_1)
+    reduced = matrix_lll(matrix)
+
+    # step 3:
+    # recover q_1 from first entry of short vector
+    q_1 = reduced[0, 0] // (2 ** (rho + 1))
+
+    # step 4:
+    # recover p
+    # x_1 = pq_1 + r_1
+    # so r_1 = x_1 mod q_1
+    # p = (x_1 - r_1) / q_1
+    r_1 = x[0] % q_1
+    p = abs((x[0] - r_1) // q_1)
+    return p
+
+
+# It may fail sometimes
+p = getPrime(512)
+rho = 50
+x = [random.randrange(0, p) * p + random.randrange(0, 2**rho) for i in range(5)]
+res = sda(x, rho)
 print(f"Got result:", res != None)
-# Note: sometimes it may give wrong but valid result
 print(f"Result correct:", res == p)
 ```
 
@@ -95,52 +116,114 @@ print(f"Result correct:", res == p)
 Create a lattice according to the paper, and for the $t-1$ short vectors in the lattice, $v_0 = \Sigma u_i r_i$ and $0 = \Sigma u_iq_i$, where $v_0$ is the first entry of the short vector, and $u_i$ are the coefficient of each basis vector. So we got $t-1$ vectors that are orthogonal to the vector of $(q_0, q_1, \cdots, q_t)$. We can compute the $q_i$ by finding the kernel of the vector subspace spanned by $u_i$ vectors. Then, we can recover $q$ in a similar way as previous.
 
 ```python
-from sage.all import *
-from Crypto.Util.number import *
+from Crypto.Util.number import getPrime
 import random
 
-p = getPrime(512)
-limit = 2**200
-known = [random.randrange(1, p) * p + random.randrange(1, limit) for i in range(5)]
 
-def ol_attack(known, limit):
-    # Orthogonal based approach
+def matrix_lll(matrix: list[list[int]], transform: bool = False):
+    """
+    Compute LLL reduction on the given matrix.
 
+    Args:
+        matrix (list[list[int]]): the row-major two-dimensional integer matrix
+        transform (bool): return transformation matrix if True
+
+    Returns:
+        LLL-reduced matrix and optionally the transformation matrix
+    """
+    try:
+        from flint import fmpz_mat
+
+        B = fmpz_mat(matrix)
+        return B.lll(transform=transform)
+    except ImportError:
+        from sage.all import Matrix
+
+        B = Matrix(matrix)
+        return B.LLL(transformation=transform)
+
+
+def find_nullspace_basis(matrix):
+    """
+    Find the basis of the one-dimensional null space of the space spanend by all vectors except for the last one.
+
+    Args:
+        matrix: the input matrix
+
+    Returns:
+        the integer basis of the null space
+    """
+    try:
+        from flint import fmpz_mat
+
+        q, nullity = fmpz_mat(matrix.tolist()[:-1]).nullspace()
+        assert nullity == 1  # null space should have only one dimension
+        return [q[0, i] for i in range(q.ncols())]
+    except ImportError:
+        q = matrix[:-1][:].right_kernel()
+        assert len(q.basis()) == 1  # null space should have only one dimension
+        return q.basis()[0]
+
+
+def ol(x: list[int], rho: int) -> int:
+    """
+    Solve ACD problem using Orthogonal based approach from
+    [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
+
+    Args:
+        x (list[int]): an array of known x_i = pq_i + r_i
+        rho (int): the log2 bound of r_i, i.e. |r_i| < 2 ** rho
+
+    Returns:
+        the recovered p
+    """
+
+    # step 1:
     # create matrix
+    # R = 2^rho
     # x_1, R, 0, ..., 0
     # x_2, 0, R, ..., 0
     # ...
     # x_t, 0, 0, ..., R
-    R = limit
-    size = len(known)
-    matrix = [[0] * (size + 1) for _ in range(size)]
-    for i in range(size):
-        matrix[i][0] = known[i]
+    R = 2**rho
+    t = len(x)
+    matrix = [[0] * (t + 1) for _ in range(t)]
+    for i in range(t):
+        matrix[i][0] = x[i]
         matrix[i][i + 1] = R
 
-    B = Matrix(matrix)
-    # transform * B == reduced
-    reduced, transform = B.LLL(transformation=True)
-    assert transform * B == reduced
+    # step 2:
+    # lll reduction
+    # transform coefficients for each short vector: (u_1, u_2, ..., u_t)
+    # are stored in rows of U
+    # U * matrix == LLL-reduced matrix
+    _, U = matrix_lll(matrix, True)
 
-    # now v_0 = sum(u_i * r_i) for short enough vector
+    # for short enough vector
+    # v_0 = sum(u_i * r_i),
     # 0 = sum(u_i * q_i)
+    # so u vector is orthogonal to q vector
 
-    # find kernel of the space spanned by t-1 u vectors
-    M = transform[: size - 1][:]
-    # q is the kernel
-    q = M.right_kernel()
-    q_0 = q.basis()[0][0]
+    # step 3:
+    # find kernel (null space) of the space,
+    # spanned by t-1 u vectors from U
+    q_1 = abs(find_nullspace_basis(U)[0])
 
-    # r_0 = x_0 mod q_0
-    r_0 = known[0] % q_0
-    # p = (x_0 - r_0) // q_0
-    p = (known[0] - r_0) // q_0
+    # step 4:
+    # recover p
+    # r_1 = x_1 mod q_1
+    r_1 = x[0] % q_1
+    # p = (x_1 - r_1) // q_1
+    p = (x[0] - r_1) // q_1
 
     return p
 
 
-res = ol_attack(known, limit)
+# It may fail sometimes
+p = getPrime(512)
+rho = 50
+x = [random.randrange(0, p) * p + random.randrange(0, 2**rho) for i in range(5)]
+res = ol(x, rho)
 print(f"Got result:", res != None)
 print(f"Result correct:", res == p)
 ```
