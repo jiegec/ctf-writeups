@@ -45,11 +45,11 @@ def sda_attack(known, limit):
         known_new[0], known_new[k] = known_new[k], known_new[0]
 
         # create matrix
-        # limit*2,  x_1,  x_2, ..., x_t
+        # limit*2,  x_1,  x_2, ...,  x_t
         #       0, -x_0, ...
         #       0,    0, -x_0, ...
         #       ...
-        #       0,    0,       ...,   0
+        #       0,    0,       ..., -x_0
         size = len(known_new)
         matrix = [[0] * size for _ in range(size)]
         matrix[0][0] = limit * 2
