@@ -73,7 +73,7 @@ void srand(int seed) {
 此时 `SRAND=1753843495 LD_PRELOAD=$PWD/hack.so ./Tch3s` 就可以得到相同的每轮 Test 的 plaintext 了。说明此时内存中已经有正确的 key。为了在不重新实现加解密算法的前提下解密，采用了调试器 `SRAND=1753843495 LD_PRELOAD=$PWD/hack.so pwndbg Tch3s` 的方法：
 
 1. 对加密函数打断点：`b *0x5555555570ba`
-2. 在加密函数的入口，$rdi 是明文，$rsi 会写入加密后的密文，$rdx 是 key
+2. 在加密函数的入口，`$rdi` 是明文，`$rsi` 会写入加密后的密文，`$rdx` 是 key
 3. 此时修改内存，把 $rdi 的内容改成 `output` 文件中，加密后的 FLAG 的密文：
 
 ```
