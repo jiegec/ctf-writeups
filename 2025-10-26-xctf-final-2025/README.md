@@ -1,12 +1,12 @@
-# 第九届 XCTF 国际网络攻防联赛总决赛团队解题赛
+# 2025 第九届 XCTF 国际网络攻防联赛总决赛
 
 Link: <https://challenge.xctf.org.cn>
 
-Official Link: <https://mp.weixin.qq.com/s/ULrTRVg2_A7jQX-EHGUhKg>
+Official Link: <https://mp.weixin.qq.com/s/ULrTRVg2_A7jQX-EHGUhKg> <https://mp.weixin.qq.com/s/oh5r-52lKdXsxv2Gpk2kGA>
 
 Participated as a member of Redbud in the competition.
 
-Result: 5103 Points, 13rd Place
+Result: 444.09 Points, 8th Place
 
 Solved challenges that I involved in:
 
