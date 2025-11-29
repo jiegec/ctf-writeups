@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF event
 
+* [2025.11.26 **2025 第八届“强网”拟态防御国际精英挑战赛**](2025-11-26-qiangwang-nitai-final-2025/README.md)
 * [2025.11.22 **2025 第九届“强网杯”全国网络安全挑战赛**](2025-11-22-qiangwangbei-final-2025/README.md)
 * [2025.10.26 **2025 第九届 XCTF 国际网络攻防联赛总决赛**](2025-10-26-xctf-final-2025/README.md)
 * [2025.10.25 **2025 第八届“强网”拟态防御国际精英挑战赛线上预选赛**](2025-10-25-qiangwang-nitai-quals-2025/README.md)
