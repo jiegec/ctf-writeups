@@ -120,3 +120,5 @@ encoded = p.recvline().decode()
 flag = bytes([a ^ rc.predict_getrandbits(8) for a in bytes.fromhex(encoded)])
 print(flag)
 ```
+
+但是，randcrack 只能支持比较简单的随机数恢复场景，对于更复杂的情况，会用到 [gf2bv](https://github.com/maple3142/gf2bv)。

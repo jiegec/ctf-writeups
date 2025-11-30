@@ -54,3 +54,10 @@ u_decrypt_them}
 ```
 
 拼接起来即得 flag。
+
+很多国外的 CTF 比赛喜欢出各种字符串编解码的 Misc 题，例如：
+
+- [scriptCTF 2025 enchant](../../2025-08-16-scriptctf2025/enchant.md)
+- [BrunnerCTF 2025 The Great Mainframe Bake-Off](../../2025-08-22-brunnerctf2025/the-great-mainframe-bake-off.md)
+- [BrunnerCTF 2025 Pie Recipe](../../2025-08-22-brunnerctf2025/pie-recipe.md)
+- [TFC CTF 2025 DISCORD SHENANIGANS V5](../../2025-08-29-tfcctf2025/discord-shenanigans-v5.md)

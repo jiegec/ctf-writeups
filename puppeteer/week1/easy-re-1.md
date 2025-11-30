@@ -198,3 +198,5 @@ def reverse_transform(data):
 flag = reverse_transform(expected)
 print(f"Flag: {flag.decode()}")
 ```
+
+目前 AI 大模型对 Reverse 题目的求解能力是比较强的（相比其他类型的题目），建议初学者在学习 Reverse 的过程中，学会如何利用大模型来解决 Reverse 题目。

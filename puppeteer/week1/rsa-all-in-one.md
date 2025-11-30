@@ -590,4 +590,4 @@ if __name__ == "__main__":
     main()
 ```
 
-本题受到了 [Hack The Boo CTF 2025 Leaking for Answers](../../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md) 的启发。
+本题受到了 [Hack The Boo CTF 2025 Leaking for Answers](../../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md) 的启发。此外还有很多类似的针对 RSA 的问题，求解方法也各式各样，可以参考 <https://github.com/RsaCtfTool/RsaCtfTool>。

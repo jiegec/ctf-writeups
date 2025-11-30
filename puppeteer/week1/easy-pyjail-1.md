@@ -61,3 +61,5 @@ p.sendline(
 p.sendline(b"cat flag")
 p.interactive()
 ```
+
+除了 Python jail 以外，还有很多类似的题目，感兴趣的同学可以关注每年的 jailCTF。

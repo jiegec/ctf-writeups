@@ -95,3 +95,5 @@ for sol in ls.solve_all(zeros):
     print(flag)
     break
 ```
+
+但 gf2bv 也有局限性，它只能求解那些 `GF(2)` 上的运算，如果计算涉及到一些更复杂的运算，可能就没有办法用 gf2bv 求解了，需要考虑其他的方法。

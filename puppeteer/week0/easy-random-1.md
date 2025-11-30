@@ -182,3 +182,5 @@ for i in range(len(numbers)):
 flag = bytes([a ^ (libc.rand() % 256) for a in bytes.fromhex(encoded)])
 print(flag)
 ```
+
+可见，如果随机数生成器的状态空间足够小，无论它计算过程多么复杂，都可以通过枚举状态空间来攻击。
