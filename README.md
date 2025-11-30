@@ -44,6 +44,10 @@ My individual team: <https://ctftime.org/team/208389>
 
 Enter [here](./misc/solution.md).
 
+## Writeups for Redbud Puppeteer
+
+Enter [here](./puppeteer/index.md).
+
 ## Private Writeups
 
 Competitions below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discus privately.
