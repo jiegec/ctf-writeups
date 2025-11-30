@@ -10,14 +10,14 @@ while True:
     print(eval(code, {'__builtins__': {}}))
 ```
 
-一个经典的禁掉 `__builtins__` 的 pyjail 题，有很多种解法，详情可以参考我的 [Pyjail 总结](../../misc/pyjail.md)。这里给出一个参考的解法：
+本题是 SECCON 2024 Quals 1linepyjail 去掉约束的简单版，经典的禁掉 `__builtins__` 的 pyjail 题，有很多种解法，详情可以参考我的 [Pyjail 总结](../../misc/pyjail.md)。这里给出一个参考的解法：
 
 1. 通过 `().__class__.__base__.__subclasses__()` 来找到一系列内置的类
 2. 例化其中的 Helper 类，从而实现 `help()` 的效果，然后加载 pdb 模块
 3. 通过 Printer 类，找到 sys 模块，进而访问 pdb 模块，调用 `pdb.set_trace()`
 4. 此时就可以任意调用 Python 代码，例如 get shell
 
-本题是 SECCON 2024 Quals 1linepyjail 去掉约束的简单版。攻击代码如下：
+攻击代码如下：
 
 ```python
 from pwn import *
