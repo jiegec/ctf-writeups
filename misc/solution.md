@@ -48,6 +48,7 @@ Table of contents:
     - [Recover different types of LCG](./lcg.md)
 - ECDSA:
     - [Reused k](../2025-09-10-watctf-f25/curve-desert.md)
+    - [Nonce leakage attack](../2025-11-22-qiangwangbei-final-2025/forge.md)
 - Python random number generator
     - [Solve MT19937 using known bits](./pyrand.md)
 - C random number generator
