@@ -52,4 +52,4 @@ Enter [here](./puppeteer/index.md).
 
 Competitions below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discus privately.
 
-* 2025.09.14 **Road to CyberBay CTF 2025**
+* 2025.09.14 [**Road to CyberBay CTF 2025**](https://compete.metactf.com/468/problems)
