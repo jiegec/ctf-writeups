@@ -1,6 +1,6 @@
 # Redbud Puppeteer
 
-[Puppeteer](https://thuctf.redbud.info/) is a weekly CTF event by Redbud.
+[Puppeteer](https://thuctf.redbud.info/) is a weekly CTF event by Redbud. You can play the challenges in my [archive](https://ctf.jia.je/).
 
 - Week 0:
     - [Easy Random 1](./week0/easy-random-1.md): Attack glibc RNG
