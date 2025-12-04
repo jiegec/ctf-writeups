@@ -1,6 +1,6 @@
 # Buster
 
-Through `dirb` tool, find that if the url is a prefix of the flag, it can be accessed:
+Using the `dirb` tool, we discovered that URLs that are prefixes of the flag can be accessed:
 
 ```
 /f
@@ -9,7 +9,7 @@ Through `dirb` tool, find that if the url is a prefix of the flag, it can be acc
 ...
 ```
 
-So write a program to probe each character in the range of `[a-f0-9]` to find the flag:
+We wrote a program to probe each character in the range `[a-f0-9]` to find the flag:
 
 ```python
 import requests

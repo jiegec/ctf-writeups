@@ -1,12 +1,12 @@
 # Just One Line
 
-Solve the perl onliner:
+We need to solve the Perl one-liner:
 
 ```shell
 echo ${FLAG} | perl -ple '$n=()=/./g;$_=~s/./$|--?ord($&)%$n:ord($&)-$^F**5/eg'
 ```
 
-The flag format is known, so enumerate prefix and find the best prefix until the whole flag is found:
+The flag format is known, so we can enumerate prefixes and find the best match until we discover the entire flag:
 
 ```python
 import subprocess

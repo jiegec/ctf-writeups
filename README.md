@@ -1,8 +1,8 @@
-# CTF writeups by @jiegec
+# CTF Writeups by @jiegec
 
 My individual team: <https://ctftime.org/team/208389>
 
-## Writeups by CTF event
+## Writeups by CTF Event
 
 * [2025.12.02 **BlackHat MEA CTF Final 2025**](2025-12-02-blackhat-mea-ctf-final-2025/README.md)
 * [2025.11.26 **2025 第八届“强网”拟态防御国际精英挑战赛**](2025-11-26-qiangwang-nitai-final-2025/README.md)
@@ -41,7 +41,7 @@ My individual team: <https://ctftime.org/team/208389>
 * [2019.01.27 **Codegate CTF 2019 Preliminary**](2019-01-27-codegate2019/README.md)
 * [2018.09.28 **THUCTF 2018**](2018-09-28-thuctf2018/README.md)
 
-## Writeups by solution
+## Writeups by Solution
 
 Enter [here](./misc/solution.md).
 
@@ -51,6 +51,6 @@ Enter [here](./puppeteer/index.md).
 
 ## Private Writeups
 
-Competitions below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discus privately.
+The competitions listed below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discuss privately.
 
 * 2025.09.14 [**Road to CyberBay CTF 2025**](https://compete.metactf.com/468/problems)

