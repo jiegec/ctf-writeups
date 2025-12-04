@@ -1,4 +1,4 @@
-# BlackHat MEA Qualification CTF 2025
+# BlackHat MEA CTF Qualification 2025
 
 Link: <https://flagyard.com/events/18db1658-bae2-4b1c-9ec7-0a851b5df275>
 
