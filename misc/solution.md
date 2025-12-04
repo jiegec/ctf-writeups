@@ -31,6 +31,7 @@ Table of contents:
     - [Chosen plaintext attack](../2025-08-16-scriptctf2025/eaas.md)
     - [Padding oracle attack](../2025-09-04-nullcon-berlin-hackim-2025-ctf/decryption-execution-service.md)
     - [XOR attack against AES-CTR & CRC](../2025-09-04-nullcon-berlin-hackim-2025-ctf/magntic-tape.md)
+    - [GCM nonce reuse attack](../2025-12-02-blackhat-mea-ctf-final-2025/tampering-detection-system.md)
 - DES:
     - [Weak keys](../2018-09-28-thuctf2018/crypto/101DES.md)
     - [Slide attack](../2025-09-04-nullcon-berlin-hackim-2025-ctf/narrow-des.md)
@@ -57,6 +58,8 @@ Table of contents:
     - [Algorithms for Approximate Common Divisor Problem](./acd.md)
 - Modular Inverse Hidden Number Problem
     - [Algorithms for MIHNP](./mihnp.md)
+- Differential Cryptanalysis
+    - [Recover key by using two keys that differ in only one bit](../2025-12-02-blackhat-mea-ctf-final-2025/limeade.md)
 
 ## Forensics
 
@@ -85,8 +88,14 @@ Table of contents:
     - [NTFS USN journal dump using USN-Journal-Parser](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
     - [Find recently accessed files via C:\Users\USERNAME\AppData\Roaming\Microsoft\Windows\Recent\*.lnk using lnkinfo](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
     - [Registry key modification time recovery via regipy](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+    - [Find recently accessed files via C:\Users\USERNAME\Recent\AutomaticDestinations\*](../2025-12-02-blackhat-mea-ctf-final-2025/pointbreak.md)
+    - [Find powershell execution history via C:\Users\USERNAME\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt](../2025-12-02-blackhat-mea-ctf-final-2025/ranwide.md)
+    - [Find scheduled tasks under C:\ProgramData\Microsoft\Group Policy\History\GUID\Machine\Preferences\ScheduledTasks\ScheduledTasks.xml](../2025-12-02-blackhat-mea-ctf-final-2025/ranwide.md)
 - Linux:
     - [Linux memory dump analysis using volatility3](../2025-09-22-holmes-ctf-2025/the-tunnel-without-walls.md)
+    - [Check files against checksum computed by package managers](../2025-12-02-blackhat-mea-ctf-final-2025/between-the-lines.md)
+    - [Find files with recent modification time](../2025-12-02-blackhat-mea-ctf-final-2025/bridged.md)
+    - [Dump memory by triggering core dump](../2025-12-02-blackhat-mea-ctf-final-2025/bridged.md)
 - TightVNC:
     - [VNC password extraction](../2025-09-05-imaginary-ctf-2025/obfuscated-1.md)
 
