@@ -25,6 +25,12 @@ Entry #: 1
   Interaction count: 1
 ```
 
+Alternatively, dump `Microsoft-Windows-Sysmon%4Operational.evtx` using `evtx_dump` leads to:
+
+```json
+"CommandLine": "\"C:\\Windows\\system32\\NOTEPAD.EXE\" C:\\Program Files\\Common Files\\microsoft shared\\Web Server Extensions\\16\\TEMPLATE\\LAYOUTS\\error.aspx",
+```
+
 In `Program\ Files/Common\ Files/microsoft\ shared/Web\ Server\ Extensions/16/TEMPLATE/LAYOUTS/error.aspx`:
 
 ```asp
