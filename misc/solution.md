@@ -86,9 +86,10 @@ Table of contents:
     - [C:\Windows\System32\winevt\Logs\*.evtx files extraction using evtx_dump](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
     - [C:\Windows\System32\config\* registry dump using reged or hivexregedit](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
     - [NTFS USN journal dump using USN-Journal-Parser](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
-    - [Find recently accessed files via C:\Users\USERNAME\AppData\Roaming\Microsoft\Windows\Recent\*.lnk using lnkinfo](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
     - [Registry key modification time recovery via regipy](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
-    - [Find recently accessed files via C:\Users\USERNAME\Recent\AutomaticDestinations\*](../2025-12-02-blackhat-mea-ctf-final-2025/pointbreak.md)
+    - [Find recently accessed files via C:\Users\USERNAME\Recent\*.lnk using lnkinfo or LECmd](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
+    - [Find recently accessed files via C:\Users\USERNAME\Recent\AutomaticDestinations\* using strings or JLECmd](../2025-12-02-blackhat-mea-ctf-final-2025/pointbreak.md)
+    - [Find recently accessed files via RecentDocs in registry](../2025-12-02-blackhat-mea-ctf-final-2025/pointbreak.md)
     - [Find powershell execution history via C:\Users\USERNAME\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt](../2025-12-02-blackhat-mea-ctf-final-2025/ranwide.md)
     - [Find scheduled tasks under C:\ProgramData\Microsoft\Group Policy\History\GUID\Machine\Preferences\ScheduledTasks\ScheduledTasks.xml](../2025-12-02-blackhat-mea-ctf-final-2025/ranwide.md)
 - Linux:
