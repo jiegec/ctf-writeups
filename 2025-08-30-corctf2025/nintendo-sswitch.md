@@ -10,7 +10,9 @@ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=
 with password ctf.
 ```
 
-Connecting to the server, we can find the folders with the same date of `Aug 29` as `/home/ctf`:
+## Initial Reconnaissance
+
+Connecting to the server via the provided SSH command, we examine the filesystem. Notice that `/home` and `/opt` have the same modification date (`Aug 29`) as `/home/ctf`:
 
 ```shell
 $ ls -al /
@@ -38,7 +40,7 @@ drwxr-xr-x   1 root root 4096 Aug 11 00:00 usr
 drwxr-xr-x   1 root root 4096 Aug 11 00:00 var
 ```
 
-So there must be something in `/opt`:
+The `/opt` directory contains the flag blob:
 
 ```shell
 $ find /opt
@@ -49,7 +51,9 @@ $ base64 /opt/ctf/flag*
 KiIppwcOdIzGO5FtC1CEHFsVodUEi4nPMdpd54Kc8ZB1TLqc6r8kJRlyGr0E6YhhCkbDVA==
 ```
 
-Now we get the base64 of `flag.blob`, but it is some unknown binary. Look for `blob` in the filesystem:
+## Analyzing the Binary
+
+The `flag.blob` file contains encrypted/encoded data. Searching for references to "blob" in the filesystem reveals a suspicious library:
 
 ```shell
 $ cd /usr
@@ -75,9 +79,9 @@ grep: bin/ssh: binary file matches
 grep: bin/ssh-add: binary file matches
 ```
 
-The `lib/x86_64-linux-gnu/libnss_ctf.so.2` file is worth looking. Grab it locally via `base64 lib/x86_64-linux-gnu/libnss_ctf.so.2`.
+The `lib/x86_64-linux-gnu/libnss_ctf.so.2` is a custom NSS (Name Service Switch) module. NSS modules are loaded by system libraries to handle user/group lookups. This custom module likely contains the decryption logic.
 
-Decompile via Ghidra:
+We extract the library and analyze it with Ghidra. Key functions:
 
 ```c
 
@@ -200,7 +204,9 @@ undefined * get_blob_path(void)
 }
 ```
 
-If we implement `get_trigger_user` locally, we can see that the user name is `nintendo`:
+## Understanding the Trigger
+
+The `get_trigger_user()` function returns an deobfuscated username. Implementing it locally reveals the username `nintendo`:
 
 ```c
 $ cat get_trigger_user.c
@@ -232,7 +238,7 @@ $ ./get_trigger_user
 nintendo
 ```
 
-But we cannot `su` in the remote machine. Do the same thing for `get_blob_path`:
+Similarly, `get_blob_path()` returns the deobfuscated path `/opt/ctf/flag.blob`:
 
 ```c
 $ cat get_blob_path.c
@@ -274,7 +280,11 @@ $ ./get_blob_path
 /opt/ctf/flag.blob
 ```
 
-So we know that the following part is for decoding the `/opt/ctf/flag.blob`, which is already known. Just repeat what the `libnss_ctf.so` does:
+## Decryption Algorithm
+
+The `FUN_00101327()` function decrypts the blob when triggered by a lookup for user `nintendo`. The decryption uses a simple XOR stream cipher with a 32-bit LFSR-like PRNG (`FUN_001012ea`).
+
+We implement the decryption locally:
 
 ```c
 #include <stdint.h>
@@ -307,6 +317,8 @@ int main() {
 }
 ```
 
-Get flag: `corctf{nsswitch_can_be_sneaky_sometimes_i_guess_idk}`.
+## Flag
 
-P.S. maybe we can just ssh to `nintendo@` and grab the flag from the output path.
+Running the decryption yields the flag: `corctf{nsswitch_can_be_sneaky_sometimes_i_guess_idk}`.
+
+**Note**: An alternative approach would be to SSH as `nintendo@localhost` (if allowed), which would trigger the NSS module to decrypt the blob automatically. The module writes the decrypted flag to an output file when the user `nintendo` is looked up.

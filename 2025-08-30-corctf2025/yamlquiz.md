@@ -45,11 +45,17 @@ app.post('/submit', (req, res) => {
 app.listen(PORT, () => console.log(`web/yamlquiz listening on port ${PORT}`));
 ```
 
-So we need to find the differences between yaml 1.1 and 1.2 to let one yaml to be parsed into different values. Some searches lead to <https://ruudvanasseldonk.com/2023/01/11/the-yaml-document-from-hell>:
+We need to find YAML 1.1 and 1.2 parsing differences to make `score_1` (parsed with YAML 1.1) different from `score_2` (parsed with YAML 1.2), while making `score_1 = 5000`.
+
+The key difference is in how time notation is parsed:
+- **YAML 1.1**: `83:20` is interpreted as `83*60 + 20 = 5000` (83 minutes 20 seconds)
+- **YAML 1.2**: `83:20` remains as the string `"83:20"`
+
+This behavior is documented in [The yaml document from hell](https://ruudvanasseldonk.com/2023/01/11/the-yaml-document-from-hell) article. The payload `83:20` gives us the required `5000` value in YAML 1.1 while being a string in YAML 1.2.
 
 ![](yamlquiz.png)
 
-So, to get `5000`, we can use `83:20` so that `83*60+20=5000`. Test it in JavaScript:
+Test it in JavaScript:
 
 ```js
 const YAML = require('yaml');
