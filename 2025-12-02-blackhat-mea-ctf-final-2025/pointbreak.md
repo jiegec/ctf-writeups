@@ -9,6 +9,22 @@ $ strings -e l Users/*/Recent/AutomaticDestinations/*
 C:\Program Files\Common Files\microsoft shared\Web Server Extensions\16\TEMPLATE\LAYOUTS\error.aspx
 ```
 
+Suggested by @Crazyman on Discord, you can also use [JLECmd](https://ericzimmerman.github.io/#!index.md):
+
+```shell
+$ wine JLECmd/JLECmd.exe -f /mnt/Users/spfarm/AppData/Roaming/Microsoft/Windows/Recent/AutomaticDestinations/9b9cdc69c1c24e2b.automaticDestinations-ms
+--- DestList entries ---
+Entry #: 1
+  MRU: 0
+  Path: C:\Program Files\Common Files\microsoft shared\Web Server Extensions\16\TEMPLATE\LAYOUTS\error.aspx
+  Pinned: False
+  Created on:    2025-11-09 02:01:53
+  Last modified: 2025-11-09 02:29:54
+  Hostname: sp-srv01
+  Mac Address: f7:36:3e:db:0b:7c
+  Interaction count: 1
+```
+
 In `Program\ Files/Common\ Files/microsoft\ shared/Web\ Server\ Extensions/16/TEMPLATE/LAYOUTS/error.aspx`:
 
 ```asp

@@ -2,6 +2,8 @@
 
 Co-authors: @Eki
 
+This challenge is modeling an actual attack: [Curly COMrades: Evasion and Persistence via Hidden Hyper-V Virtual Machines](https://businessinsights.bitdefender.com/curly-comrades-evasion-persistence-hidden-hyper-v-virtual-machines).
+
 Extract the E01 file content:
 
 ```shell

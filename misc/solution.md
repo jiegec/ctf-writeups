@@ -83,7 +83,7 @@ Table of contents:
     - [Find files by date and time](../2025-08-30-corctf2025/nintendo-sswitch.md)
 - Windows:
     - [NTUSER.DAT registry extraction using MiTeC Windows Registry Recovery](../2025-09-05-imaginary-ctf-2025/obfuscated-1.md)
-    - [C:\Windows\System32\winevt\logs\*.evtx files extraction using evtx_dump](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
+    - [C:\Windows\System32\winevt\Logs\*.evtx files extraction using evtx_dump](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
     - [C:\Windows\System32\config\* registry dump using reged or hivexregedit](../2025-09-22-holmes-ctf-2025/the-enduring-echo.md)
     - [NTFS USN journal dump using USN-Journal-Parser](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
     - [Find recently accessed files via C:\Users\USERNAME\AppData\Roaming\Microsoft\Windows\Recent\*.lnk using lnkinfo](../2025-09-22-holmes-ctf-2025/the-watchmans-residue.md)
