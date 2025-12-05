@@ -1,30 +1,37 @@
-# Approximate Common Divisor
+# Approximate Common Divisor (ACD) Problem
 
-Reference: [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
+This document provides implementations for solving the Approximate Common Divisor (ACD) problem, which appears in various cryptographic CTF challenges.
+
+**Reference:** [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
 
 Approximate Common Divisor Problem: for unknown integer $p$, we are given some $pq_i + r_i$, where $q_i$ and $r_i$ are integers and $r_i$ are small: $\mathrm{abs}(r_i) < 2^{\rho}$. If without the $r_i$ term, we can simply compute GCD of many $pq_i$ to recover $p$. However, $r$ makes it approximate.
 
 Partial Approximate Common Divisor Problem: $r_0 = 0$, so we have an exact multiple of $p$ given. Others are approximate.
 
-CTF challenges:
+**CTF challenges using ACD:**
 
 - [litt1e](../2025-10-26-xctf-final-2025/litt1e.md)
 
-## Simultaneous Diophantine Approximation approach (SDA)
+## Simultaneous Diophantine Approximation (SDA) Approach
 
-We have $x_i = pq_i + r_i$ for $0 \le i \le t$ where $r_i$ is small. Then $x_i/x_0 \approx q_i/q_0$. If we can find $q_0$, then we can compute $r_0 = x_0 \bmod q_0$ and $p = (x_0 - r_0) / q_0$.
+**Attack principle:** Given $x_i = p \cdot q_i + r_i$ with small $r_i$, we have $x_i/x_0 \approx q_i/q_0$. If we can find $q_0$, we can compute:
 
-To find $q_0$ where there is approximation for all $x_i/x_0 \approx q_i/q_0$ equations, construct lattice:
+- $r_0 = x_0 \bmod q_0$
+- $p = (x_0 - r_0) / q_0$
+
+To find $q_0$ satisfying all approximations $x_i/x_0 \approx q_i/q_0$, construct a lattice with basis vectors:
 
 $v_0 = (2^{\rho+1}, x_1, x_2, \cdots, x_t)$
 
 $v_1 = (0, -x_0, 0, \cdots, 0)$
 
+$\vdots$
+
 $v_t = (0, 0, 0, \cdots, -x_0)$
 
-Run LLL reduction on the vectors. It will find the approximations of $q_i$ for us: $q_0v_0+q_1v_1+\cdots+q_tv_t$ is a short vector. Then we can recover $q_0$ by dividing the first entry by $2^{\rho+1}$.
+After LLL reduction, the short vector $q_0v_0 + q_1v_1 + \cdots + q_tv_t$ reveals $q_0$ as the first entry divided by $2^{\rho+1}$.
 
-Code:
+**Implementation:**
 
 ```python
 from Crypto.Util.number import getPrime

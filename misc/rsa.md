@@ -1,13 +1,19 @@
-# Solving RSA private key
+# Solving RSA Private Key
 
-Table of contents:
+This document provides comprehensive solutions for various RSA attack scenarios, including recovering private keys from different types of leaked information.
+
+**Table of contents:**
 
 * TOC
 {:toc}
 
-## Small N
+## Small N (Direct Factorization)
 
-If N is small, we can factor it directly. We can solve RSA200 in ~2s:
+When the RSA modulus `n` is small (typically < 1000 bits), it can be factored directly using integer factorization algorithms.
+
+**Attack principle:** For small `n`, use built-in factorization functions or implement simple trial division.
+
+**Example code:**
 
 ```python
 from sage.all import *
@@ -20,9 +26,13 @@ print(p, q)
 print(Integer(n).factor())
 ```
 
-## Small d
+## Small d (Wiener's Attack)
 
-Use Wiener's attack for small d.
+Wiener's attack exploits RSA implementations where the private exponent `d` is too small relative to the modulus `n`. The attack uses continued fractions to recover `d` when `d < n^{0.25}`.
+
+**Attack principle:** The public exponent `e` and private exponent `d` satisfy `ed ≡ 1 mod φ(n)`. When `d` is small, `e/n` is a close approximation to `k/d` for some integer `k`. Continued fraction expansion of `e/n` reveals `d`.
+
+**Example code:**
 
 ```python
 from sage.all import *

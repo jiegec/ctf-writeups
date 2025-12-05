@@ -1,29 +1,30 @@
-# Recover LCG random number generators
+# Recover Linear Congruential Generator (LCG) Parameters
 
-LCG: generate random numbers of the form: $x_{i+1} = (ax_i + b) \bmod p$
+Linear Congruential Generators (LCGs) generate pseudorandom numbers using the recurrence:
+$x_{i+1} = (a \cdot x_i + b) \bmod p$
 
-Table of contents:
+This document provides techniques for recovering LCG parameters (`a`, `b`, `p`) and seeds from various types of outputs, including truncated outputs where only partial bits are known.
+
+**Table of contents:**
 
 * TOC
 {:toc}
 
-## Recover vanilla LCG
+## Recover Full LCG Parameters from Complete Outputs
 
-Reference: <https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator>
+When we have complete outputs from an LCG, we can recover all parameters using algebraic techniques.
 
-Recover $p$: first, cancel out $b$:
+**Attack principle:** Given consecutive outputs $x_0, x_1, x_2, \dots$, we can:
 
-Set $y_{i} = x_{i+1} - x_i$, then $y_i \bmod p = ((ax_i + b) - (ax_{i-1} + b)) \bmod p = (a(x_i - x_{i-1})) \bmod p$, so $y_{i} = ay_{i-1} \pmod p$
+1. Cancel out $b$ by computing differences $y_i = x_{i+1} - x_i$, then $y_i \bmod p = ((ax_i + b) - (ax_{i-1} + b)) \bmod p = (a(x_i - x_{i-1})) \bmod p$, so $y_{i} = ay_{i-1} \pmod p$
+2. Cancel out $a$ by computing $z_i = y_{i+2}y_i - y_{i+1}^2$ so $z_i \bmod p = (a^2y_i^2 - (ay_i)^2) \bmod p = 0$
+3. Recover $p$ as $\gcd(z_i)$
+4. Recover $a$ from $y_i = a \cdot y_{i-1} \pmod p$
+5. Recover $b$ from $x_{i+1} = a \cdot x_i + b \pmod p$
 
-Then, cancel out $a$:
+**Reference:** <https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator>
 
-$z_{i} = y_{i+2}y_i - y_{i+1}^2$, $z_i \bmod p = (a^2y_i^2 - (ay_i)^2) \bmod p = 0$, so we can recover $p$ from gcd of all $z_i$.
-
-Next, we can compute $a$ using $y_i = ay_{i-1} \pmod p$, so $a = y_iy_{i-1}^{-1} \bmod p$.
-
-Last, we can recover $b$ from $x_{i+1} = ax_i + b \bmod p$ by $b = (x_{i+1} - ax_i) \bmod p$.
-
-Code:
+**Example code:**
 
 ```python
 # recover LCG

@@ -1,59 +1,74 @@
-# Modular Inverse Hidden Number Problem
+# Modular Inverse Hidden Number Problem (MIHNP)
 
-Modular Inverse Hidden Number Problem (MIHNP):
+This document provides solutions for the Modular Inverse Hidden Number Problem (MIHNP), a cryptographic problem that appears in CTF challenges involving partial leakage of modular inverses.
 
-Given prime $p$, $\alpha$ is a hidden integer in $\mathbb{Z}_p$. We are given $n$ random integers $x_1, x_2, \cdots, x_n$ and corresponding $\mathrm{MSB}_k(1/(\alpha+x_i))$: the MSB bits of modular inverse of $\alpha + x_i$.
+## Problem Definition
 
-CTF challenges:
+Given:
 
+- Prime modulus $p$
+- Hidden integer $\alpha \in \mathbb{Z}_p$
+- $n$ random integers $x_1, x_2, \cdots, x_n$
+- Corresponding $\mathrm{MSB}_k(1/(\alpha+x_i))$: the $k$ most significant bits of the modular inverse $(\alpha + x_i)^{-1} \bmod p$
+
+Goal: Recover the hidden value $\alpha$.
+
+**CTF challenges using MIHNP:**
 - [litt1e](../2025-10-26-xctf-final-2025/litt1e.md)
 
-## Approach 1
+## Lattice-Based Attack (Approach 1)
 
-Here is the first approach in paper [The Modular Inversion Hidden Number Problem](https://www.iacr.org/archive/asiacrypt2001/22480036.pdf). We are given:
+**Reference:** [The Modular Inversion Hidden Number Problem](https://www.iacr.org/archive/asiacrypt2001/22480036.pdf)
 
-$b_i = \mathrm{MSB}_k(1/(\alpha+x_i))$
+### Mathematical Derivation
 
-Let $e_i = 1/(\alpha+x_i) - b_i$, so:
 
-$(\alpha + x_i)(b_i + e_i) = 1 \pmod p$
+Let $b_i = \mathrm{MSB}_k((\alpha + x_i)^{-1} \bmod p)$ be the known MSB bits, and define the error terms:
 
-Let $i = 0$, then:
+$e_i = (\alpha + x_i)^{-1} \bmod p - b_i$
 
-$(\alpha + x_0)(b_0 + e_0) = 1 \pmod p$
+The errors $e_i$ are small because we know the MSB bits. The exact relation is:
 
-Eliminate the known $\alpha$ from the equations:
+$(\alpha + x_i)(b_i + e_i) \equiv 1 \pmod p$
 
-$(b_0 + e_0) * (b_i + e_i) * (\alpha + x_i) = b_0 + e_0 \pmod p$
+For $i = 0$, we have:
 
-$(b_0 + e_0) * (b_i + e_i) * (\alpha + x_0) = b_i + e_i \pmod p$
+$(\alpha + x_0)(b_0 + e_0) \equiv 1 \pmod p$
 
-Subtract the two equations:
+To eliminate $\alpha$, consider pairs of equations:
 
-$(b_0 + e_0) * (b_i + e_i) * (x_i - x_0) = b_0 + e_0 - b_i - e_i \pmod p$
+$(b_0 + e_0)(b_i + e_i)(\alpha + x_i) \equiv b_0 + e_0 \pmod p$
 
-Expand:
+$(b_0 + e_0)(b_i + e_i)(\alpha + x_0) \equiv b_i + e_i \pmod p$
 
-$ (x_i - x_0) * e_0 * e_i + (b_0 * x_i - b_0 * x_0 + 1) * e_i + (b_i * x_i - b_i * x_0 - 1) * e_0 + b_0 * b_i * (x_1 - x_0) + b_i - b_0 = 0 \pmod p$
+Subtracting gives:
 
-Assign the coefficients for $e_0 * e_i$, $e_0$, $e_i$ and constant term:
+$(b_0 + e_0)(b_i + e_i)(x_i - x_0) \equiv b_0 + e_0 - b_i - e_i \pmod p$
+
+Expanding and rearranging yields quadratic equations in $e_0$ and $e_i$:
+
+$(x_i - x_0)e_0e_i + (b_0x_i - b_0x_0 + 1)e_i + (b_ix_i - b_ix_0 - 1)e_0 + b_0b_i(x_i - x_0) + b_i - b_0 \equiv 0 \pmod p$
+
+Define coefficients:
 
 $A_i = x_i - x_0$
 
-$B_i = b_0 * x_i - b_0 * x_0 + 1$
+$B_i = b_0x_i - b_0x_0 + 1$
 
-$C_i = b_i * x_i - b_i * x_0 - 1$
+$C_i = b_ix_i - b_ix_0 - 1$
 
-$D_i = b_0 * b_i * (x_i - x_0) + b_i - b_0$
+$D_i = b_0b_i(x_i - x_0) + b_i - b_0$
 
-then,
+Resulting equation:
 
-$A_i * e_0 * e_i + B_i * e_i + C_i * e_0 + D_i = 0 \pmod p$
+$A_i e_0 e_i + B_i e_i + C_i e_0 + D_i \equiv 0 \pmod p$
 
-By definition, $e_i$ are small, so we are solving the modular equations with small roots. Given the bounds of $e_i$: $\mathrm{abs}(e_i) < B$, then we can create the following matrix to solve the modular equations for bounded small roots when $n=2$:
+### Lattice Construction
+
+Since $e_i$ are small ($|e_i| < B$), we can construct a lattice to find these small roots. For $n=2$ equations, the lattice basis matrix is:
 
 $$
-M=\begin{pmatrix}
+M = \begin{pmatrix}
 1 & & & & & & D_1 & D_2 \\
 & 1/B & & & & & C_1 & C_2 \\
 & & 1/B & & & & B_1 & \\
@@ -65,15 +80,20 @@ M=\begin{pmatrix}
 \end{pmatrix}
 $$
 
-The first row corresponds to the constant term: the coefficient is always 1. The second to fourth rows correspond to $e_0$ to $e_2$, they are bounded by $B$, so the coefficient is $1/B$ to make it small proportionally by $B$. The fifth to sixth rows correspond to $e_0e_1$ and $e_0e_2$, which are bounded by $B^2$. The last two rows are for the modular operation, where we can subtract by multiples of $p$.
+**Matrix interpretation:**
 
-Since the modular equations have the solution, we expect there is a vector $v$ in the lattice formed by $M$:
+- Row 1: Constant term (coefficient 1)
+- Rows 2-4: Linear terms $e_0, e_1, e_2$ scaled by $1/B$
+- Rows 5-6: Quadratic terms $e_0e_1, e_0e_2$ scaled by $1/B^2$
+- Rows 7-8: Modular reduction terms (multiples of $p$)
 
-$v=(1, e_0/B, \cdots, e_n/B, e_0e_1/B^2, \cdots, e_0e_n/B^2, 0, \cdots, 0)$
+The solution vector has form:
 
-which is a short vector and can be obtained by LLL reduction.
+$v = (1, e_0/B, e_1/B, e_2/B, e_0e_1/B^2, e_0e_2/B^2, 0, 0)$
 
-Code:
+This vector is short and can be found via LLL reduction.
+
+**Implementation:**
 
 ```python
 from sage.all import *
@@ -131,7 +151,7 @@ def attack(p, k, x, b):
         D.append(b[0] * b[i] * (x[i] - x[0]) + b[i] - b[0])
 
     # bound for e_i
-    bound = p >> k
+    bound = 2 ** (p.bit_length() - k)
 
     # construct lattice
     M = [[0] * (3 * n + 2) for _ in range(3 * n + 2)]

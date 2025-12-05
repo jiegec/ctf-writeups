@@ -1,6 +1,8 @@
-# Writeups by solution
+# Writeups by Solution
 
-Table of contents:
+This document organizes CTF writeups by solution type and technique rather than by CTF event. Use this as a reference when looking for specific exploitation techniques or vulnerability types.
+
+**Table of contents:**
 
 * TOC
 {:toc}
