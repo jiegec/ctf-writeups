@@ -65,7 +65,7 @@ $A_i e_0 e_i + B_i e_i + C_i e_0 + D_i \equiv 0 \pmod p$
 
 ### Lattice Construction
 
-Since $e_i$ are small ($|e_i| < B$), we can construct a lattice to find these small roots. For $n=2$ equations, the lattice basis matrix is:
+Since $e_i$ are small ($\mathrm{abs}(e_i) < B$), we can construct a lattice to find these small roots. For $n=2$ equations, the lattice basis matrix is:
 
 $$
 M = \begin{pmatrix}
