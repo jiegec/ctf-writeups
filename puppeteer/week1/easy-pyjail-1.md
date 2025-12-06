@@ -1047,3 +1047,35 @@ The exploit works by:
 - Finding the `_wrap_close` class in subclasses
 - Accessing its `close` method's `__globals__` to get the `os` module
 - Calling `os.system()` to execute shell commands and read the flag
+
+## Token 花销
+
+```
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                                                   │
+│  Agent powering down. Goodbye!                                                                                                    │
+│                                                                                                                                   │
+│  Interaction Summary                                                                                                              │
+│  Session ID:                 f7166e51-0b0c-4e38-afe6-7b547e7dd05e                                                                 │
+│  Tool Calls:                 22 ( ✓ 22 x 0 )                                                                                      │
+│  Success Rate:               100.0%                                                                                               │
+│  Code Changes:               +260 -0                                                                                              │
+│                                                                                                                                   │
+│  Performance                                                                                                                      │
+│  Wall Time:                  6m 29s                                                                                               │
+│  Agent Active:               3m 30s                                                                                               │
+│    » API Time:               3m 14s (92.4%)                                                                                       │
+│    » Tool Time:              16.0s (7.6%)                                                                                         │
+│                                                                                                                                   │
+│                                                                                                                                   │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                                  │
+│  ───────────────────────────────────────────────────────────────                                                                  │
+│  deepseek-chat                  23        409,318          5,281                                                                  │
+│                                                                                                                                   │
+│  Savings Highlight: 401,792 (98.2%) of input tokens were served from the cache, reducing costs.                                   │
+│                                                                                                                                   │
+│  » Tip: For a full token breakdown, run `/stats model`.                                                                           │
+│                                                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
