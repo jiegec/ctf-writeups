@@ -1,4 +1,11 @@
-# Easy Random 2 WP
+# Easy Random 2 Writeup
+
+## 题目描述
+
+本题是 Easy Random 1 的 Python 版本。程序使用 Python 的 `random` 模块生成随机数，允许用户进行两种操作：
+
+1. 玩一个猜数字游戏（数字范围 $[0, 2^{32}-1]$）
+2. 猜测 Flag（Flag 会与随机数进行异或加密后输出）
 
 附件：
 
@@ -28,9 +35,21 @@ while True:
         break
 ```
 
-本题在 Easy Random 1 的基础上，把随机数生成器换成了 Python，其余的逻辑一样。攻击的思路是，首先通过二分通关前面的猜随机数环节，然后把随机数传给 [randcrack](https://github.com/tna0y/Python-random-module-cracker)，它可以逆向出 Python 随机数生成器的内部状态，进而推算后续生成的随机数，求出 Flag。
+## 漏洞分析
 
-首先是通过二分进行猜随机数，只需要猜 624 次即可：
+Python 的 `random` 模块使用 Mersenne Twister 算法作为伪随机数生成器。该算法在已知 624 个连续的 32 位随机数后，可以完全预测后续的所有随机数输出。
+
+## 攻击思路
+
+1. **收集随机数样本**：通过二分法玩猜数字游戏，收集 624 个 `random.getrandbits(32)` 的结果
+2. **恢复随机数状态**：使用 `randcrack` 库将收集到的随机数提交，恢复 Mersenne Twister 的内部状态
+3. **恢复 Flag**：使用恢复的状态预测后续随机数，解密加密的 Flag
+
+## 解题步骤
+
+### 1. 收集随机数样本
+
+使用二分法收集 624 个 32 位随机数：
 
 ```python
 # pip3 install randcrack pwntools
@@ -65,7 +84,9 @@ for i in range(624):
         number = left
 ```
 
-接下来，就可以用 randcrack 进行攻击：
+### 2. 恢复随机数状态
+
+使用 `randcrack` 库恢复 Mersenne Twister 的内部状态：
 
 ```python
 from randcrack import RandCrack
@@ -75,7 +96,20 @@ for i in range(624):
     rc.submit(number)
 ```
 
-最终，根据恢复出来的随机数得到 Flag，完整的攻击脚本如下：
+### 3. 恢复 Flag
+
+使用恢复的状态预测后续随机数，解密加密的 Flag：
+
+```python
+p.recvuntil(b"action:")
+p.sendline(b"2")
+p.recvline()
+encoded = p.recvline().decode()
+flag = bytes([a ^ rc.predict_getrandbits(8) for a in bytes.fromhex(encoded)])
+print(flag)
+```
+
+## 完整攻击脚本
 
 ```python
 # pip3 install randcrack pwntools
@@ -121,4 +155,8 @@ flag = bytes([a ^ rc.predict_getrandbits(8) for a in bytes.fromhex(encoded)])
 print(flag)
 ```
 
-但是，randcrack 只能支持比较简单的随机数恢复场景，对于更复杂的情况，会用到 [gf2bv](https://github.com/maple3142/gf2bv)。
+## 总结
+
+本题展示了 Python `random` 模块的 Mersenne Twister 算法的弱点。虽然该算法在统计上具有良好的随机性，但在密码学上并不安全。一旦攻击者获得了足够多的连续随机数输出（624 个 32 位整数），就可以完全预测后续的所有随机数。
+
+对于更复杂的随机数恢复场景（如非连续的随机数输出或经过变换的随机数），可以使用更强大的工具如 [gf2bv](https://github.com/maple3142/gf2bv)。

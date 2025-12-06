@@ -1,4 +1,11 @@
-# Easy Random 1 WP
+# Easy Random 1 Writeup
+
+## 题目描述
+
+本题是一个基于 C 语言随机数生成器的挑战。程序首先生成一个 24 位的随机种子，然后允许用户进行两种操作：
+
+1. 玩一个猜数字游戏（数字范围 0-65535）
+2. 猜测 Flag（Flag 会与随机数进行异或加密后输出）
 
 附件：
 
@@ -55,9 +62,21 @@ int main() {
 }
 ```
 
-本题攻击的是 C 标准库（glibc）的随机数生成器，它的弱点在于 seed 的空间比较小，本题为了简化，进一步缩小到了 24 位，可以枚举。攻击的思路是，首先通过二分通关前面的猜随机数环节，然后枚举随机数生成器的内部状态，找到吻合的 seed，进而推算后续生成的随机数，求出 Flag。
+## 漏洞分析
 
-首先是通过二分进行猜随机数，只需要猜几次即可：
+攻击目标是 C 标准库（glibc）的 `rand()` 函数。该随机数生成器的弱点在于种子空间较小，而本题为了简化进一步将种子限制为 24 位（3 字节），使得暴力枚举成为可能。
+
+## 攻击思路
+
+1. **收集随机数样本**：通过二分法玩猜数字游戏，收集多个 `rand() % 65536` 的结果
+2. **暴力枚举种子**：枚举所有可能的 24 位种子（0 到 2^24-1），找到与收集到的随机数序列匹配的种子
+3. **恢复 Flag**：使用找到的种子预测后续随机数，解密加密的 Flag
+
+## 解题步骤
+
+### 1. 收集随机数样本
+
+使用二分法快速猜中数字，收集 10 个随机数样本：
 
 ```python
 # pip3 install pwntools tqdm
@@ -98,7 +117,9 @@ for i in range(10):
     numbers.append(number)
 ```
 
-接下来，就可以枚举 seed 进行攻击，这里使用 ctypes 来调用 glibc：
+### 2. 暴力枚举种子
+
+使用 `ctypes` 调用 glibc 的 `rand()` 函数，枚举所有可能的种子：
 
 ```python
 # bruteforce random seed
@@ -115,7 +136,26 @@ for seed in tqdm.trange(256**3):
         break
 ```
 
-最终，根据恢复出来的随机数得到 Flag，完整的攻击脚本如下：
+### 3. 恢复 Flag
+
+使用找到的种子预测后续随机数，解密加密的 Flag：
+
+```python
+p.recvuntil(b"action:")
+p.sendline(b"2")
+p.recvline()
+encoded = p.recvline().decode()
+
+# recover flag
+libc.srand(seed)
+for i in range(len(numbers)):
+    libc.rand()
+
+flag = bytes([a ^ (libc.rand() % 256) for a in bytes.fromhex(encoded)])
+print(flag)
+```
+
+## 完整攻击脚本
 
 ```python
 # pip3 install pwntools tqdm
@@ -167,7 +207,6 @@ for seed in tqdm.trange(256**3):
     if good:
         print("Found seed", seed)
         break
-
 
 p.recvuntil(b"action:")
 p.sendline(b"2")
@@ -183,4 +222,6 @@ flag = bytes([a ^ (libc.rand() % 256) for a in bytes.fromhex(encoded)])
 print(flag)
 ```
 
-可见，如果随机数生成器的状态空间足够小，无论它计算过程多么复杂，都可以通过枚举状态空间来攻击。
+## 总结
+
+本题展示了当随机数生成器的状态空间足够小时，无论其计算过程多么复杂，都可以通过枚举状态空间来进行攻击。在实际的 CTF 比赛中，类似的随机数攻击经常出现，关键在于识别随机数生成器的弱点并收集足够的样本进行攻击。
