@@ -17,3 +17,8 @@
 - [Easy RE 1](./week1/easy-re-1.md): 简单的可逆密码的逆向工程
 - [Rosetta 3](./week1/rosetta-3.md): 三种字符编码（使用 dcode.fr 解码）
 - [RSA All in One](./week1/rsa-all-in-one.md): 五种典型的 RSA 攻击
+
+### Week 2
+
+- [Easy Random 4](./week2/easy-random-4.md): 攻击 LCG 随机数生成器
+- [ECDSA Nonce Reuse](./week2/ecdsa-nonce-reuse.md): 攻击复用 Nonce 的 ECDSA
