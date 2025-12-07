@@ -6,6 +6,8 @@ Participated as a member of [Redbud](https://ctftime.org/team/20555)
 
 Writeups by ptr-Yudai: <https://gist.github.com/ptr-yudai/ebf09b77256853fdfc3b2da5335b5ff2>
 
+Writeups by Rosayxy: <https://blog.rosay.xyz/blackhat-mea-pwn-writeup/>
+
 Result: 5th Place
 
 Solved challenges that I involved in:
