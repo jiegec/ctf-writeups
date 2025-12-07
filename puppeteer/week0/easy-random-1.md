@@ -19,7 +19,7 @@
 int main() {
   setvbuf(stdout, NULL, _IONBF, 0);
 
-  unsigned int seed;
+  unsigned int seed = 0;
   FILE *fp = fopen("/dev/urandom", "rb");
   fread(&seed, 3, 1, fp);
   srand(seed);
