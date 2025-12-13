@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF Event
 
+* [2025.12.12 **NexHunt CTF 2025**](2025-12-12-nexhunt-ctf-2025/README.md)
 * [2025.12.02 **BlackHat MEA CTF Final 2025**](2025-12-02-blackhat-mea-ctf-final-2025/README.md)
 * [2025.11.26 **2025 第八届“强网”拟态防御国际精英挑战赛**](2025-11-26-qiangwang-nitai-final-2025/README.md)
 * [2025.11.22 **2025 第九届“强网杯”全国网络安全挑战赛**](2025-11-22-qiangwangbei-final-2025/README.md)
