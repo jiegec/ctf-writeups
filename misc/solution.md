@@ -50,7 +50,7 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [Recover truncated LCG with LSB bits known](../2025-10-25-qiangwang-nitai-quals-2025/FMS.md)
     - [Recover different types of LCG](./lcg.md)
 - ECDSA:
-    - [Reused k](../2025-09-10-watctf-f25/curve-desert.md)
+    - [Reused nonce k](../2025-09-10-watctf-f25/curve-desert.md)
     - [Nonce leakage attack](../2025-11-22-qiangwangbei-final-2025/forge.md)
 - Python random number generator
     - [Solve MT19937 using known bits](./pyrand.md)

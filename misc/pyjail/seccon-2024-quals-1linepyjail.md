@@ -1,5 +1,7 @@
 ## SECCON 2024 Quals 1linepyjail
 
+Official archive: <https://github.com/SECCON/SECCON13_online_CTF/blob/main/jail/1linepyjail/README.md>
+
 ```python
 print(eval(code, {"__builtins__": None}, {}) if len(code := input("jail> ")) <= 100 and __import__("re").fullmatch(r'([^()]|\(\))*', code) else ":(")
 ```

@@ -69,6 +69,15 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
+## SECCON CTF 2025 Quals
+
+Requirements:
+
+1. At most one occurrence for each character `.,(+)`: use lambda + `__getattribute__` for `a.b`, call function step by step, save intermediate values in exception `KeyError` via `{}[obj]`
+2. No builtins: use `[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")`
+
+Details [here](../2025-12-13-seccon-ctf-2025-quals/excepython.md).
+
 ## Hack.lu CTF 2025 FÄNGELSE
 
 Requirements:
@@ -209,7 +218,7 @@ Requirements:
 
 Details [here](./pyjail/uoftctf-2024-jail-zero.md).
 
-## SECCON 2024 Quals 1linepyjail
+## SECCON CTF 2024 Quals 1linepyjail
 
 Requirements:
 
