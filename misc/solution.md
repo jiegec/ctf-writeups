@@ -110,6 +110,7 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [Zero width characters](../2025-09-19-k17-ctf-2025/discord.md)
 - Audio steganography:
     - [Sonic visualizer](../2025-09-26-iran-tech-olympics-ctf-2025/rider.md)
+    - [LSB](../2025-12-12-nexhunt-ctf-2025/can-you-read-the-music.md)
 - Representations:
     - [Minecraft](../2025-08-16-scriptctf2025/enchant.md)
     - [Zeckendorf representation](../2025-08-22-brunnerctf2025/pie-recipe.md)
@@ -162,6 +163,9 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [Pipe operator to execute command and get output](../2025-09-05-imaginary-ctf-2025/pearl.md)
 - Environment variable:
     - [KEY==VALUE confusion](../2025-09-12-fortid-ctf-2025/protect-the-environment.md)
+- Seccomp jail:
+    - [Make syscalls via io_uring](../2025-12-01-advent-of-pwn-2025/day-05.md)
+    - [Send fd via sendmsg](../2025-12-01-advent-of-pwn-2025/day-10.md)
 
 ## Reverse
 
@@ -181,6 +185,7 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [pyinstxtractor](../2025-09-19-k17-ctf-2025/jumping.md)
 - BPF:
     - [Use bpftool to dump bpf program and maps](../2025-09-27-sunshine-ctf-2025/warp.md)
+    - [BPF assembly reverse engineering](../2025-12-01-advent-of-pwn-2025/day-04.md)
 - Side channel:
     - [Use loop count as side channel to recover flag](../2025-10-25-qiangwang-nitai-quals-2025/hyperjump.md)
 
