@@ -12,6 +12,7 @@ Reversing:
 
 - [Mini Bloat](./mini-bloat.md)
 - [Ez Flag Checker](./ez-flag-checker.md)
+- [aeppel](./aeppel.md)
 
 Jail:
 
