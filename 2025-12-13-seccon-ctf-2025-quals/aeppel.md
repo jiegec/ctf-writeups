@@ -69,7 +69,7 @@ set res to run script «data scpt4661736455415320312e3130312e31300e000000040ffff
 return res
 ```
 
-Then, we extract the embedded apple script by stripping the `scpt` prefix. The inner apple script can be further disassembled after apply patch:
+Then, we extract the embedded apple script by stripping the `scpt` prefix. The inner apple script can be further disassembled after applying patch:
 
 ```diff
 diff --git a/disassembler.py b/disassembler.py
