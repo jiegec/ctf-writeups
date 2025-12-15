@@ -16,3 +16,7 @@ Solved Challenges:
 - [Day 10](./day-10.md)
 - [Day 11](./day-11.md)
 - [Day 12](./day-12.md)
+
+Result:
+
+![alt text](image.png)
