@@ -22,3 +22,8 @@
 
 - [Easy Random 4](./week2/easy-random-4.md): 攻击 LCG 随机数生成器
 - [ECDSA Nonce Reuse](./week2/ecdsa-nonce-reuse.md): 攻击复用 Nonce 的 ECDSA
+
+### Week 3
+
+- [Easy Random 5](./week3/easy-random-5.md): 攻击 Xoshiro256starstar 随机数生成器
+- [RSA Partial Factorization](./week3/rsa-partial-factorization.md): 使用 Coppersmith 算法攻击 RSA
