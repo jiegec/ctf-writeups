@@ -5,6 +5,7 @@ My individual team: <https://ctftime.org/team/208389>
 ## Writeups by CTF Event
 
 * [2025.12.20 **TSG CTF 2025**](2025-12-20-tsg-ctf-2025/README.md)
+* [2025.12.19 **HKCERT CTF 2025 Quals**](2025-12-19-hkcert-ctf-2025-quals/README.md)
 * [2025.12.13 **SECCON CTF 14 Quals**](2025-12-13-seccon-ctf-2025-quals/README.md)
 * [2025.12.12 **NexHunt CTF 2025**](2025-12-12-nexhunt-ctf-2025/README.md)
 * [2025.12.02 **BlackHat MEA CTF Final 2025**](2025-12-02-blackhat-mea-ctf-final-2025/README.md)
