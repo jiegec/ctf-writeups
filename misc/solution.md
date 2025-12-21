@@ -28,9 +28,13 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [Known n, e, d](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
     - [Known n, pow(p, -q, q), pow(q, -p, p)](../2025-10-24-hack-the-boo-ctf-2025/leaking-for-answers.md)
     - [Solving p, q for diffent known values](./rsa.md)
+    - [Recover message with non co-prime factors](../2025-12-19-hkcert-ctf-2025-quals/cruel-rsa.md)
 - Discrete logarithm:
     - [Baby-step giant-step](../2025-09-08-wanqubei-quals-2025/new-trick.md)
     - [Pohlig-Hellman](../2025-09-04-nullcon-berlin-hackim-2025-ctf/field-trip.md)
+    - [Pohlig-Hellman without large factors](../2025-12-19-hkcert-ctf-2025-quals/ec-fun.md)
+    - [Elliptic Curve Discrete Logarithm Problem](../2025-12-19-hkcert-ctf-2025-quals/ec-fun.md)
+    - [Smart's Attack](../2025-12-19-hkcert-ctf-2025-quals/lwecc.md)
 - AES:
     - [Chosen plaintext attack](../2025-08-16-scriptctf2025/eaas.md)
     - [Padding oracle attack](../2025-09-04-nullcon-berlin-hackim-2025-ctf/decryption-execution-service.md)
@@ -64,6 +68,8 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [Algorithms for MIHNP](./mihnp.md)
 - Differential Cryptanalysis
     - [Recover key by using two keys that differ in only one bit](../2025-12-02-blackhat-mea-ctf-final-2025/limeade.md)
+- Learning with Errors
+    - [Errors are sampled from a small set](../2025-12-19-hkcert-ctf-2025-quals/lwecc.md)
 
 ## Forensics
 

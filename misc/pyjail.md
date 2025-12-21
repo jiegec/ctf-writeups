@@ -80,7 +80,23 @@ except Exception as e:
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
-## SECCON CTF 2025 Quals
+## TSG CTF 2025 SafePickle
+
+Requirements:
+
+1. Pickle without `EXT1/EXT2/EXT4/REDUCE/INST/OBJ/PERSID/BINPERSID`: use `BUILD` for `license._Printer__setup = code.interact` and `print(license)` to run `code.interact`
+
+Details [here](../2025-12-20-tsg-ctf-2025/safe-pickle.md).
+
+## HKCERT CTF 2025 Quals easyJail
+
+Requirments:
+
+1. banned pickle `NEWOBJ_EX/INST/REDUCE/OBJ/NEWOBJ` opcodes: override `pickle._Unpickler.pop_mark` to `code.interact` and trigger `pop_mark()` via `TUPLE`
+
+Details [here](../2025-12-19-hkcert-ctf-2025-quals/easyJail.md).
+
+## SECCON CTF 2025 Quals excepython
 
 Requirements:
 
