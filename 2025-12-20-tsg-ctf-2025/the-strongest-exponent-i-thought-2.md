@@ -95,7 +95,7 @@ c = 7341592689122368703269062915193394410604431907295497983041734250935688015036
 Given `e = p^q mod phi` where `phi = (p-1)*(q-1)`:
 
 1. `e ≡ p^q (mod phi)`
-2. Since `phi = (p-1)*(q-1)`, we have `e ≡ p^q (mod (p-1))`
+2. Since `phi = (p-1)*(q-1)`, we have `e ≡ p^q (mod (p-1))` (when `a = b (mod c * d)`, you known that `a = b (mod c)`)
 3. Because `p ≡ 1 (mod (p-1))`, we get `p^q ≡ 1^q ≡ 1 (mod (p-1))`
 4. Therefore: `e ≡ 1 (mod (p-1))`
 
