@@ -11,6 +11,8 @@ This document organizes CTF writeups by solution type and technique rather than 
 
 - Jailbreak:
     - [System prompt leak](../2025-09-05-imaginary-ctf-2025/tax-return.md)
+- KV cache:
+    - [Recover prompt from kv cache](../2025-12-20-tsg-ctf-2025/chatbot.md)
 
 ## Crypto
 
