@@ -4,7 +4,7 @@ Link: <https://mp.weixin.qq.com/s/YKkeYrjadAUG6UWrAjmx0A>
 
 Participated as a member of Redbud in the competition.
 
-Result: xxxx Points, 5th Place
+Result: 5th Place
 
 Solved challenges that I involved in:
 

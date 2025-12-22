@@ -6,7 +6,7 @@ CTFTime: <https://ctftime.org/event/2999>
 
 Participated as a member of Redbud in the competition.
 
-Result: xxxx Points, xxth Place
+Result: 10601 Points, 14th Place
 
 Solved challenges that I involved in:
 
