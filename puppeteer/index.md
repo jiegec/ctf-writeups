@@ -27,3 +27,7 @@
 
 - [Easy Random 5](./week3/easy-random-5.md): 攻击 Xoshiro256starstar 随机数生成器
 - [RSA Partial Factorization](./week3/rsa-partial-factorization.md): 使用 Coppersmith 算法攻击 RSA
+
+### Week 4
+
+- [Easy Random 6](./week2/easy-random-6.md): 攻击 Truncated LCG 随机数生成器
