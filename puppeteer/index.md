@@ -30,4 +30,4 @@
 
 ### Week 4
 
-- [Easy Random 6](./week2/easy-random-6.md): 攻击 Truncated LCG 随机数生成器
+- [Easy Random 6](./week4/easy-random-6.md): 攻击 Truncated LCG 随机数生成器
