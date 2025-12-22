@@ -209,17 +209,27 @@ The `escape()` function attempts to sanitize filenames by adding a backslash bef
 ### Command Injection Vector
 When a filename contains backticks with an odd number of preceding backslashes, command substitution occurs:
 
-1. Filename: `\`command\`.jpg`
-2. After `escape()`: `\\\`command\\\`.jpg`
-3. In bash command: `magick "./tmp/inputs/\\\`command\\\`.jpg" ...`
+1. Filename: 
+
+```
+\`command\`.jpg
+```
+
+2. After `escape()`: 
+
+```
+\\`command\\`.jpg
+```
+
+3. In bash command: 
+
+```
+magick "./tmp/inputs/\\`command\\`.jpg" ...
+```
+
 4. Bash parsing inside `"..."`:
    - `\\` → `\` (single backslash)
-   - `\`` → `` ` `` (literal backtick due to escaping)
 5. Result: `` `command` `` - command substitution executes!
-
-### Why Odd Number of Backslashes Matters
-- Even backslashes: `\\\\\`` → `\\\`` → backslash + escaped backtick → literal backtick
-- Odd backslashes: `\\\`` → `\`` → escaped backtick → command substitution
 
 ## Exploit Development
 
