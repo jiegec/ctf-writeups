@@ -4,6 +4,8 @@ Link: <https://nexus-security.club/challenges>
 
 CTFTime: <https://ctftime.org/event/3037>
 
+Official writeups: <https://github.com/n3xusss/NexHunt-ctf-2025-writeups>
+
 Solved challenges by AI agent without human intervention:
 
 Reverse:

