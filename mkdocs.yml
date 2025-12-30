@@ -1,0 +1,16 @@
+site_name: CTF Writeups by @jiegec
+site_description: CTF Writeups by @jiegec
+site_url: https://jia.je/ctf-writeups
+copyright: Copyright &copy; 2025 Jiajie Chen
+nav:
+  - Home: README.md
+  - Writeups by Solution: misc/solution.md
+  - Redbud Puppeteer: puppeteer/index.md
+theme:
+  custom_dir: overrides
+  name: mkdocs
+use_directory_urls: false
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
