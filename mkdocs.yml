@@ -5,6 +5,7 @@ copyright: Copyright &copy; 2025 Jiajie Chen
 nav:
   - Home: README.md
   - Writeups by Solution: misc/solution.md
+  - Pyjail: misc/pyjail.md
   - Redbud Puppeteer: puppeteer/index.md
 theme:
   custom_dir: overrides
