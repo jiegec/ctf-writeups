@@ -80,6 +80,15 @@ except Exception as e:
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
+# hxp 39C3 CTF sponsored
+
+Requirements:
+
+1. At most one occurrence for each character `.,(+)`: use function call + `__getattribute__` for `a.b`, call function step by step and save intermediate values via list comprehension
+2. No builtins: use `[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")`
+
+Details [here](./pyjail/hxp-39c3-ctf-sponsored.md).
+
 ## TSG CTF 2025 SafePickle
 
 Requirements:
