@@ -22,11 +22,13 @@ The challenge provides a PCAP file with the cryptic hint "I said it all .." in t
 ## Initial Analysis
 
 ### File Examination
+
 - `chall.pcap`: 62KB, contains 720 packets
 - All traffic is IPv6 (unusual, should be a clue)
 - Contains SSH, HTTP, and DNS traffic (red herrings)
 
 ### Traffic Overview
+
 - **720 total packets**, all IPv6
 - **SSH**: 17 identical SSH-2.0-OpenSSH_8.2 banner packets
 - **HTTP**: 30 identical GET requests to `/index.html` on `example.com`
@@ -40,6 +42,7 @@ The challenge name "HBH" stands for **Hop-By-Hop**, referring to IPv6 Hop-by-Hop
 
 ### Step 2: Identifying Suspicious Packets
 Using scapy to analyze the pcap:
+
 ```python
 from scapy.all import *
 packets = rdpcap('chall.pcap')
@@ -52,6 +55,7 @@ Found 25 packets with Hop-by-Hop options, but only 10 contain the 8-byte PadN op
 
 ### Step 3: Extracting Hidden Data
 The Hop-by-Hop headers contain PadN options with 8-byte data fields:
+
 ```python
 for pkt in packets:
     if pkt.haslayer(IPv6):
@@ -66,7 +70,9 @@ for pkt in packets:
 ```
 
 ### Step 4: Decryption Process
+
 The 8-byte data chunks are encrypted:
+
 1. **XOR each byte with 0x42** (ASCII 'B')
 2. **Base64 decode** the result
 3. **Result**: ASCII text fragments of the flag
@@ -82,6 +88,7 @@ def decrypt_data(data):
 
 ### Step 5: Extracting All Fragments
 Applying the decryption to all 10 packets gives:
+
 ```
 Packet 6:  shellm
 Packet 88: t10ns_
@@ -115,6 +122,7 @@ ICMP Seq 9:  ght}      (Packet 220)
 
 ### Step 7: Flag Reconstruction
 Concatenating in ICMPv6 sequence order:
+
 - `shellm` + `ates{h` = `shellmates{`
 - Remaining parts in sequence order 2-9
 
@@ -122,6 +130,7 @@ Concatenating in ICMPv6 sequence order:
 
 ### Step 8: Plaintext Interpretation
 The leetspeak translates to:
+
 - `h0p_by_h0p_0pt10ns` = `hop_by_hop_options`
 - `h1d3_s3cr3ts` = `hide_secrets`
 - `1n_pl41n_s1ght` = `in_plain_sight`
@@ -131,21 +140,25 @@ The leetspeak translates to:
 ## Technical Details
 
 ### Steganography Method
+
 - Data hidden in IPv6 Hop-by-Hop extension headers
 - Specifically in PadN option data fields
 - Each packet carries 8 bytes of encrypted data
 
 ### Encryption Scheme
+
 1. **XOR encryption** with key `0x42` (ASCII 'B')
 2. **Base64 encoding** of plaintext
 3. Result stored in PadN option data
 
 ### Data Fragmentation
+
 - Flag split across 10 ICMPv6 Echo Request packets
 - Each packet contains 6-character fragment (8 bytes base64 → 6 bytes decoded)
 - ICMPv6 sequence numbers 0-9 provide ordering
 
 ### Red Herrings
+
 - SSH banners (identical, repeated)
 - HTTP GET requests (identical, to example.com)
 - DNS queries (common domains)
@@ -155,6 +168,7 @@ The leetspeak translates to:
 See `solve_hbh.py` for a complete, cleaned-up solver.
 
 ## Lessons Learned
+
 1. **Challenge names are clues**: "HBH" = Hop-By-Hop = IPv6 extension headers
 2. **Check all protocol layers**: Data can be hidden in unexpected places (extension headers)
 3. **Consider packet context**: ICMPv6 sequence numbers matter for ordering
@@ -162,6 +176,7 @@ See `solve_hbh.py` for a complete, cleaned-up solver.
 5. **Red herrings are intentional**: SSH/HTTP/DNS traffic was distraction
 
 ## Tools Used
+
 - Python with scapy
 - Wireshark (for initial inspection)
 - Base64 and XOR operations

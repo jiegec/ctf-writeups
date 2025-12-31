@@ -69,28 +69,29 @@ There are two parts:
 1. Bypass the signature validation by setting `c == s == 1`
 2. Padding oracle attack
 
+## DeepSeek
+
 The signature validation bypass is suggested by DeepSeek:
 
-```
 To solve this CTF challenge, we need to provide a triplet \((r', c', s')\) that decrypts to the FLAG using the `LayeredEncryption` class's `decrypt` method. The key insight is that we can compute the value \(A\) (the `aes_c` value) from the given triplet \((r, c, s)\) using the formula \(A = r \times s^e \mod n\). Once we have \(A\), we can form a new triplet \((A, 1, 1)\) that bypasses the signature check and decrypts to the FLAG.
 
 ### Step-by-Step Solution:
+
 1. **Obtain the values \(n\), \(e\), \(r\), \(c\), and \(s\) from the challenge output.**
-   - The challenge outputs `e.n`, `e.e`, and the triplet \((r, c, s)\).
-
+    - The challenge outputs `e.n`, `e.e`, and the triplet \((r, c, s)\).
 2. **Compute \(A = r \times s^e \mod n\).**
-   - This \(A\) is the `aes_c` value, which is the long integer representing the IV and AES-encrypted FLAG.
-
+    - This \(A\) is the `aes_c` value, which is the long integer representing the IV and AES-encrypted FLAG.
 3. **Form the new triplet \((A, 1, 1)\).**
-   - This triplet satisfies the decrypt method's check because \(c' = 1\) and \(s' = 1\), so \(s'^{e^2} \mod n = 1\), which equals \(c'\).
-   - During decryption, computing \(c'^d \times r' \mod n\) gives \(1^d \times A = A\), which is the required `aes_c` value.
-
+    - This triplet satisfies the decrypt method's check because \(c' = 1\) and \(s' = 1\), so \(s'^{e^2} \mod n = 1\), which equals \(c'\).
+    - During decryption, computing \(c'^d \times r' \mod n\) gives \(1^d \times A = A\), which is the required `aes_c` value.
 4. **Provide the triplet \((A, 1, 1)\) as input when prompted.**
-   - The decrypt method will successfully decrypt this to the FLAG.
+    - The decrypt method will successfully decrypt this to the FLAG.
 
 ### Python Implementation:
+
 Here is a Python script that computes \(A\) and outputs the triplet for input:
 
+```python
 from Crypto.Util.number import long_to_bytes, bytes_to_long
 
 # Given values from the challenge output
@@ -107,16 +108,17 @@ A = (r * pow(s, e, n)) % n
 triplet = f"{A},1,1"
 
 print(triplet)
+```
 
 When the challenge prompts for input, provide the output of this script. The decrypt method will then return the FLAG.
 
 ### Explanation:
+
 - The original triplet \((r, c, s)\) is encrypted such that \(A\) can be derived from \(r\) and \(s\) using public exponent \(e\) and modulus \(n\).
 - The new triplet \((A, 1, 1)\) exploits the decrypt method's check by using \(c' = 1\) and \(s' = 1\), which always satisfies \(c' = s'^{e^2} \mod n\).
 - The decryption computation \(c'^d \times r' \mod n\) becomes \(1 \times A = A\), which is then decrypted with the AES key (known to the object) to obtain the FLAG.
 
 This approach efficiently bypasses the need for the private key or AES key by leveraging the public values and the properties of modular arithmetic.
-```
 
 The padding oracle attack part:
 

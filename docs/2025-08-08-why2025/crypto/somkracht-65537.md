@@ -30,6 +30,7 @@ ct2 = 22631780052826150697381692505088118250303723421396368790431142512270298021
 ## Mathematical Analysis
 
 **Known values:**
+
 - $N = p \times q$
 - $e = 65537$
 - $ct1 = msg^e \bmod N$
@@ -37,12 +38,14 @@ ct2 = 22631780052826150697381692505088118250303723421396368790431142512270298021
 - $msg^{(p-1)(q-1)} \bmod N = 1$ (Euler's theorem)
 
 **Simplification:**
+
 - $msg^{pq-p-q+1} \bmod N = 1$
 - $msg^{p+q} \bmod N = ct2$
 - $msg^{pq+1} \bmod N = ct2$
 - $msg^{N+1} \bmod N = ct2$
 
 **Solution approach:**
+
 - Find integers $x$ and $y$ such that $65537x + (N + 1)y = 1$ using the extended Euclidean algorithm
 - Compute $ct1^x \times ct2^y \bmod N = msg^{65537x + (N+1)y} \bmod N = msg \bmod N$
 

@@ -148,6 +148,7 @@ The flag is: `nexus{thr33_hunt5_c0mpl3t3_th3_f0r3st_gr4nts_p4ss4g3}`
 ## Exploit Script
 
 See `solve.py` for the complete solution implementation that:
+
 1. Implements the `sub_4012BC()` function logic
 2. Extracts the permutation and target XOR arrays from the binary
 3. Computes the correct input by solving the XOR equation
@@ -156,6 +157,7 @@ See `solve.py` for the complete solution implementation that:
 ## Testing
 
 The flag was successfully tested with the binary:
+
 ```
 echo "nexus{thr33_hunt5_c0mpl3t3_th3_f0r3st_gr4nts_p4ss4g3}" | ./HuntMe3
 ```

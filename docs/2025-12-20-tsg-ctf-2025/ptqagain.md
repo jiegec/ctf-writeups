@@ -125,6 +125,7 @@ The equality `c1 = c2` is the key to solving this challenge. It means:
 ## Mathematical Analysis
 
 Let's define:
+
 - `x = p + q` (integer sum)
 - `y = int(str(p) + str(q))` (concatenation of decimal representations)
 - `len_q` = number of decimal digits in `q`
@@ -203,6 +204,7 @@ for k in range(140, 160):
 ## Results
 
 The exploit finds a factor when `k = 144`:
+
 - `q = 899718757349577828631761341730093220713822770643140264600436229195941807849819816835925771559643276518390048146301688389176642719947087961896703`
 - `q` has 479 bits and 144 decimal digits
 - `p = N // q` has 512 bits and 154 decimal digits

@@ -48,6 +48,7 @@ app.listen(PORT, () => console.log(`web/yamlquiz listening on port ${PORT}`));
 We need to find YAML 1.1 and 1.2 parsing differences to make `score_1` (parsed with YAML 1.1) different from `score_2` (parsed with YAML 1.2), while making `score_1 = 5000`.
 
 The key difference is in how time notation is parsed:
+
 - **YAML 1.1**: `83:20` is interpreted as `83*60 + 20 = 5000` (83 minutes 20 seconds)
 - **YAML 1.2**: `83:20` remains as the string `"83:20"`
 

@@ -83,12 +83,14 @@ The unknown values are $k$ and $\textrm{priv}$, but we have two equations, so we
 - $s_1 - s_2 = k^{-1} (z_1 - z_2) \bmod n$
 - $k = (s_1 - s_2)^{-1} (z_1 - z_2) \bmod n$
 
+## DeepSeek
+
 Ask DeepSeek to solve it:
 
-```
 To solve this CTF challenge, we need to obtain a valid signature for the challenge message without directly signing it. The signing algorithm uses ECDSA on the brainpoolP512r1 curve with a fixed nonce `k` for all signatures. This allows us to recover `k` by signing two different messages and then compute the signature for the challenge message.
 
 ### Approach
+
 1. **Retrieve the Challenge**: The challenge is a random 32-byte value printed at the start of the program.
 2. **Sign Two Messages**: Choose two distinct messages (e.g., "hello" and "world") and obtain their signatures using the sign option. Since `k` is fixed, the `r` value will be the same for both signatures.
 3. **Compute the Nonce `k`**: Using the signatures and the integer values of the messages, compute `k` with the formula `k = (z1 - z2) * inv(s1 - s2, n) mod n`, where `z1` and `z2` are the integer representations of the messages, and `s1` and `s2` are the signature components.
@@ -97,6 +99,7 @@ To solve this CTF challenge, we need to obtain a valid signature for the challen
 
 ### Solution Code
 
+```python
 from pwn import *
 from Crypto.Util.number import bytes_to_long
 import ecdsa
@@ -173,8 +176,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+```
 
 ### Explanation
+
 1. **Connection Setup**: The script connects to the server running the provided code either locally or remotely.
 2. **Challenge Retrieval**: The challenge value is read from the initial server output.
 3. **Message Signing**: The script signs two messages ("hello" and "world") to obtain their signatures `(r, s1)` and `(r, s2)`.
@@ -183,7 +188,6 @@ if __name__ == '__main__':
 6. **Verification**: The challenge message and its computed signature are submitted for verification. Upon successful verification, the server prints the flag.
 
 This approach exploits the fixed nonce vulnerability in ECDSA to recover the private key material and forge a signature for the challenge message.
-```
 
 Made small modifications to make it work:
 

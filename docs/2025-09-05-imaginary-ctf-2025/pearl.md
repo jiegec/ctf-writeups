@@ -146,9 +146,10 @@ $ curl "http://pearl.chal.imaginaryctf.org/%0Acat%20/flag-8ede8d4419fba13690098d
 ictf{uggh_why_do_people_use_perl_1f023b129a22}
 ```
 
+## DeepSeek
+
 The attach is inspired by DeepSeek:
 
-```
 The provided Perl code for the HTTP server has a vulnerability that allows command injection through the `open` function when the path ends with a pipe character (`|`). This is because the `open` function in Perl interprets a filename ending with a pipe as a command to execute, reading the output of that command.
 
 The blacklist filter in the code blocks certain characters (e.g., `..`, `,`, `` ` ``, `)`, `(`, `;`, `&`, and `|...|`), but it does not block a single pipe at the end of the path. Additionally, newlines (`%0A`) and comment characters (`#`) are not blocked, allowing for shell command injection.
@@ -157,18 +158,20 @@ To exploit this, send a GET request with a path that includes a newline followed
 
 ### Example Request:
 
+```
 GET /%0Acat%20/flag.txt%20%23%20%7C HTTP/1.1
 Host: vulnerable-server.com
+```
 
 This will execute the command `cat /flag.txt` and return its output in the HTTP response, revealing the flag.
 
 ### Explanation:
+
 - `%0A` is a newline, which allows multiple commands to be executed in the shell.
 - `cat /flag.txt` is the command to read the flag file (adjust the path if necessary).
 - `%23` is `#`, which comments out the remaining string (including the webroot path prefix).
 - `%7C` is `|`, which triggers the command injection in the `open` function.
 
 Ensure the flag file exists at `/flag.txt`; if not, use other commands like `ls` to explore the file system first.
-```
 
 The extra `#` is not required.

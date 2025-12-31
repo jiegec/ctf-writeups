@@ -82,9 +82,10 @@ if __name__ == "__main__":
             print("Invalid option.")
 ```
 
+## DeepSeek
+
 Ask DeepSeek to solve it:
 
-```
 To solve this CTF challenge, the goal is to log in as the "admin" user with a password that is not the default hex-encoded "admin" (which is '61646d696e') but still passes the authentication check. The vulnerability arises from a mismatch in how passwords are handled during account creation and login. 
 
 During account creation, the password is first hex-encoded and then encoded to bytes before being combined with the salt and hashed. For example, the admin account is created with the password "admin", which becomes '61646d696e' when hex-encoded. Then, in `create_account`, this hex string is encoded to bytes (b'61646d696e') before hashing.
@@ -94,6 +95,7 @@ During login, the password input is expected to be a hex string, which is conver
 The hex representation of b'61646d696e' is '36313634366436393665'. Therefore, by logging in with the password '36313634366436393665', the authentication will succeed because it correctly reconstructs the bytes used during the hash computation. Additionally, since this password is not equal to '61646d696e', the condition in the login check for admin will be satisfied, and the flag will be printed.
 
 ### Steps to Retrieve the Flag:
+
 1. Run the provided Python script.
 2. Select option "2" to login.
 3. Enter "admin" as the login.
@@ -101,7 +103,6 @@ The hex representation of b'61646d696e' is '36313634366436393665'. Therefore, by
 5. The flag will be displayed.
 
 This approach exploits the password handling inconsistency to achieve successful authentication without needing to change the password or know the salt.
-```
 
 Follow the steps:
 

@@ -59,12 +59,14 @@ print(flag)
 1. 随机一个矩阵 G，对它乘以 Q 矩阵，其中 Q 矩阵的效果是对列进行重排（Permutations）然后每一列乘以一个系数（diagonal_matrix），再求 echelon form，根据线性代数知识，可知求 echelon form 过程就是高斯消元的过程，左乘了一个可逆矩阵
 2. 给定 G 和 H，找到可逆矩阵 A 和 B，使得 `AGB = H`
 
+## DeepSeek
+
 让 DeepSeek 求解：
 
-```
 To solve this CTF challenge, we need to find invertible matrices \( A \) and \( B \) for each given pair of matrices \( G \) and \( H \) such that \( A \cdot G \cdot B = H \). The matrices \( G \) and \( H \) are provided over the finite field \( GF(127) \), with dimensions \( 14 \times 26 \) and \( 14 \times 26 \) respectively. The solution involves computing \( B \) such that \( G \cdot B = H \) and ensuring \( B \) is invertible by adding a component from the null space of \( G \). The matrix \( A \) is set to the identity matrix since \( G \cdot B = H \) already holds.
 
 ### Approach
+
 1. **Compute \( B_0 \)**: The matrix \( B_0 \) is computed as \( B_0 = G^T \cdot (G \cdot G^T)^{-1} \cdot H \). This ensures that \( G \cdot B_0 = H \), and each column of \( B_0 \) lies in the row space of \( G \).
 2. **Handle Null Space**: The null space of \( G \) is computed, and a basis matrix \( U \) is formed where each column is a basis vector of the null space.
 3. **Ensure Invertibility of \( B \)**: A matrix \( C \) of size \( (n-k) \times n \) with full rank is constructed. The matrix \( B \) is then obtained as \( B = B_0 + U \cdot C \). This ensures that \( B \) is invertible because its columns span both the row space and null space of \( G \).
@@ -72,6 +74,7 @@ To solve this CTF challenge, we need to find invertible matrices \( A \) and \( 
 
 ### Solution Code
 
+```python
 #!/usr/bin/env sage
 
 import sys
@@ -164,14 +167,15 @@ def main():
 
 if __name__ == '__main__':
     main()
+```
 
 ### Explanation
+
 1. **Reading Input**: The script reads the matrices \( G \) and \( H \) from standard input for each of the 26 rounds.
 2. **Computing \( A \) and \( B \)**: For each pair \( G \) and \( H \), the function `find_AB` computes matrices \( A \) and \( B \) as described.
 3. **Output**: The matrices \( A \) and \( B \) are printed in the required format for each round. After all rounds, the flag is read and printed.
 
 This approach efficiently solves the challenge by leveraging linear algebra properties over finite fields, ensuring correctness and invertibility of the required matrices. The solution is both optimal and straightforward, meeting the challenge constraints.
-```
 
 DeepSeek 的思路是：
 
