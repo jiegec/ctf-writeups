@@ -75,7 +75,7 @@ except Exception as e:
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
-# hxp 39C3 CTF sponsored
+## hxp 39C3 CTF sponsored
 
 Requirements:
 
