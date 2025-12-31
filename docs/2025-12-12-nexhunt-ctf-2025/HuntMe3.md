@@ -100,6 +100,7 @@ This is a reverse engineering challenge where we need to find the correct 53-cha
 ## Binary Analysis
 
 The binary `HuntMe3` is a 64-bit ELF executable with:
+
 - Partial RELRO
 - No stack canary  
 - NX enabled

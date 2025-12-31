@@ -53,6 +53,7 @@ eval(`Buffer.from(${`${`requir`}${`e`}`}(\"fs\").readFileSync(\"flag.txt\",\"utf
 ```
 
 This payload:
+
 1. Uses template literals to bypass the `require` keyword filter
 2. Imports the `fs` module 
 3. Reads `flag.txt` from the filesystem

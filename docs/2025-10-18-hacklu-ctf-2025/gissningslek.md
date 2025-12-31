@@ -34,14 +34,16 @@ done
 /readflag
 ```
 
+## Claude
+
 Solve via Claude:
 
-```
 Looking at this CTF challenge, I need to analyze what's happening:
 
 ## Challenge Analysis
 
 The bash script:
+
 1. Asks for a single guess (`user_guess`)
 2. Runs a loop 1000 times
 3. Each iteration generates a random number between 1337-11336
@@ -60,6 +62,7 @@ The `-eq` operator performs **arithmetic evaluation** in bash. If the left side 
 
 When you input `rand`, here's what happens:
 
+```shell
 # In the guess function:
 # ${1} becomes "rand"
 # ${rand} is the random number variable
@@ -69,23 +72,27 @@ When you input `rand`, here's what happens:
 # It looks up the variable $rand
 # So it becomes: [[ <random_value> -eq <random_value> ]]
 # This is ALWAYS true!
+```
 
 ## Solution
 
 Simply input:
 
+```
 rand
+```
 
 This works because:
+
 - Bash's arithmetic evaluation in `-eq` will treat `rand` as a variable reference
 - It evaluates to the current value of `$rand`
 - So you're comparing `$rand == $rand`, which is always true!
 
 **Alternative solutions** (if the above doesn't work):
+
 - `RANDOM % 10000 + 1337` - directly use the same expression
 - Shell expansion tricks to force re-evaluation
 
 Try submitting `rand` as your guess!
-```
 
 Flag: `flag{it5_y0ur_lucky_d4y_h3h3_04217a096}`.
