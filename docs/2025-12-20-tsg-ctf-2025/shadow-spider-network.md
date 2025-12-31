@@ -74,6 +74,7 @@ void main() {
 
 ### Verification Function
 The verification function `sub_40419F` appears to implement RC4:
+
 1. Initializes S-box with 0-255
 2. Uses a key from global variable `s` (37 bytes: "the_flying_cabbage_eats_purple_clocks")
 3. Performs RC4 key scheduling
@@ -111,6 +112,7 @@ void setup_signals() {
 
 ### Signal Handler Analysis
 The signal handler `sub_401363` is complex (1455 lines of decompiled code). It implements a state machine that:
+
 - Checks the current RIP (`a3[21]`) to determine state
 - For each state, checks a specific byte at an offset from `a3[15]`
 - If byte matches expected value, sets next RIP to continue
@@ -127,6 +129,7 @@ if (*(_BYTE *)(a3[15] + offset) == expected_char)
 ```
 
 Where:
+
 - `a3[15]` is the faulting address (RIP in signal context)
 - `offset` ranges from -64 to +17
 - `expected_char` is an ASCII value
@@ -139,12 +142,14 @@ __isoc99_scanf("%s", v1);  // Unsafe - no length limit!
 ```
 
 The program:
+
 1. Reads input with `scanf("%s", v1)` which can overflow the 56-byte buffer
 2. Intentionally causes faults at `input + 64`
 3. Signal handler checks 82 bytes around the faulting address
 
 ### Mapping Offsets to Input
 If the program faults at `input + 64`, then:
+
 - `a3[15]` (RIP) = `input + 64`
 - `input[0]` is at offset -64
 - `input[1]` is at offset -63

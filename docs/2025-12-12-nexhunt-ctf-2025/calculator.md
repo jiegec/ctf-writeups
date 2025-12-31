@@ -19,6 +19,7 @@ The web calculator application has a server-side code injection vulnerability in
 ## Client-side Protections
 
 The frontend implements basic client-side filtering that blocks:
+
 - Quotes: ' " 
 - Brackets: [ ] { }
 - These are easily bypassed since they're only client-side
@@ -26,6 +27,7 @@ The frontend implements basic client-side filtering that blocks:
 ## Server-side Filtering
 
 The server blocks several keywords including:
+
 - `process`
 - `require` 
 - `global`
@@ -40,7 +42,7 @@ The server blocks several keywords including:
 
 The key bypass was using template literals to construct blocked strings:
 
-1. Used template literals to concatenate string parts: `${`fun`}${`ction`}`
+1. Used template literals to concatenate string parts: ```${`fun`}${`ction`}```
 2. Used `eval()` to execute the constructed code
 3. Accessed Node.js modules through `process.mainModule.require()`
 

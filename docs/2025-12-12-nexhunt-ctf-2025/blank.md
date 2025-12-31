@@ -34,6 +34,7 @@ The binary is a simple reverse engineering challenge that XORs encrypted data se
 
 ## Flag Extraction
 The flag is revealed by XORing each 32-byte segment:
+
 - Segment 0: `nexus{`
 - Segment 1: `th3_f`
 - Segment 2: `l4g_w1ll`

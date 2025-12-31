@@ -12,6 +12,7 @@ theme:
   name: mkdocs
 use_directory_urls: false
 markdown_extensions:
+  - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
 
