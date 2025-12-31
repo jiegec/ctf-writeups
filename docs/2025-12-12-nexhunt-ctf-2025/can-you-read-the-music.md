@@ -23,11 +23,11 @@ Audio Steganography (LSB - Least Significant Bit encoding)
 2. **Understand the hint**: The challenge description mentions "Can you read the music" and the hint says "if you need something 'nexus' will help you". This suggests looking for hidden data in the audio.
 3. **Check for LSB steganography**: Audio LSB steganography hides data in the least significant bits of audio samples. Since audio samples are 16-bit values, changing the LSB has minimal impact on sound quality.
 4. **Extract LSB data**: Write a Python script to:
-   - Read the WAV file using the `wave` module
-   - Extract the left channel audio samples
-   - Get the least significant bit of each sample (sample & 1)
-   - Group bits into bytes (8 bits = 1 byte)
-   - Convert bytes to ASCII text
+    - Read the WAV file using the `wave` module
+    - Extract the left channel audio samples
+    - Get the least significant bit of each sample (sample & 1)
+    - Group bits into bytes (8 bits = 1 byte)
+    - Convert bytes to ASCII text
 5. **Find the flag**: The extracted text contains the flag in the format `nexus{...}`
 
 ## Technical Details

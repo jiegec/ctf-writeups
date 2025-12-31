@@ -7,26 +7,31 @@ Reverse enginnered by AI:
 # Attack Methodology for Ez Flag Checker
 
 ## Reverse Engineering Process
+
 1. **Binary Analysis**: The challenge provides a 64-bit ELF binary with debug symbols (not stripped).
 2. **Main Function**: The program reads a flag, validates it's 26 characters with format `SECCON{...}`, then encrypts the 18-character inner part using `sigma_encrypt()`.
 3. **Encryption Algorithm**: `sigma_encrypt()` implements a simple XOR cipher:
-   - Key material: `sigma_words` contains "expand 32-byte k" (ChaCha20 constant)
-   - Encryption: `out[i] = (i + key_bytes[i & 0xF]) ^ message[i]`
-   - Where `key_bytes` is derived from `sigma_words` (4 little-endian dwords converted to bytes)
+    - Key material: `sigma_words` contains "expand 32-byte k" (ChaCha20 constant)
+    - Encryption: `out[i] = (i + key_bytes[i & 0xF]) ^ message[i]`
+    - Where `key_bytes` is derived from `sigma_words` (4 little-endian dwords converted to bytes)
 4. **Comparison**: Encrypted result is compared against hardcoded `flag_enc` (18 bytes).
 
 ## Solution
 The encryption is reversible (XOR). Decryption formula:
+
 - `message[i] = (i + key_bytes[i & 0xF]) ^ flag_enc[i]`
 
 Where:
+
 - `flag_enc` = `03 15 13 03 11 55 1f 43 63 61 59 ef bc 10 1f 43 54 a8`
 - `key_bytes` derived from "expand 32-byte k":
-  - Bytes: `65 78 70 61 6e 64 20 33 32 2d 62 79 74 65 20 6b`
-  - Repeats every 16 bytes (i & 0xF)
+    - Bytes: `65 78 70 61 6e 64 20 33 32 2d 62 79 74 65 20 6b`
+    - Repeats every 16 bytes (i & 0xF)
 
 ## Decrypted Flag
+
 Inner flag: `flagc<9yYW5k<b19!!`
+
 Full flag: `SECCON{flagc<9yYW5k<b19!!}`
 
 ## Verification

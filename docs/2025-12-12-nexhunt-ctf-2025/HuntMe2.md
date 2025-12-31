@@ -96,27 +96,30 @@ The binary `HuntMe2` is a 64-bit ELF executable that validates a 32-character in
 - Checks input length == 32
 - Calls `sub_401176()` (doesn't affect validation, just computes a value)
 - For each position `i` (0-31):
-  - Computes `sub_401239(i)`
-  - Requires: `sub_401239(i) ^ input[i] == byte_402060[i]`
-  - Therefore: `input[i] = sub_401239(i) ^ byte_402060[i]`
+    - Computes `sub_401239(i)`
+    - Requires: `sub_401239(i) ^ input[i] == byte_402060[i]`
+    - Therefore: `input[i] = sub_401239(i) ^ byte_402060[i]`
 
 ### Transformation Function (sub_401239)
 Takes index `i` and returns a byte:
+
 1. Uses 5 arrays of 7 bytes each starting at `0x402020`
 2. For each array `j` (0-4):
-   - Computes index: `(i * (j+1) + j*j + 3) % 7`
-   - XORs the byte at that index into accumulator `v6`
-   - Rotates `v6` left by 1 bit: `v6 = (2 * v6) | (v6 >> 7)`
+    - Computes index: `(i * (j+1) + j*j + 3) % 7`
+    - XORs the byte at that index into accumulator `v6`
+    - Rotates `v6` left by 1 bit: `v6 = (2 * v6) | (v6 >> 7)`
 3. Passes result through `sub_401201(v6, i)`
 
 ### Final Transformation (sub_401201)
+
 - `return (61 * i) ^ (((8 * v6) ^ v6) >> 5) ^ ((8 * v6) ^ v6)`
 
 ## Solution Approach
 The solution involves:
+
 1. Extracting the hardcoded data from the binary:
-   - `byte_402060` (32 bytes): target XOR results
-   - Arrays at `0x402020` (35 bytes, organized as 5x7 arrays)
+    - `byte_402060` (32 bytes): target XOR results
+    - Arrays at `0x402020` (35 bytes, organized as 5x7 arrays)
 2. Implementing the transformation algorithm in Python
 3. Computing the required input: `input[i] = sub_401239(i) ^ byte_402060[i]`
 

@@ -109,29 +109,28 @@ The binary `HuntMe3` is a 64-bit ELF executable with:
 ## Reverse Engineering Process
 
 1. **Main Function Analysis**: The program reads input via `fgets()` and validates it using `sub_401367()`.
-
 2. **Validation Logic**: The validation function `sub_401367()` checks:
-   - Input length must be exactly 53 characters
-   - Calls `sub_4011B6()` and `sub_40120D()` (these appear to be initialization functions)
-   - For each position `i` from 0 to 52, checks:
-     ```
-     if (sub_4012BC(i) ^ input[permutation[i]] != target_xor[i]) return 0;
-     ```
-   - Where `permutation` is an array at address `0x402040` and `target_xor` is at `0x402080`
-
+    - Input length must be exactly 53 characters
+    - Calls `sub_4011B6()` and `sub_40120D()` (these appear to be initialization functions)
+    - For each position `i` from 0 to 52, checks:
+        ```
+        if (sub_4012BC(i) ^ input[permutation[i]] != target_xor[i]) return 0;
+        ```
+    - Where `permutation` is an array at address `0x402040` and `target_xor` is at `0x402080`
 3. **Key Function `sub_4012BC()`**: This function generates a key byte for each position `i` using:
-   - Initial values: `v6 = 92`, `v5 = -46`, `v4 = 359969064`
-   - Loop from 0 to `i`:
-     - `v6 -= 4`
-     - `v5 += i * i`
-     - `v4 = ROL4(v4, i & 7)` (rotate left 32-bit)
-   - Final calculation:
-     ```
-     rotated_v4 = (v4 >> (i & 7)) & 0xFF
-     xor_result = rotated_v4 ^ v5 ^ v6
-     v2 = (8 * xor_result) ^ xor_result
-     result = (v2 >> 5) ^ v2
-     ```
+    - Initial values: `v6 = 92`, `v5 = -46`, `v4 = 359969064`
+    - Loop from 0 to `i`:
+        - `v6 -= 4`
+        - `v5 += i * i`
+        - `v4 = ROL4(v4, i & 7)` (rotate left 32-bit)
+    - Final calculation:
+
+```
+rotated_v4 = (v4 >> (i & 7)) & 0xFF
+xor_result = rotated_v4 ^ v5 ^ v6
+v2 = (8 * xor_result) ^ xor_result
+result = (v2 >> 5) ^ v2
+```
 
 ## Solution
 

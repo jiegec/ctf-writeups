@@ -45,12 +45,13 @@ __int64 __fastcall encode(__int64 a1, __int64 a2, __int64 a3, unsigned __int8 a4
 ## Analysis
 
 The encoding algorithm works as follows:
+
 1. Start with a random index `a4` (the key) into the rockyou.txt word list
 2. Append the word at index `a4` to the output
 3. For each character in the input flag:
-   - Compute `v9 = a4 XOR flag_char`
-   - Append the word at index `v9` to the output
-   - Update `a4 = a4 XOR i XOR v9` where `i` is the character index
+    - Compute `v9 = a4 XOR flag_char`
+    - Append the word at index `v9` to the output
+    - Update `a4 = a4 XOR i XOR v9` where `i` is the character index
 
 Given the encoded output, we can reverse this process:
 1. The first word "charlie" gives us the initial key `a4` (its index in rockyou.txt)

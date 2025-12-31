@@ -16,18 +16,13 @@ The challenge provides a PNG image file `output.png` with the hint "the picture 
 ## Solution Steps
 
 1. **PNG Analysis**: The PNG file appears normal at first glance (1280x853 RGBA image).
-
 2. **Steganography Detection**: Standard stego tools and LSB analysis didn't immediately reveal the flag.
-
 3. **Proper PNG Decoding**: Writing a proper PNG decoder revealed that the image uses filter type 4 (Paeth filter) for most scanlines.
-
 4. **LSB Steganography Extraction**: After properly decoding the PNG (applying inverse filters), extracting the Least Significant Bit (LSB) from each color channel revealed hidden messages:
-
-   - **Red channel LSB**: `nexus{fake_flag_123}`
-   - **Green channel LSB**: `nexus{lmao_not_the_flag}`
-   - **Blue channel LSB**: `nexus{dummy_text_zzz}`
-   - **Alpha channel LSB**: `nexus{yea_u_didi_v2er_wekcj7}`
-
+      - **Red channel LSB**: `nexus{fake_flag_123}`
+      - **Green channel LSB**: `nexus{lmao_not_the_flag}`
+      - **Blue channel LSB**: `nexus{dummy_text_zzz}`
+      - **Alpha channel LSB**: `nexus{yea_u_didi_v2er_wekcj7}`
 5. **Flag Identification**: The alpha channel contains what appears to be the real flag: `nexus{yea_u_didi_v2er_wekcj7}`
 
 ## Technical Details

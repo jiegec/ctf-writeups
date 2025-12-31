@@ -562,15 +562,12 @@ Looking at this BPF assembly code for the `handle_do_linkat` function attached t
 ### Key Analysis:
 
 1. **Path String Extraction**: The code reads two path strings from the linkat arguments:
-   - First string loaded from `[%r1+112]` (old path)
-   - Second string loaded from `[%r1+70]` (new path)
-
+    - First string loaded from `[%r1+112]` (old path)
+    - Second string loaded from `[%r1+70]` (new path)
 2. **String Matching Logic**: The code performs sequential string comparisons:
-   - First checks if the path is "sleigh" (bytes: 115, 108, 101, 105, 103, 104)
-   - Then checks various other strings like "dasher", "vixen", "comet", "cupid", "dancer", "prancer", "blitzen", etc.
-
+    - First checks if the path is "sleigh" (bytes: 115, 108, 101, 105, 103, 104)
+    - Then checks various other strings like "dasher", "vixen", "comet", "cupid", "dancer", "prancer", "blitzen", etc.
 3. **State Machine**: The code uses `%r7` as a state variable and implements what appears to be a sequence of required paths. It checks for different strings based on the current state.
-
 4. **Success Condition**: The code sets up values and calls helper functions (call 1 and call 2) which are likely `bpf_map_lookup_elem` and `bpf_map_update_elem`. When the correct sequence is followed, it should update a map that the C program is monitoring.
 
 ### Required Link Call:
