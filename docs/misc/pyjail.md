@@ -38,9 +38,12 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 
 - `().__class__.__base__.__subclasses__()`
 - `().__class__.__mro__[1].__subclasses__()`
-- `().__reduce_ex__(2)[0].__builtins__`
-- `().__reduce_ex__(2)[0].__globals__`
 - `().__setattr__.__objclass__.__subclasses__()`
+
+When `__import__` is available:
+
+- `().__reduce_ex__(2)[0].__builtins__`
+- `().__reduce_ex__(2)[0].__globals__["__builtins__"]`
 
 When you have access to exception:
 
