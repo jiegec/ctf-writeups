@@ -124,6 +124,8 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [Blind execution with time side channel](../2025-09-26-iran-tech-olympics-ctf-2025/koori.md)
 - PDF:
     - [Decompress /FlateDecode via qpdf](../2025-09-27-sunshine-ctf-2025/pretty-delicious-food.md)
+- DNS:
+    - [DNS Reconnaissance](../2025-12-02-advent-of-ctf-2025/day-03.md)
 
 ## Pwn
 
