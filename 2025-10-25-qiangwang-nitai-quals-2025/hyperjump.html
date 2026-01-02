@@ -1,0 +1,289 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-10-25-qiangwang-nitai-quals-2025/hyperjump.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>HyperJump - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#hyperjump" class="nav-link">HyperJump</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="hyperjump">HyperJump</h1>
+<p>合作者：@9vvert</p>
+<pre class="highlight"><code>组织使用了一个定制的虚拟机程序来保护他们的秘密。你需要找到能够通过验证的口令。有时候，最复杂的迷宫也有它的规律...
+The organization used a customized virtual machine program to protect their secrets. You need to find a password that can be verified. Sometimes, even the most complex maze has its own patterns ..</code></pre>
+<p>题目给了一个二进制需要逆向，通过标准输入读取 flag，然后打印比较是否成功。经过逆向，可以发现 flag 一共有 24 字节，在循环中，每次循环对输入的一个字节进行一定的操作，然后判断是否成功。一般对于这种检查前缀的题目，思路是：</p>
+<ol>
+<li>给定前缀，通过某种方法得到程序匹配成功的前缀长度</li>
+<li>实现深度优先搜索，找到符合要求的输入，即可得 flag</li>
+</ol>
+<p>为了得到程序匹配成功的前缀长度，传统方法是利用 QEMU 进行侧信道测量，例如 <a href="https://github.com/ChrisTheCoolHut/Instruction-Stomp">Instruction Stomp</a>，但在这里，@9vvert 提出了一个更巧妙的办法：当循环中比较失败的时候，把循环的迭代次数寄存器（在这里是 r15）作为 main 的返回值，那么就可以直接通过 exit code 来判断匹配的前缀长度了。当然了，原来的二进制并没有这个功能，所以需要进行一些 patch：</p>
+<pre class="highlight"><code class="language-diff">--- hyperjump_orig.S
++++ hyperjump.S
+@@ -1,5 +1,5 @@
+
+-hyperjump_orig:     file format elf64-x86-64
++hyperjump:     file format elf64-x86-64
+
+
+ Disassembly of section .init:
+@@ -288,7 +288,9 @@
+     143f:      c3                      ret
+     1440:      48 8d 3d 14 42 00 00    lea    0x4214(%rip),%rdi        # 565b &lt;__cxa_finalize@plt+0x457b&gt;
+     1447:      e8 04 fc ff ff          call   1050 &lt;puts@plt&gt;
+-    144c:      b8 01 00 00 00          mov    $0x1,%eax
++    144c:      44 89 f8                mov    %r15d,%eax
++    144f:      90                      nop
++    1450:      90                      nop
+     1451:      eb db                   jmp    142e &lt;__cxa_finalize@plt+0x34e&gt;
+     1453:      48 8d 3d f5 41 00 00    lea    0x41f5(%rip),%rdi        # 564f &lt;__cxa_finalize@plt+0x456f&gt;
+     145a:      e8 f1 fb ff ff          call   1050 &lt;puts@plt&gt;</code></pre>
+<p>有了这个以后，再去搜索就简单很多了。但是实现的时候，发现在特定位置，有很多种解，这就导致 DFS 的效果比较差，所以这里改成了 BFS，搜索的就比较快了：</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+import string
+import subprocess
+
+
+guess = list("flag{") + ["A"] * 19
+assert len(guess) == 24
+jobs = []
+jobs.append((guess, 5))
+while len(jobs) &gt; 0:
+    job = jobs[0]
+    jobs = jobs[1:]
+    guess, i = job
+    if i == 24:
+        continue
+    res = []
+    for ch in string.ascii_letters + string.digits + string.punctuation:
+        guess[i] = ch
+        p = subprocess.Popen(
+            [
+                "./hyperjump_patched",
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        p.communicate(input="".join(guess).encode(), timeout=10)[0]
+        count = p.returncode
+        if count == 0:
+            # correct
+            count = 24
+        res.append((ch, count))
+        # print("".join(guess), count)
+    print("Best:")
+    best = list(sorted(res, key=lambda count: count[1]))[-1]
+    for j in range(len(res)):
+        if res[j][1] == best[1]:
+            guess[i] = res[j][0]
+            print("".join(guess), best[1])
+            jobs.append((guess.copy(), i + 1))</code></pre>
+<p>结果：</p>
+<pre class="highlight"><code>Best:
+flag{m4i3d_vm_jump5__42} 24
+Best:
+flag{m4z3d_vm_jump5__42} 24
+Best:
+flag{m4!3d_vm_jump5__42} 24
+Best:
+flag{]4i3d_vm_jump5__42} 24
+Best:
+flag{]4z3d_vm_jump5__42} 24
+Best:
+flag{]4!3d_vm_jump5__42} 24</code></pre>
+<p>经过尝试，<code>flag{m4z3d_vm_jump5__42}</code> 是正确的 flag。</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

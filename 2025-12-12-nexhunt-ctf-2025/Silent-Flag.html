@@ -1,0 +1,271 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-12-nexhunt-ctf-2025/Silent-Flag.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Silent Flag - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#silent-flag" class="nav-link">Silent Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#silent-flag-challenge-solution" class="nav-link">Silent Flag Challenge Solution</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#challenge-analysis" class="nav-link">Challenge Analysis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#solution-steps" class="nav-link">Solution Steps</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#attack-summary" class="nav-link">Attack Summary</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tools-used" class="nav-link">Tools Used</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="silent-flag">Silent Flag</h1>
+<pre class="highlight"><code>A smart contract emitted an event containing unknown data. Recover the original value.
+
+Author: R4Y4N3</code></pre>
+<p>Writeup written by AI agent:</p>
+<h1 id="silent-flag-challenge-solution">Silent Flag Challenge Solution</h1>
+<h2 id="challenge-analysis">Challenge Analysis</h2>
+<p>This is a blockchain smart contract challenge where a <code>Stored(bytes32 id, bytes data)</code> event was emitted with:</p>
+<ul>
+<li>Event signature: <code>Stored(bytes32,bytes)</code> (topic0: 0x2b017342b91efedb50bcabb8f1d8e8b6e6ad1dc391c876174642e80868b896ed)</li>
+<li>Indexed parameter <code>id</code>: 0x1337 (topic1)</li>
+<li>Data: ABI-encoded bytes data</li>
+</ul>
+<h2 id="solution-steps">Solution Steps</h2>
+<ol>
+<li><strong>Extract the encoded data</strong>: The <code>data</code> file contains ABI-encoded bytes:
+   <pre class="highlight"><code>0x0000000000000000000000000000000000000000000000000000000000000020  # offset (32 bytes)
+0x000000000000000000000000000000000000000000000000000000000000001c  # length (28 bytes)
+0x59524f42444c6f07656803757e68730474077306797068050705024a00000000  # actual data (28 bytes) + padding</code></pre></li>
+<li><strong>Decode ABI encoding</strong>: Extract the actual 28-byte data:
+   <code>59524f42444c6f07656803757e68730474077306797068050705024a</code></li>
+<li><strong>Analyze the encryption</strong>: The data appears to be encrypted. Given the challenge name "Silent Flag" and the <code>id</code> value <code>0x1337</code>, we suspect XOR encryption.</li>
+<li>
+<p><strong>Try XOR decryption</strong>: XOR each byte with <code>0x37</code> (the lower byte of <code>0x1337</code>):
+   <pre class="highlight"><code>Encrypted: 59 52 4f 42 44 4c 6f 07 65 68 03 75 7e 68 73 04 74 07 73 06 79 70 68 05 07 05 02 4a
+XOR 0x37:  6e 65 78 75 73 7b 58 30 52 5f 34 42 49 5f 44 33 43 30 44 31 4e 47 5f 32 30 32 35 7d
+ASCII:     n  e  x  u  s  {  X  0  R  _  4  B  I  _  D  3  C  0  D  1  N  G  _  2  0  2  5  }</code></pre></p>
+</li>
+<li>
+<p><strong>Recover the flag</strong>: <code>nexus{X0R_4BI_D3C0D1NG_2025}</code></p>
+</li>
+</ol>
+<h2 id="attack-summary">Attack Summary</h2>
+<p>The flag was XOR-encrypted with key <code>0x37</code> (the lower byte of the event's <code>id</code> parameter <code>0x1337</code>). The solution involves:</p>
+<ol>
+<li>Parsing the ABI-encoded event data</li>
+<li>Recognizing XOR encryption pattern</li>
+<li>Using <code>0x37</code> as the XOR key to decrypt</li>
+<li>Recovering the original flag</li>
+</ol>
+<h2 id="tools-used">Tools Used</h2>
+<ul>
+<li>Python for data analysis and XOR decryption</li>
+<li>Basic understanding of Ethereum ABI encoding for events</li>
+<li>XOR cryptanalysis</li>
+</ul></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

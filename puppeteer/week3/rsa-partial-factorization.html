@@ -1,0 +1,349 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/puppeteer/week3/rsa-partial-factorization.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>RSA Partial Factorization Writeup - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#rsa-partial-factorization-writeup" class="nav-link">RSA Partial Factorization Writeup</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#_1" class="nav-link">题目分析</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_2" class="nav-link">解题思路</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#sagemath-small_roots" class="nav-link">方法一：使用 SageMath 的 small_roots 函数</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#cuso" class="nav-link">方法二：使用 cuso 库</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_4" class="nav-link">总结</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="rsa-partial-factorization-writeup">RSA Partial Factorization Writeup</h1>
+<h2 id="_1">题目分析</h2>
+<p>题目附件是一个 RSA 加密脚本，给出了模数 <code>n</code>、密文 <code>c</code>，以及素数 <code>p</code> 的高位（MSB）：</p>
+<pre class="highlight"><code class="language-python">try:
+    from Crypto.Util.number import getPrime, bytes_to_long
+except:
+    from Cryptodome.Util.number import getPrime, bytes_to_long
+import os
+
+flag = os.getenv("GZCTF_FLAG") or "flag{fake_flag_for_testing}"
+p = getPrime(512)
+q = getPrime(512)
+n = p * q
+shift = 245
+msb = p &gt;&gt; shift
+
+print(f"{n = }")
+print(f"{msb = }")
+
+m = bytes_to_long(flag.encode())
+e = 65537
+c = pow(m, e, n)
+print(f"{c = }")
+
+"""
+n = 115875396476311164878844415823841082350245930740649724159462505854041600357779384584606867590201120411413035622363685173256457589742586979659611488861300362133287019970031565288521931188121591696006529955353016686922392181478379060749179686147719197947169391942218136659087912749851657253128124861897041685071
+msb = 163000585837295888314881725391367744404519415473103980454100723937398095645225036
+c = 104425648636226597292001259237932911115107208342809231621163974971158265898985628696950498323584366182895045547922752200783547330765300848978348283927246463324879212916154416662729625318954521503935904635905660154612105895432496397360099609520406239812612326934889422747296854795726003883512669423580785040551
+"""</code></pre>
+<p>已知信息：</p>
+<ul>
+<li><code>n = p * q</code>，其中 <code>p</code> 和 <code>q</code> 都是 512 位素数</li>
+<li><code>msb = p &gt;&gt; 245</code>，即 <code>p</code> 的高 267 位（512 - 245 = 267）</li>
+<li>加密指数 <code>e = 65537</code></li>
+<li>密文 <code>c</code></li>
+</ul>
+<h2 id="_2">解题思路</h2>
+<p>本题考察的是 RSA 部分因子分解（Partial Factorization）攻击。RSA 的安全性依赖于大整数分解的困难性，但当攻击者知道其中一个素数 <code>p</code> 的部分信息时，可以利用 Coppersmith 方法恢复完整的 <code>p</code>。</p>
+<h3 id="coppersmith">Coppersmith 方法简介</h3>
+<p>Coppersmith 方法是一种基于格基规约（Lattice Basis Reduction）的算法，用于求解模多项式的小根。其核心思想是：给定一个模数 <code>N</code> 和一个多项式 <code>f(x)</code>，如果存在一个较小的根 <code>x0</code> 满足 <code>f(x0) ≡ 0 (mod p)</code>，其中 <code>p</code> 是 <code>N</code> 的一个因子，那么可以通过 Coppersmith 方法找到这个根。</p>
+<p>关于 Coppersmith 方法的详细讲解，可以参考我之前制作的 <a href="https://www.bilibili.com/video/BV1jj41167tU/">Bilibili 视频</a>。</p>
+<h3 id="_3">问题建模</h3>
+<p>已知 <code>p</code> 的高位 <code>msb</code>，设 <code>p</code> 的低位为 <code>x</code>，则有：</p>
+<pre class="highlight"><code>p = msb * 2^245 + x</code></pre>
+<p>其中 <code>0 ≤ x &lt; 2^245</code>。</p>
+<p>由于 <code>p</code> 整除 <code>n</code>，我们有：</p>
+<pre class="highlight"><code>f(x) = msb * 2^245 + x ≡ 0 (mod p)</code></pre>
+<p>这是一个模 <code>p</code> 的多项式方程，且 <code>x</code> 相对于 <code>p</code> 很小（<code>x &lt; 2^245</code>，而 <code>p ≈ 2^512</code>）。这正是 Coppersmith 方法适用的场景。</p>
+<h2 id="sagemath-small_roots">方法一：使用 SageMath 的 small_roots 函数</h2>
+<p>SageMath 提供了内置的 <code>small_roots</code> 函数来实现 Coppersmith 攻击：</p>
+<pre class="highlight"><code class="language-python"># run with sage --python
+from sage.all import Zmod, Integer
+from Crypto.Util.number import long_to_bytes
+
+# given numbers
+n = 115875396476311164878844415823841082350245930740649724159462505854041600357779384584606867590201120411413035622363685173256457589742586979659611488861300362133287019970031565288521931188121591696006529955353016686922392181478379060749179686147719197947169391942218136659087912749851657253128124861897041685071
+msb = 163000585837295888314881725391367744404519415473103980454100723937398095645225036
+c = 104425648636226597292001259237932911115107208342809231621163974971158265898985628696950498323584366182895045547922752200783547330765300848978348283927246463324879212916154416662729625318954521503935904635905660154612105895432496397360099609520406239812612326934889422747296854795726003883512669423580785040551
+e = 65537
+shift = 245
+
+# https://latticehacks.cr.yp.to/rsa.html
+# modulo n
+R = Zmod(n)["x"]
+x = R.gens()[0]
+
+# find small root of equation a + x = 0 (mod p)
+# x = the missing LSB bits
+# Coppersmith attack
+f = msb * (Integer(1) &lt;&lt; shift) + x
+
+# small root bound: |x| &lt; 2^shift
+# returns small roots of this polynomial modulo some factor b of N
+# where b &gt;= N^{beta}, which is p
+beta = 0.49
+# smaller epsilon finds larger root, but takes longer time
+roots = f.small_roots(X=1 &lt;&lt; shift, beta=beta, epsilon=0.02)
+if len(roots) &gt;= 1:
+    # roots[0] is x, compute p
+    p = int(roots[0]) + msb * (2**shift)
+    q = n // p
+    assert p * q == n
+    d = pow(e, -1, (p - 1) * (q - 1))
+    m = pow(c, d, n)
+    print(long_to_bytes(m))</code></pre>
+<h2 id="cuso">方法二：使用 cuso 库</h2>
+<p><a href="https://github.com/keeganryan/cuso">cuso</a> 是一个实现了多变量 Coppersmith 方法的 Python 库，可以处理更复杂的同余方程问题：</p>
+<pre class="highlight"><code class="language-python"># run with sage --python
+from sage.all import var
+import cuso
+from Crypto.Util.number import long_to_bytes
+
+# given numbers
+n = 115875396476311164878844415823841082350245930740649724159462505854041600357779384584606867590201120411413035622363685173256457589742586979659611488861300362133287019970031565288521931188121591696006529955353016686922392181478379060749179686147719197947169391942218136659087912749851657253128124861897041685071
+msb = 163000585837295888314881725391367744404519415473103980454100723937398095645225036
+c = 104425648636226597292001259237932911115107208342809231621163974971158265898985628696950498323584366182895045547922752200783547330765300848978348283927246463324879212916154416662729625318954521503935904635905660154612105895432496397360099609520406239812612326934889422747296854795726003883512669423580785040551
+e = 65537
+shift = 245
+
+# adapted from https://github.com/keeganryan/cuso/blob/main/examples/rsa_partial_factorization.py
+x = var("x")
+relations = [msb * 2**shift + x]
+
+p_len = (n.bit_length() + 1) // 2
+bounds = {
+    x: (0, 1 &lt;&lt; shift),
+}
+
+roots = cuso.find_small_roots(
+    relations=relations,
+    bounds=bounds,
+    modulus="p",
+    modulus_multiple=n,
+    modulus_lower_bound=1 &lt;&lt; (p_len - 1),
+    modulus_upper_bound=1 &lt;&lt; p_len,
+)
+
+p = int(roots[0]["p"])
+q = n // p
+assert p * q == n
+d = pow(e, -1, (p - 1) * (q - 1))
+m = pow(c, d, n)
+print(long_to_bytes(m))</code></pre>
+<h2 id="_4">总结</h2>
+<p>本题展示了 RSA 部分因子分解攻击的实际应用。当攻击者知道素数 <code>p</code> 的部分信息时，可以利用 Coppersmith 方法恢复完整的 <code>p</code>，从而破解 RSA 加密。这种攻击在实际中具有重要意义，提醒我们在实现 RSA 时要确保随机数的生成过程不会泄露任何部分信息。</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

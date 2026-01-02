@@ -1,0 +1,355 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-10-18-hacklu-ctf-2025/manual.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>MÄNUAL - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#manual" class="nav-link">MÄNUAL</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="manual">MÄNUAL</h1>
+<pre class="highlight"><code>Who needs a team of talented designers, when you can just get a computer to generate your instruction manuals?
+Connect using ncat manual.flu.xxx 1024</code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">import secrets
+import random
+import os
+
+from typing import Callable
+
+FLAG = os.getenv("FLAG") or "flag{this_is_a_test_flag_:D_&gt;.&lt;}"
+
+class InstructionManual:
+    STEP_COUNT = 40
+    PIECE_SIZE = 256
+    PIECE_COUNT = PIECE_SIZE // 8
+    BIGGEST_PIECE = 2**PIECE_SIZE - 1
+
+    _steps: list[Callable[[int], int]]
+
+    def __init__(self):
+        step_types = [self.step_screw_in, self.step_turn_around, self.step_hammer_together]
+        prefix = [x() for x in step_types]
+        suffix = [x() for x in step_types[::-1]]
+        self._operations = prefix + [random.choice(step_types)() for _ in range(self.STEP_COUNT)] + suffix
+
+    def build(self, value: bytes) -&gt; bytes:
+        assert len(value) == self.PIECE_COUNT, "These pieces don't seem to be the correct size :("
+        wip_furniture = int.from_bytes(value, "big")
+        for op in self._operations:
+            wip_furniture = op(wip_furniture)
+
+        return wip_furniture.to_bytes(self.PIECE_COUNT, "big")
+
+    @classmethod
+    def step_screw_in(cls):
+        screw_tight = secrets.randbits(1) == 1
+        screw_amount = secrets.randbelow(cls.PIECE_SIZE)
+        def _inner(value: int) -&gt; int:
+            if screw_tight:
+                return ((value &gt;&gt; screw_amount) | (value &lt;&lt; (cls.PIECE_SIZE - screw_amount))) &amp; cls.BIGGEST_PIECE
+            else:
+                return ((value &lt;&lt; screw_amount) | (value &gt;&gt; (cls.PIECE_SIZE - screw_amount))) &amp; cls.BIGGEST_PIECE
+
+        return _inner
+
+    @classmethod
+    def step_turn_around(cls):
+        def _inner(value: int) -&gt; int:
+            return int.from_bytes(value.to_bytes(cls.PIECE_COUNT, "little"), "big")
+
+        return _inner
+
+    @classmethod
+    def step_hammer_together(cls):
+        required_hammer = secrets.randbits(cls.PIECE_SIZE)
+        def _inner(value: int) -&gt; int:
+            return value ^ required_hammer
+
+        return _inner
+
+def main():
+    assert len(FLAG) == InstructionManual.PIECE_COUNT, "incorrect flag length!!"
+
+    instruction_manual = InstructionManual()
+    print("Here at FLUX, we always strive to include the latest technological advancements in our products.")
+    print("This instruction manual has been generated just for you! But we don't know which pieces are needed to actually construct it...")
+    print("Can you help us figure out how it all fits together?")
+    print()
+
+    max_count = 300
+
+    print("We've allocated some time for one of our interns to help you with this task.")
+    print(f"They will attempt to follow the instruction manual using pieces you provide, for a maximum of {max_count} attempts.")
+
+    remaining = max_count
+    while remaining &gt; 0:
+        val = input(f"({max_count - remaining}/{max_count}) Please enter your {InstructionManual.PIECE_COUNT} selected pieces as one hex encoded string, or 'finish' to exit early:\n")
+        if val == "finish":
+            break
+
+        try:
+            decoded = bytes.fromhex(val)
+            if len(decoded) != InstructionManual.PIECE_COUNT:
+                print("incorrect piece count.")
+                continue
+
+        except Exception:
+            print("incorrect pieces.")
+            continue
+
+        assembled_furniture = instruction_manual.build(decoded)
+        print("Here is what the intern put together:")
+        print(assembled_furniture.hex())
+
+        remaining -= 1
+
+    print("The intern says they've understood what the manual is supposed to construct now, and to relay you this message:")
+    print(instruction_manual.build(FLAG.encode()).hex())
+    print("Thanks for your help!")
+
+if __name__ == "__main__":
+    main()</code></pre>
+<p>The input array of 32 bytes is transformed in three ways: rotate shift, byte swap or xor with a random constant. All the three transformations have the same characteristic: if <code>a ^ b</code> is fixed, then <code>instruction_manual.build(a) ^ instruction_manual.build(b)</code> is also fixed. If we set <code>a ^ b</code> to an array with only one bit set, then <code>instruction_manual.build(a) ^ instruction_manual.build(b)</code> will only have one bit set. And each bit is isolated from others. So we can enumerate the mapping of one bit location in <code>a ^ b</code> to the bit location in <code>instruction_manual.build(a) ^ instruction_manual.build(b)</code> by sending all zeros and arrays where only one bit is set. At last, we can recover flag by remapping bits in <code>instruction_manual.build(all_zeros) ^ instruction_manual.build(flag)</code>:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+p = remote("manual.flu.xxx", 1024)
+#p = process(["python3", "server.py"])
+
+# all zeros
+p.recvuntil(b"early:\n")
+p.sendline(bytes([0] * 32).hex().encode())
+p.recvuntil(b"together:\n")
+zeros = bytes.fromhex(p.recvline().decode())
+print(zeros)
+
+# test location of each bit
+mapping = dict()
+for i in range(32 * 8):
+    b = bytearray([0] * 32)
+    b[i // 8] |= 1 &lt;&lt; (i % 8)
+    p.recvuntil(b"early:\n")
+    p.sendline(b.hex().encode())
+    p.recvuntil(b"together:\n")
+    res = bytes.fromhex(p.recvline().decode())
+    # xor with encoded all zeros
+    res = bytes([a ^ b for a, b in zip(res, zeros)])
+    print(i, res)
+    # record correspondence
+    for j in range(32 * 8):
+        if res[j // 8] &amp; (1 &lt;&lt; (j % 8)) != 0:
+            mapping[j] = i
+            break
+
+p.recvuntil(b"early:\n")
+p.sendline(b"finish")
+p.recvuntil(b"message:\n")
+flag_encoded = bytes.fromhex(p.recvline().decode())
+# xor with encoded all zeros
+flag_encoded = bytes([a ^ b for a, b in zip(flag_encoded, zeros)])
+print(flag_encoded)
+
+flag = bytearray([0] * 32)
+# for each bit, recover flag
+for j in range(32 * 8):
+    if flag_encoded[j // 8] &amp; (1 &lt;&lt; (j % 8)) != 0:
+        i = mapping[j]
+        flag[i // 8] |= (1 &lt;&lt; (i % 8))
+
+print(flag)</code></pre>
+<p>Flag: <code>flag{crypt0_kn0wl3dg3_g4in3d_:3}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

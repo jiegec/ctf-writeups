@@ -1,0 +1,261 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-12-fortid-ctf-2025/rev.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Rev - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#rev" class="nav-link">Rev</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="rev">Rev</h1>
+<pre class="highlight"><code>In order to find the flag, you must first search for the flag.</code></pre>
+<p>Open the attachment in <a href="https://binary.ninja">Binary Ninja</a>, the main logic is:</p>
+<pre class="highlight"><code class="language-c">00401357            while ((int64_t)i &lt; strlen(&amp;input))
+00401357            {
+00401357                int32_t low = 0;
+0040126b                int32_t high = 0xff;
+0040126b                
+00401281                while (true)
+00401281                {
+00401281                    int32_t mid = high + low;
+0040128a                    int32_t mid_1 = (mid + (mid &gt;&gt; 0x1f)) &gt;&gt; 1;
+0040128a                    
+004012ab                    if (mid_1 == (int32_t)input[(int64_t)i])
+004012ab                        break;
+004012ab                    
+004012e1                    if (mid_1 &gt;= (int32_t)input[(int64_t)i])
+004012e1                    {
+00401310                        int32_t rax_21 = var_290_1;
+00401319                        var_290_1 = rax_21 + 1;
+00401321                        var_228[(int64_t)rax_21] = 0x3c;
+00401332                        high = mid_1 - 1;
+004012e1                    }
+004012e1                    else
+004012e1                    {
+004012e3                        int32_t rax_17 = var_290_1;
+004012ec                        var_290_1 = rax_17 + 1;
+004012f4                        var_228[(int64_t)rax_17] = 0x3e;
+00401305                        low = mid_1 + 1;
+004012e1                    }
+00401281                }
+00401281                
+004012ad                int32_t rax_11 = var_290_1;
+004012b6                var_290_1 = rax_11 + 1;
+004012be                var_228[(int64_t)rax_11] = 0x3d;
+0040133d                i += 1;
+00401357            }</code></pre>
+<p>Using binary search to find each byte of the input, and the result is stored in an array and compared with <code>target</code> later. We can recover each byte of the flag:</p>
+<pre class="highlight"><code class="language-python">target = "&lt;&gt;&lt;&lt;&lt;&gt;&gt;=&lt;&gt;&gt;=&lt;&gt;&gt;&gt;&lt;&lt;&gt;=&lt;&gt;&gt;&gt;&lt;&gt;&lt;=&lt;&gt;&lt;&lt;&gt;&lt;=&lt;&gt;&lt;&lt;&lt;&gt;&lt;=&lt;&gt;&gt;&gt;&gt;=&lt;&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&lt;&lt;&lt;=&lt;&lt;&gt;&gt;=&lt;&gt;=&lt;&gt;&lt;&gt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;&lt;&lt;=&lt;&gt;&gt;&gt;&lt;&gt;=&lt;&gt;&gt;&gt;&lt;&lt;&gt;=&lt;&gt;=&lt;&gt;&lt;&gt;&lt;&gt;&gt;=&lt;&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;&lt;=&lt;&gt;&gt;&lt;&lt;&gt;=&lt;&lt;&gt;&gt;&lt;&gt;=&lt;&gt;=&lt;&lt;&gt;&gt;&lt;&gt;&lt;=&lt;&gt;&gt;&lt;&gt;&gt;&gt;=&lt;&gt;&gt;&lt;&lt;&gt;&lt;=&lt;&gt;=&lt;&gt;&lt;&lt;&gt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&gt;&lt;&lt;&gt;=&lt;&gt;&gt;&lt;&gt;&gt;&gt;=&lt;&gt;=&lt;&gt;&lt;&gt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;&lt;&lt;=&lt;&gt;&gt;&gt;&lt;&gt;=&lt;&gt;&gt;&gt;&lt;&lt;&gt;=&lt;&gt;=&lt;&gt;&lt;&lt;&lt;&gt;&gt;=&lt;&gt;&gt;&gt;&lt;&gt;=&lt;&gt;&gt;&lt;&gt;&gt;&gt;=&lt;&gt;&gt;&lt;&lt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;&gt;&lt;=&lt;&gt;&gt;&lt;&gt;&gt;=&lt;&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&lt;&gt;&gt;&gt;=&lt;&lt;&gt;&gt;=&lt;&lt;&gt;&gt;&lt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;&lt;=&lt;&gt;=&lt;&gt;&lt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&lt;&lt;&lt;=&lt;&gt;&gt;&gt;&lt;&lt;&gt;=&lt;&gt;&gt;&lt;&lt;=&lt;&gt;&gt;&lt;&gt;&lt;&lt;=&lt;&gt;=&lt;&gt;&lt;&lt;&lt;&lt;=&lt;&gt;&gt;&lt;&gt;&gt;&lt;=&lt;&gt;&gt;&lt;=&lt;&lt;&gt;&gt;&lt;&lt;&lt;=&lt;&gt;&gt;&gt;&lt;&lt;&gt;=&lt;&lt;&gt;&gt;&lt;&lt;=&lt;&lt;&gt;&gt;=&lt;&gt;&gt;&lt;&gt;&lt;&lt;=&lt;&gt;&gt;&lt;&gt;&gt;=&lt;&lt;&gt;&gt;&lt;&gt;=&lt;&gt;&gt;&gt;&gt;&gt;="
+print(len(target))
+
+flag = bytearray()
+
+low = 0
+high = 0xff
+for ch in target:
+    mid = (low + high) // 2
+    if ch == "&gt;":
+        low = mid + 1
+    elif ch == "&lt;":
+        high = mid - 1
+    else:
+        flag.append(mid)
+        low = 0
+        high = 0xff
+print(flag)</code></pre>
+<p>Flag: <code>FortID{3a7_Y0ur_V3gg1e5_4nd_L3rn_Y0ur_Fund4m3n741_S3arch_Alg0r17hm5}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

