@@ -13,7 +13,7 @@ Requirements:
 1. At most one occurrence for each character `.,(+)`: use function call + `__getattribute__` for `a.b`, call function step by step and save intermediate values via list comprehension
 2. No builtins: use `[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")`
 
-It is a stricter version of [SECCON CTF 2025 Quals excepython](../../2025-12-13-seccon-ctf-2025-quals/excepython.md), where loop and exception handling are removed.
+This problem is a stricter version of [SECCON CTF 2025 Quals excepython](../../2025-12-13-seccon-ctf-2025-quals/excepython.md), with the removal of loops and exception handling; it is also a stricter version of [jailCTF 2025 one](./jailctf-2025-one.md), where only a single '.' was allowed, now extended to include ',', '+', and parentheses.
 
 Inspired by the solution by @D1N0 regarding excepython, we can use list comprehension to do function calls in multiple steps and save intermediate values. Here's the idea:
 
