@@ -1,0 +1,477 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-10-26-xctf-final-2025/lel.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>lel - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#lel" class="nav-link">lel</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#deepseek" class="nav-link">DeepSeek</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="lel">lel</h1>
+<p>附件：</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env sage
+
+import sys, signal
+from flag import flag
+q, n, k = 127, 26, 14
+F = GF(q)
+
+def random_multiple(F):
+    while 1:
+        r = F.random_element()
+        if r != 0: return r
+
+def generate_challenge(F, k, n):
+    G = random_matrix(F, k, n)
+    Q = Permutations(n).random_element().to_matrix() * diagonal_matrix([random_multiple(F) for _ in range(n)])
+    H = (G * Q).echelon_form()
+    return G, H
+
+print("Now start to be a challenger:")
+challs = [generate_challenge(F, k, n) for _ in range(n)]
+signal.alarm(10) 
+
+for _ in range(n):
+    G, H = challs[_]
+    print(f"G matrix is: \n{G}")
+    print(f"H matrix is: \n{H}")
+
+    A = []
+    for __ in range(k):
+        ai = input().strip()
+        try: A.append([int(i) for i in ai.split(',')])
+        except: print("weird input.."); exit()
+
+    B = []
+    for __ in range(n):
+        bi = input().strip()
+        try: B.append([int(i) for i in bi.split(',')])
+        except: print("weird input.."); exit()
+
+    A, B = matrix(F, A), matrix(F, B)
+    if not A.is_invertible() or not B.is_invertible():
+        print("DAMN, I don't like your A,B")
+        exit()
+
+    if A * G * B != H:
+        print("You lose..")
+        exit()
+
+print(flag)</code></pre>
+<p>本题的逻辑是：</p>
+<ol>
+<li>随机一个矩阵 G，对它乘以 Q 矩阵，其中 Q 矩阵的效果是对列进行重排（Permutations）然后每一列乘以一个系数（diagonal_matrix），再求 echelon form，根据线性代数知识，可知求 echelon form 过程就是高斯消元的过程，左乘了一个可逆矩阵</li>
+<li>给定 G 和 H，找到可逆矩阵 A 和 B，使得 <code>AGB = H</code></li>
+</ol>
+<h2 id="deepseek">DeepSeek</h2>
+<p>让 DeepSeek 求解：</p>
+<p>To solve this CTF challenge, we need to find invertible matrices <span class="arithmatex">\( A \)</span> and <span class="arithmatex">\( B \)</span> for each given pair of matrices <span class="arithmatex">\( G \)</span> and <span class="arithmatex">\( H \)</span> such that <span class="arithmatex">\( A \cdot G \cdot B = H \)</span>. The matrices <span class="arithmatex">\( G \)</span> and <span class="arithmatex">\( H \)</span> are provided over the finite field <span class="arithmatex">\( GF(127) \)</span>, with dimensions <span class="arithmatex">\( 14 \times 26 \)</span> and <span class="arithmatex">\( 14 \times 26 \)</span> respectively. The solution involves computing <span class="arithmatex">\( B \)</span> such that <span class="arithmatex">\( G \cdot B = H \)</span> and ensuring <span class="arithmatex">\( B \)</span> is invertible by adding a component from the null space of <span class="arithmatex">\( G \)</span>. The matrix <span class="arithmatex">\( A \)</span> is set to the identity matrix since <span class="arithmatex">\( G \cdot B = H \)</span> already holds.</p>
+<h3 id="approach">Approach</h3>
+<ol>
+<li><strong>Compute <span class="arithmatex">\( B_0 \)</span></strong>: The matrix <span class="arithmatex">\( B_0 \)</span> is computed as <span class="arithmatex">\( B_0 = G^T \cdot (G \cdot G^T)^{-1} \cdot H \)</span>. This ensures that <span class="arithmatex">\( G \cdot B_0 = H \)</span>, and each column of <span class="arithmatex">\( B_0 \)</span> lies in the row space of <span class="arithmatex">\( G \)</span>.</li>
+<li><strong>Handle Null Space</strong>: The null space of <span class="arithmatex">\( G \)</span> is computed, and a basis matrix <span class="arithmatex">\( U \)</span> is formed where each column is a basis vector of the null space.</li>
+<li><strong>Ensure Invertibility of <span class="arithmatex">\( B \)</span></strong>: A matrix <span class="arithmatex">\( C \)</span> of size <span class="arithmatex">\( (n-k) \times n \)</span> with full rank is constructed. The matrix <span class="arithmatex">\( B \)</span> is then obtained as <span class="arithmatex">\( B = B_0 + U \cdot C \)</span>. This ensures that <span class="arithmatex">\( B \)</span> is invertible because its columns span both the row space and null space of <span class="arithmatex">\( G \)</span>.</li>
+<li><strong>Set <span class="arithmatex">\( A \)</span> to Identity</strong>: Since <span class="arithmatex">\( G \cdot B = H \)</span>, setting <span class="arithmatex">\( A \)</span> to the identity matrix satisfies <span class="arithmatex">\( A \cdot G \cdot B = H \)</span>.</li>
+</ol>
+<h3 id="solution-code">Solution Code</h3>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env sage
+
+import sys
+
+def find_AB(G, H):
+    k = G.nrows()
+    n = G.ncols()
+    F = G.base_ring()
+    GGT = G * G.transpose()
+    GGT_inv = GGT.inverse()
+    B0 = G.transpose() * GGT_inv * H
+
+    null_space = G.right_kernel()
+    U = null_space.matrix().transpose()
+    d = U.ncols()
+    C = matrix.identity(d).augment(matrix.zeros(d, n - d))
+    U_C = U * C
+    B = B0 + U_C
+    A = matrix.identity(F, k)
+    return A, B
+
+def main():
+    q = 127
+    n = 26
+    k = 14
+    F = GF(q)
+
+    first_line = sys.stdin.readline()
+    if not first_line.startswith("Now start to be a challenger:"):
+        print("Unexpected first line")
+        return
+
+    for _ in range(n):
+        line = sys.stdin.readline()
+        if not line.startswith("G matrix is:"):
+            print("Expected G matrix line")
+            return
+
+        G_lines = []
+        for i in range(k):
+            line = sys.stdin.readline().strip()
+            if line.startswith('['):
+                line = line[1:]
+            if line.endswith(']'):
+                line = line[:-1]
+            G_lines.append(line)
+
+        G_list = []
+        for line in G_lines:
+            values = line.split()
+            row = [int(val) for val in values]
+            G_list.append(row)
+        G = matrix(F, G_list)
+
+        line = sys.stdin.readline()
+        if not line.startswith("H matrix is:"):
+            print("Expected H matrix line")
+            return
+
+        H_lines = []
+        for i in range(k):
+            line = sys.stdin.readline().strip()
+            if line.startswith('['):
+                line = line[1:]
+            if line.endswith(']'):
+                line = line[:-1]
+            H_lines.append(line)
+
+        H_list = []
+        for line in H_lines:
+            values = line.split()
+            row = [int(val) for val in values]
+            H_list.append(row)
+        H = matrix(F, H_list)
+
+        A, B = find_AB(G, H)
+
+        for i in range(k):
+            row = A[i]
+            print(','.join(str(x) for x in row))
+            sys.stdout.flush()
+
+        for i in range(n):
+            row = B[i]
+            print(','.join(str(x) for x in row))
+            sys.stdout.flush()
+
+    flag_line = sys.stdin.readline()
+    print(flag_line)
+
+if __name__ == '__main__':
+    main()</code></pre>
+<h3 id="explanation">Explanation</h3>
+<ol>
+<li><strong>Reading Input</strong>: The script reads the matrices <span class="arithmatex">\( G \)</span> and <span class="arithmatex">\( H \)</span> from standard input for each of the 26 rounds.</li>
+<li><strong>Computing <span class="arithmatex">\( A \)</span> and <span class="arithmatex">\( B \)</span></strong>: For each pair <span class="arithmatex">\( G \)</span> and <span class="arithmatex">\( H \)</span>, the function <code>find_AB</code> computes matrices <span class="arithmatex">\( A \)</span> and <span class="arithmatex">\( B \)</span> as described.</li>
+<li><strong>Output</strong>: The matrices <span class="arithmatex">\( A \)</span> and <span class="arithmatex">\( B \)</span> are printed in the required format for each round. After all rounds, the flag is read and printed.</li>
+</ol>
+<p>This approach efficiently solves the challenge by leveraging linear algebra properties over finite fields, ensuring correctness and invertibility of the required matrices. The solution is both optimal and straightforward, meeting the challenge constraints.</p>
+<p>DeepSeek 的思路是：</p>
+<ol>
+<li>不管 A，让 A 等于单位矩阵，直接求 B 矩阵，使得 <span class="arithmatex">\(GB=H\)</span></li>
+<li>首先找到矩阵 <span class="arithmatex">\(B_0=G^T(GG^T)^{-1}H\)</span>，那么 <span class="arithmatex">\(GB_0=GG^T(GG^T)^{-1}H=H\)</span> 成立</li>
+<li>接下来，求 <span class="arithmatex">\(G\)</span> 的零空间 <span class="arithmatex">\(U\)</span>，即 <span class="arithmatex">\(GU=0\)</span> 其中 <span class="arithmatex">\(0\)</span> 代表全零的矩阵，然后把它填上 0（代码中乘以矩阵 <span class="arithmatex">\(C\)</span>），直到成为方阵 <span class="arithmatex">\(UC\)</span></li>
+<li>那么 <span class="arithmatex">\(B=B_0+UC\)</span>，满足 <span class="arithmatex">\(GB=GB_0+GUC=H+0=H\)</span></li>
+</ol>
+<p>移植到本题的环境：</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env sage
+
+from pwn import *
+import sys
+
+def find_AB(G, H):
+    k = G.nrows()
+    n = G.ncols()
+    F = G.base_ring()
+    GGT = G * G.transpose()
+    GGT_inv = GGT.inverse()
+    B0 = G.transpose() * GGT_inv * H
+
+    null_space = G.right_kernel()
+    U = null_space.matrix().transpose()
+    d = U.ncols()
+    C = matrix.identity(d).augment(matrix(d, n - d))
+    U_C = U * C
+    B = B0 + U_C
+    A = matrix.identity(F, k)
+    return A, B
+
+def main():
+    q = 127
+    n = 26
+    k = 14
+    F = GF(q)
+
+    context(log_level = "DEBUG")
+    #p = process(["sage", "task.sage"])
+    p = remote("173.32.9.15", 11421)
+    first_line = p.recvline().decode()
+    if not first_line.startswith("Now start to be a challenger:"):
+        print("Unexpected first line")
+        return
+
+    for _ in range(n):
+        line = p.recvline().decode()
+        if not line.startswith("G matrix is:"):
+            print("Expected G matrix line")
+            return
+
+        G_lines = []
+        for i in range(k):
+            line = p.recvline().decode().strip()
+            if line.startswith('['):
+                line = line[1:]
+            if line.endswith(']'):
+                line = line[:-1]
+            G_lines.append(line)
+
+        G_list = []
+        for line in G_lines:
+            values = line.split()
+            row = [int(val) for val in values]
+            G_list.append(row)
+        G = matrix(F, G_list)
+
+        line = p.recvline().decode()
+        if not line.startswith("H matrix is:"):
+            print("Expected H matrix line")
+            return
+
+        H_lines = []
+        for i in range(k):
+            line = p.recvline().decode().strip()
+            if line.startswith('['):
+                line = line[1:]
+            if line.endswith(']'):
+                line = line[:-1]
+            H_lines.append(line)
+
+        H_list = []
+        for line in H_lines:
+            values = line.split()
+            row = [int(val) for val in values]
+            H_list.append(row)
+        H = matrix(F, H_list)
+
+        A, B = find_AB(G, H)
+
+        for i in range(k):
+            row = A[i]
+            p.sendline((','.join(str(x) for x in row)).encode())
+
+        for i in range(n):
+            row = B[i]
+            p.sendline((','.join(str(x) for x in row)).encode())
+
+    flag_line = p.recvline().decode()
+    print(flag_line)
+
+if __name__ == '__main__':
+    main()</code></pre>
+<p>可得 Flag。</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

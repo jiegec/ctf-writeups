@@ -1,0 +1,426 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/puppeteer/week0/easy-random-1.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Easy Random 1 Writeup - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#easy-random-1-writeup" class="nav-link">Easy Random 1 Writeup</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#_1" class="nav-link">题目描述</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_2" class="nav-link">漏洞分析</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_3" class="nav-link">攻击思路</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_4" class="nav-link">解题步骤</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_5" class="nav-link">完整攻击脚本</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_6" class="nav-link">总结</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="easy-random-1-writeup">Easy Random 1 Writeup</h1>
+<h2 id="_1">题目描述</h2>
+<p>本题是一个基于 C 语言随机数生成器的挑战。程序首先生成一个 24 位的随机种子，然后允许用户进行两种操作：</p>
+<ol>
+<li>玩一个猜数字游戏（数字范围 0-65535）</li>
+<li>猜测 Flag（Flag 会与随机数进行异或加密后输出）</li>
+</ol>
+<p>附件：</p>
+<pre class="highlight"><code class="language-c">#include &lt;assert.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+  setvbuf(stdout, NULL, _IONBF, 0);
+
+  unsigned int seed = 0;
+  FILE *fp = fopen("/dev/urandom", "rb");
+  fread(&amp;seed, 3, 1, fp);
+  srand(seed);
+
+  while (1) {
+    printf("Actions: (1) play a random guess game (2) guess the flag\n");
+    printf("Please input action:");
+    int action = 0;
+    scanf("%d", &amp;action);
+    if (action == 1) {
+      int number = rand() % 65536;
+      while (1) {
+        printf("Enter your guess:");
+        int guess = 0;
+        scanf("%d", &amp;guess);
+        if (guess &gt; number) {
+          printf("Bigger\n");
+        } else if (guess &lt; number) {
+          printf("Smaller\n");
+        } else {
+          printf("You win!\n");
+          break;
+        }
+      }
+    } else if (action == 2) {
+      char *flag = getenv("GZCTF_FLAG");
+      if (!flag) {
+        flag = "flag{fake_flag_for_testing}";
+      }
+      unsigned long len = strlen(flag);
+      printf("Guess the flag:\n");
+      for (unsigned long i = 0; i &lt; len; i++) {
+        printf("%02X", (uint8_t)flag[i] ^ (uint8_t)rand());
+      }
+      printf("\n");
+      break;
+    }
+  }
+  return 0;
+}</code></pre>
+<h2 id="_2">漏洞分析</h2>
+<p>攻击目标是 C 标准库（glibc）的 <code>rand()</code> 函数。该随机数生成器的弱点在于种子空间较小，而本题为了简化进一步将种子限制为 24 位（3 字节），使得暴力枚举成为可能。</p>
+<h2 id="_3">攻击思路</h2>
+<ol>
+<li><strong>收集随机数样本</strong>：通过二分法玩猜数字游戏，收集多个 <code>rand() % 65536</code> 的结果</li>
+<li><strong>暴力枚举种子</strong>：枚举所有可能的 24 位种子（0 到 2^24-1），找到与收集到的随机数序列匹配的种子</li>
+<li><strong>恢复 Flag</strong>：使用找到的种子预测后续随机数，解密加密的 Flag</li>
+</ol>
+<h2 id="_4">解题步骤</h2>
+<h3 id="1">1. 收集随机数样本</h3>
+<p>使用二分法快速猜中数字，收集 10 个随机数样本：</p>
+<pre class="highlight"><code class="language-python"># pip3 install pwntools tqdm
+from pwn import *
+import ctypes
+import tqdm
+
+p = process(["./main"])
+
+context(log_level="DEBUG")
+
+numbers = []
+for i in range(10):
+    p.recvuntil(b"action:")
+    p.sendline(b"1")
+    left = 0
+    right = 65536 - 1
+    number = None
+    while left &lt; right:
+        middle = (left + right) // 2
+        p.recvuntil(b"guess:")
+        p.sendline(str(middle).encode())
+        resp = p.recvline().strip()
+        if resp == b"Bigger":
+            right = middle - 1
+        elif resp == b"Smaller":
+            left = middle + 1
+        else:
+            assert resp == b"You win!"
+            number = middle
+            break
+    if number is None:
+        p.recvuntil(b"guess:")
+        p.sendline(str(left).encode())
+        resp = p.recvline().strip()
+        assert resp == b"You win!"
+        number = left
+    numbers.append(number)</code></pre>
+<h3 id="2">2. 暴力枚举种子</h3>
+<p>使用 <code>ctypes</code> 调用 glibc 的 <code>rand()</code> 函数，枚举所有可能的种子：</p>
+<pre class="highlight"><code class="language-python"># bruteforce random seed
+libc = ctypes.CDLL("libc.so.6")
+for seed in tqdm.trange(256**3):
+    libc.srand(seed)
+    good = True
+    for i in range(len(numbers)):
+        if libc.rand() % 65536 != numbers[i]:
+            good = False
+            break
+    if good:
+        print("Found seed", seed)
+        break</code></pre>
+<h3 id="3-flag">3. 恢复 Flag</h3>
+<p>使用找到的种子预测后续随机数，解密加密的 Flag：</p>
+<pre class="highlight"><code class="language-python">p.recvuntil(b"action:")
+p.sendline(b"2")
+p.recvline()
+encoded = p.recvline().decode()
+
+# recover flag
+libc.srand(seed)
+for i in range(len(numbers)):
+    libc.rand()
+
+flag = bytes([a ^ (libc.rand() % 256) for a in bytes.fromhex(encoded)])
+print(flag)</code></pre>
+<h2 id="_5">完整攻击脚本</h2>
+<pre class="highlight"><code class="language-python"># pip3 install pwntools tqdm
+from pwn import *
+import ctypes
+import tqdm
+
+p = process(["./main"])
+
+context(log_level="DEBUG")
+
+numbers = []
+for i in range(10):
+    p.recvuntil(b"action:")
+    p.sendline(b"1")
+    left = 0
+    right = 65536 - 1
+    number = None
+    while left &lt; right:
+        middle = (left + right) // 2
+        p.recvuntil(b"guess:")
+        p.sendline(str(middle).encode())
+        resp = p.recvline().strip()
+        if resp == b"Bigger":
+            right = middle - 1
+        elif resp == b"Smaller":
+            left = middle + 1
+        else:
+            assert resp == b"You win!"
+            number = middle
+            break
+    if number is None:
+        p.recvuntil(b"guess:")
+        p.sendline(str(left).encode())
+        resp = p.recvline().strip()
+        assert resp == b"You win!"
+        number = left
+    numbers.append(number)
+
+# bruteforce random seed
+libc = ctypes.CDLL("libc.so.6")
+for seed in tqdm.trange(256**3):
+    libc.srand(seed)
+    good = True
+    for i in range(len(numbers)):
+        if libc.rand() % 65536 != numbers[i]:
+            good = False
+            break
+    if good:
+        print("Found seed", seed)
+        break
+
+p.recvuntil(b"action:")
+p.sendline(b"2")
+p.recvline()
+encoded = p.recvline().decode()
+
+# recover flag
+libc.srand(seed)
+for i in range(len(numbers)):
+    libc.rand()
+
+flag = bytes([a ^ (libc.rand() % 256) for a in bytes.fromhex(encoded)])
+print(flag)</code></pre>
+<h2 id="_6">总结</h2>
+<p>本题展示了当随机数生成器的状态空间足够小时，无论其计算过程多么复杂，都可以通过枚举状态空间来进行攻击。在实际的 CTF 比赛中，类似的随机数攻击经常出现，关键在于识别随机数生成器的弱点并收集足够的样本进行攻击。</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

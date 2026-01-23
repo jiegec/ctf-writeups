@@ -1,0 +1,369 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-22-holmes-ctf-2025/the-payload.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>The Payload - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#the-payload" class="nav-link">The Payload</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#question-1" class="nav-link">Question #1</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-2" class="nav-link">Question #2</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-3" class="nav-link">Question #3</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-4" class="nav-link">Question #4</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-5" class="nav-link">Question #5</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-6" class="nav-link">Question #6</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-7" class="nav-link">Question #7</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-8" class="nav-link">Question #8</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-9" class="nav-link">Question #9</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#question-10" class="nav-link">Question #10</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="the-payload">The Payload</h1>
+<pre class="highlight"><code>With the malware extracted, Holmes inspects its logic. The strain spreads silently across the entire network. Its goal? Not destruction-but something more persistent…friends. NOTE: The downloaded file is active malware. Take the necessary precautions when attempting this challenge.</code></pre>
+<h2 id="question-1">Question #1</h2>
+<pre class="highlight"><code>During execution, the malware initializes the COM library on its main thread. Based on the imported functions, which DLL is responsible for providing this functionality? (filename.ext)</code></pre>
+<p>List imported functions:</p>
+<pre class="highlight"><code class="language-shell">$ objdump -x AetherDesk-v74-77.exe
+        DLL Name: ole32.dll
+        vma:     Ordinal  Hint  Member-Name  Bound-To
+        00005358  &lt;none&gt;  002b  CoCreateInstance
+        00005360  &lt;none&gt;  0091  CoUninitialize
+        00005368  &lt;none&gt;  0060  CoInitialize
+        00005370  &lt;none&gt;  01c1  OleRun</code></pre>
+<h2 id="question-2">Question #2</h2>
+<pre class="highlight"><code>Which GUID is used by the binary to instantiate the object containing the data and code for execution? (********-****-****-****-************)</code></pre>
+<p>Open the binary in IDA:</p>
+<pre class="highlight"><code>Instance = CoCreateInstance(&amp;rclsid, 0, 0x17u, &amp;riid, (LPVOID *)pUnknown);
+
+.rdata:0000000140005A48 ; const IID rclsid
+.rdata:0000000140005A48 rclsid          IID &lt;0DABCD999h, 1234h, 4567h, &lt;89h, 0ABh, 12h, 34h, 56h, 78h, 90h, \
+.rdata:0000000140005A48                                         ; DATA XREF: sub_140001310+446↑o
+.rdata:0000000140005A48                                         ; main+5B↑o
+.rdata:0000000140005A48                      0FFh&gt;&gt;</code></pre>
+<p>The GUID is <code>DABCD999-1234-4567-89AB-1234567890FF</code>.</p>
+<p>Binary Ninja can print the guid for you in decompiled code:</p>
+<pre class="highlight"><code>140001ca2        HRESULT hr_1 = CoCreateInstance(
+140001ca2            rclsid: &amp;_GUID_dabcd999_1234_4567_89ab_1234567890ff, pUnkOuter: 0, 
+140001ca2            dwClsContext: 0x17, riid: &amp;_GUID_00000000_0000_0000_c000_000000000046, 
+140001ca2            ppv: &amp;pAddrInfo_1)</code></pre>
+<h2 id="question-3">Question #3</h2>
+<pre class="highlight"><code>Which .NET framework feature is the attacker using to bridge calls between a managed .NET class and an unmanaged native binary? (string)</code></pre>
+<p>Search online:</p>
+<ol>
+<li>P/Invoke</li>
+<li>C++/CLI</li>
+<li>Com Interop</li>
+</ol>
+<p>The third one is the answer.</p>
+<h2 id="question-4">Question #4</h2>
+<pre class="highlight"><code>Which Opcode in the disassembly is responsible for calling the first function from the managed code? (** ** **)</code></pre>
+<p>Call COM function:</p>
+<pre class="highlight"><code>(*(void (__fastcall **)(__int64, __int64 *))(*(_QWORD *)v5 + 104LL))(v5, &amp;v73);</code></pre>
+<p>Corresponding instruction:</p>
+<pre class="highlight"><code>.text:0000000140001D23                 call    qword ptr [rax+68h]</code></pre>
+<p>Hex:</p>
+<p><code>ff 50 68</code></p>
+<h2 id="question-5">Question #5</h2>
+<pre class="highlight"><code>Identify the multiplication and addition constants used by the binary's key generation algorithm for decryption. (*, **h)</code></pre>
+<p>Decompile in Binary Ninja:</p>
+<pre class="highlight"><code class="language-c">140001d75                if (__isa_available &lt; 6)
+140001d75                {
+140001f17                    do
+140001f17                    {
+140001f09                        *(uint8_t*)(&amp;var_1f8 + i) = (uint8_t)i * 7 + 0x42;
+140001f10                        i += 1;
+140001f17                    } while (i &lt; 0x20);
+140001d75                }
+140001d75                else
+140001d75                {
+140001d7b                    int32_t __xmm@00000000000000010000000000000000_1[0x4] =
+140001d7b                        __xmm@00000000000000010000000000000000;</code></pre>
+<p>Answer: <code>7, 42h</code>.</p>
+<h2 id="question-6">Question #6</h2>
+<pre class="highlight"><code>Which Opcode in the disassembly is responsible for calling the decryption logic from the managed code? (** ** **)</code></pre>
+<p>Call COM function:</p>
+<pre class="highlight"><code>  v54 = (*(__int64 (__fastcall **)(__int64, _QWORD, _QWORD, PCSTR *))(*(_QWORD *)v50 + 88LL))(
+          v50,
+          *(_QWORD *)v53,
+          *v51,
+          &amp;pNodeName);</code></pre>
+<p>Corresponding instruction:</p>
+<pre class="highlight"><code>.text:00000001400020F6                 call    qword ptr [rax+58h]</code></pre>
+<p>Hex:</p>
+<p><code>ff 50 58</code></p>
+<h2 id="question-7">Question #7</h2>
+<pre class="highlight"><code>Which Win32 API is being utilized by the binary to resolve the killswitch domain name? (string)</code></pre>
+<p>List imported functions:</p>
+<pre class="highlight"><code class="language-shell">$ objdump -x AetherDesk-v74-77.exe
+        DLL Name: WS2_32.dll
+        vma:     Ordinal  Hint  Member-Name  Bound-To
+        00005208  &lt;none&gt;  00a5  freeaddrinfo
+        00005210    116  &lt;none&gt; &lt;none&gt;
+        00005218  &lt;none&gt;  00a6  getaddrinfo
+        00005220    115  &lt;none&gt; &lt;none&gt;</code></pre>
+<h2 id="question-8">Question #8</h2>
+<pre class="highlight"><code>Which network-related API does the binary use to gather details about each shared resource on a server? (string)</code></pre>
+<p>List imported functions:</p>
+<pre class="highlight"><code class="language-shell">$ objdump -x AetherDesk-v74-77.exe
+        DLL Name: NETAPI32.dll
+        vma:     Ordinal  Hint  Member-Name  Bound-To
+        00005160  &lt;none&gt;  0052  NetApiBufferFree
+        00005168  &lt;none&gt;  00e0  NetShareEnum</code></pre>
+<h2 id="question-9">Question #9</h2>
+<pre class="highlight"><code>Which Opcode is responsible for running the encrypted payload? (** ** **)</code></pre>
+<p>In <code>ScanAndSpread</code>:</p>
+<pre class="highlight"><code>14000197a                    (*(uint64_t*)(*(uint64_t*)rbx_3 + 0x60))(rbx_3, rax_11, 
+14000197a                        *(uint64_t*)rsi_4, *(uint64_t*)rdi_3);
+140001987                    rsi_4[2] -= 1;</code></pre>
+<p>Assembly:</p>
+<pre class="highlight"><code>14000197a  ff5060             call    qword [rax+0x60]</code></pre>
+<p><code>ff 50 60</code></p>
+<h2 id="question-10">Question #10</h2>
+<pre class="highlight"><code>Find → Block → Flag: Identify the killswitch domain, spawn the Docker to block it, and claim the flag. (HTB{*******_**********_********_*****})</code></pre>
+<p>The key generation function:</p>
+<pre class="highlight"><code class="language-c">140001f17                    do
+140001f17                    {
+140001f09                        *(uint8_t*)(&amp;var_1f8 + i) = (uint8_t)i * 7 + 0x42;
+140001f10                        i += 1;
+140001f17                    } while (i &lt; 0x20);</code></pre>
+<p>Encrypted payload:</p>
+<pre class="highlight"><code class="language-c">1400020cc                        *(uint64_t*)r15_1 =
+1400020cc                            _com_util::ConvertStringToBSTR("KXgmYHMADxsV8uHiuPPB3w==");</code></pre>
+<p>Decrypt:</p>
+<pre class="highlight"><code class="language-python">import base64
+
+data = base64.b64decode("KXgmYHMADxsV8uHiuPPB3w==")
+
+key = bytearray()
+for i in range(32):
+    key.append((i * 7 + 0x42) &amp; 0xFF)
+
+print(bytes([x ^ y for x, y in zip(key, data)]))</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code>k1v7-echosim.net</code></pre>
+<p>Block the domain in the provided docker and get flag:</p>
+<p><code>HTB{Eternal_Companions_Reunited_Again}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

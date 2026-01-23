@@ -1,0 +1,436 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/pyjail/unicode-bypass.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Unicode bypass - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#unicode-bypass" class="nav-link">Unicode bypass</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#common-bypass" class="nav-link">Common bypass</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#reduce-length" class="nav-link">Reduce length</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#full-mapping" class="nav-link">Full mapping</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="unicode-bypass">Unicode bypass</h1>
+<h2 id="common-bypass">Common bypass</h2>
+<ul>
+<li><a href="https://www.compart.com/en/unicode/block/U+1D400">Unicode Block "Mathematical Alphanumeric Symbols"</a><ul>
+<li><code>A</code> -&gt; <a href="https://www.compart.com/en/unicode/U+1D400"><code>𝐀</code> (U+1D400)</a></li>
+<li><code>a</code> -&gt; <a href="https://www.compart.com/en/unicode/U+1D41A"><code>𝐚</code> (U+1D41A)</a></li>
+</ul>
+</li>
+<li><a href="https://www.compart.com/en/unicode/block/U+FB00">Unicode Block "Alphabetic Presentation Forms"</a><ul>
+<li><code>fl</code> -&gt; <a href="https://www.compart.com/en/unicode/U+FB02"><code>ﬂ</code> (U+FB02)</a>, e.g. <code>ﬂag</code></li>
+</ul>
+</li>
+<li><a href="https://www.compart.com/en/unicode/block/U+FF00">Unicode Block "Halfwidth and Fullwidth Forms"</a><ul>
+<li><code>A</code> -&gt; <a href="https://www.compart.com/en/unicode/U+FF21"><code>Ａ</code> (U+FF21)</a></li>
+<li><code>_</code> -&gt; <a href="https://www.compart.com/en/unicode/U+FF3F"><code>＿</code> (U+FF3F)</a>, e.g. <code>_＿builtins＿＿</code> (cannot be used for the first character)</li>
+<li><code>a</code> -&gt; <a href="https://www.compart.com/en/unicode/U+FF41"><code>ａ</code> (U+FF41)</a>, e.g. <code>ｏｓ</code></li>
+</ul>
+</li>
+<li><a href="https://www.compart.com/en/unicode/block/U+2150">Unicode Block "Number Forms"</a><ul>
+<li><code>VI</code> -&gt; <a href="https://www.compart.com/en/unicode/U+2165"><code>Ⅵ</code> (U+2165)</a></li>
+<li><code>ii</code> -&gt; <a href="https://www.compart.com/en/unicode/U+2171"><code>ⅱ</code> (U+2171)</a></li>
+<li><code>ix</code> -&gt; <a href="https://www.compart.com/en/unicode/U+2178"><code>ⅸ</code> (U+2178)</a></li>
+<li><code>xi</code> -&gt; <a href="https://www.compart.com/en/unicode/U+217A"><code>ⅺ</code> (U+217A)</a>, e.g. <code>eⅺt</code></li>
+<li><code>xii</code> -&gt; <a href="https://www.compart.com/en/unicode/U+217B"><code>ⅻ</code> (U+217B)</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="reduce-length">Reduce length</h2>
+<p>Sometimes we can reduce length by unicode bypass:</p>
+<pre class="highlight"><code class="language-python">import unicodedata
+import string
+from collections import defaultdict
+
+mapping = defaultdict(list)
+for ch in range(0x110000):
+    nfkc_text = unicodedata.normalize("NFKC", chr(ch))
+    if all(c in string.printable for c in nfkc_text):
+        # some characters are not working
+        try:
+            eval("_" + chr(ch))
+        except SyntaxError as e:
+            # bad
+            continue
+            pass
+        except Exception as e:
+            pass
+        mapping[nfkc_text].append(chr(ch))
+
+
+def find_shortest(s):
+    res = []
+    for i in range(len(s)):
+        # case 1: no mapping happened
+        if i &gt; 0:
+            new_res = res[i - 1] + s[i]
+        else:
+            new_res = s[i]
+        # case 2: a suffix of length j is mapped
+        for j in range(2, i + 2):
+            part = s[i - j + 1 : i + 1]
+            if part in mapping:
+                if i - j + 1 &gt; 0:
+                    temp = res[i - j] + mapping[part][0]
+                else:
+                    temp = mapping[part][0]
+                # found better solution
+                if len(temp) &lt; len(new_res):
+                    new_res = temp
+        res.append(new_res)
+    return res[-1]
+
+
+for function in __builtins__.__dict__:
+    res = find_shortest(function)
+    if len(res) &lt; len(function):
+        print(function, res, f"{len(res)} &lt; {len(function)}")</code></pre>
+<p>Result:</p>
+<pre class="highlight"><code>ascii ascⅱ 4 &lt; 5
+divmod dⅳmod 5 &lt; 6
+isinstance isinﬅance 9 &lt; 10
+memoryview memoryⅵew 9 &lt; 10
+filter ﬁlter 5 &lt; 6
+float ﬂoat 4 &lt; 5
+list liﬅ 3 &lt; 4
+staticmethod ﬅaticmethod 11 &lt; 12
+str ﬅr 2 &lt; 3
+GeneratorExit GeneratorEⅺt 12 &lt; 13
+SystemExit SyﬅemEⅺt 8 &lt; 10
+EnvironmentError EnⅵronmentError 15 &lt; 16
+OverflowError OverﬂowError 12 &lt; 13
+ZeroDivisionError ZeroDⅳisionError 16 &lt; 17
+SystemError SyﬅemError 10 &lt; 11
+BufferError BuﬀerError 10 &lt; 11
+FileExistsError FileEⅺﬅsError 13 &lt; 15
+exit eⅺt 3 &lt; 4</code></pre>
+<h2 id="full-mapping">Full mapping</h2>
+<p>Print all characters that map to ascii printables after NFKC normalization:</p>
+<pre class="highlight"><code class="language-python">import unicodedata
+import string
+from collections import defaultdict
+
+mapping = defaultdict(list)
+for ch in range(0x110000):
+    nfkc_text = unicodedata.normalize("NFKC", chr(ch))
+    if all(c in string.printable for c in nfkc_text):
+        if nfkc_text != chr(ch):
+            # some characters are not working
+            try:
+                eval("_" + chr(ch))
+            except SyntaxError as e:
+                # bad
+                continue
+                pass
+            except Exception as e:
+                pass
+            mapping[nfkc_text].append(chr(ch))
+
+for key in sorted(mapping.keys()):
+    print("-", f"`{key}`:", ",".join(f"`{ch}` (U+{ord(ch):X})" for ch in mapping[key]))</code></pre>
+<p>Result:</p>
+<ul>
+<li><code>0</code>: <code>０</code> (U+FF10),<code>𝟎</code> (U+1D7CE),<code>𝟘</code> (U+1D7D8),<code>𝟢</code> (U+1D7E2),<code>𝟬</code> (U+1D7EC),<code>𝟶</code> (U+1D7F6),<code>🯰</code> (U+1FBF0)</li>
+<li><code>1</code>: <code>１</code> (U+FF11),<code>𝟏</code> (U+1D7CF),<code>𝟙</code> (U+1D7D9),<code>𝟣</code> (U+1D7E3),<code>𝟭</code> (U+1D7ED),<code>𝟷</code> (U+1D7F7),<code>🯱</code> (U+1FBF1)</li>
+<li><code>2</code>: <code>２</code> (U+FF12),<code>𝟐</code> (U+1D7D0),<code>𝟚</code> (U+1D7DA),<code>𝟤</code> (U+1D7E4),<code>𝟮</code> (U+1D7EE),<code>𝟸</code> (U+1D7F8),<code>🯲</code> (U+1FBF2)</li>
+<li><code>3</code>: <code>３</code> (U+FF13),<code>𝟑</code> (U+1D7D1),<code>𝟛</code> (U+1D7DB),<code>𝟥</code> (U+1D7E5),<code>𝟯</code> (U+1D7EF),<code>𝟹</code> (U+1D7F9),<code>🯳</code> (U+1FBF3)</li>
+<li><code>4</code>: <code>４</code> (U+FF14),<code>𝟒</code> (U+1D7D2),<code>𝟜</code> (U+1D7DC),<code>𝟦</code> (U+1D7E6),<code>𝟰</code> (U+1D7F0),<code>𝟺</code> (U+1D7FA),<code>🯴</code> (U+1FBF4)</li>
+<li><code>5</code>: <code>５</code> (U+FF15),<code>𝟓</code> (U+1D7D3),<code>𝟝</code> (U+1D7DD),<code>𝟧</code> (U+1D7E7),<code>𝟱</code> (U+1D7F1),<code>𝟻</code> (U+1D7FB),<code>🯵</code> (U+1FBF5)</li>
+<li><code>6</code>: <code>６</code> (U+FF16),<code>𝟔</code> (U+1D7D4),<code>𝟞</code> (U+1D7DE),<code>𝟨</code> (U+1D7E8),<code>𝟲</code> (U+1D7F2),<code>𝟼</code> (U+1D7FC),<code>🯶</code> (U+1FBF6)</li>
+<li><code>7</code>: <code>７</code> (U+FF17),<code>𝟕</code> (U+1D7D5),<code>𝟟</code> (U+1D7DF),<code>𝟩</code> (U+1D7E9),<code>𝟳</code> (U+1D7F3),<code>𝟽</code> (U+1D7FD),<code>🯷</code> (U+1FBF7)</li>
+<li><code>8</code>: <code>８</code> (U+FF18),<code>𝟖</code> (U+1D7D6),<code>𝟠</code> (U+1D7E0),<code>𝟪</code> (U+1D7EA),<code>𝟴</code> (U+1D7F4),<code>𝟾</code> (U+1D7FE),<code>🯸</code> (U+1FBF8)</li>
+<li><code>9</code>: <code>９</code> (U+FF19),<code>𝟗</code> (U+1D7D7),<code>𝟡</code> (U+1D7E1),<code>𝟫</code> (U+1D7EB),<code>𝟵</code> (U+1D7F5),<code>𝟿</code> (U+1D7FF),<code>🯹</code> (U+1FBF9)</li>
+<li><code>A</code>: <code>ᴬ</code> (U+1D2C),<code>Ａ</code> (U+FF21),<code>𝐀</code> (U+1D400),<code>𝐴</code> (U+1D434),<code>𝑨</code> (U+1D468),<code>𝒜</code> (U+1D49C),<code>𝓐</code> (U+1D4D0),<code>𝔄</code> (U+1D504),<code>𝔸</code> (U+1D538),<code>𝕬</code> (U+1D56C),<code>𝖠</code> (U+1D5A0),<code>𝗔</code> (U+1D5D4),<code>𝘈</code> (U+1D608),<code>𝘼</code> (U+1D63C),<code>𝙰</code> (U+1D670)</li>
+<li><code>B</code>: <code>ᴮ</code> (U+1D2E),<code>ℬ</code> (U+212C),<code>Ｂ</code> (U+FF22),<code>𝐁</code> (U+1D401),<code>𝐵</code> (U+1D435),<code>𝑩</code> (U+1D469),<code>𝓑</code> (U+1D4D1),<code>𝔅</code> (U+1D505),<code>𝔹</code> (U+1D539),<code>𝕭</code> (U+1D56D),<code>𝖡</code> (U+1D5A1),<code>𝗕</code> (U+1D5D5),<code>𝘉</code> (U+1D609),<code>𝘽</code> (U+1D63D),<code>𝙱</code> (U+1D671)</li>
+<li><code>C</code>: <code>ℂ</code> (U+2102),<code>ℭ</code> (U+212D),<code>Ⅽ</code> (U+216D),<code>Ｃ</code> (U+FF23),<code>𝐂</code> (U+1D402),<code>𝐶</code> (U+1D436),<code>𝑪</code> (U+1D46A),<code>𝒞</code> (U+1D49E),<code>𝓒</code> (U+1D4D2),<code>𝕮</code> (U+1D56E),<code>𝖢</code> (U+1D5A2),<code>𝗖</code> (U+1D5D6),<code>𝘊</code> (U+1D60A),<code>𝘾</code> (U+1D63E),<code>𝙲</code> (U+1D672)</li>
+<li><code>D</code>: <code>ᴰ</code> (U+1D30),<code>ⅅ</code> (U+2145),<code>Ⅾ</code> (U+216E),<code>Ｄ</code> (U+FF24),<code>𝐃</code> (U+1D403),<code>𝐷</code> (U+1D437),<code>𝑫</code> (U+1D46B),<code>𝒟</code> (U+1D49F),<code>𝓓</code> (U+1D4D3),<code>𝔇</code> (U+1D507),<code>𝔻</code> (U+1D53B),<code>𝕯</code> (U+1D56F),<code>𝖣</code> (U+1D5A3),<code>𝗗</code> (U+1D5D7),<code>𝘋</code> (U+1D60B),<code>𝘿</code> (U+1D63F),<code>𝙳</code> (U+1D673)</li>
+<li><code>DZ</code>: <code>Ǳ</code> (U+1F1)</li>
+<li><code>Dz</code>: <code>ǲ</code> (U+1F2)</li>
+<li><code>E</code>: <code>ᴱ</code> (U+1D31),<code>ℰ</code> (U+2130),<code>Ｅ</code> (U+FF25),<code>𝐄</code> (U+1D404),<code>𝐸</code> (U+1D438),<code>𝑬</code> (U+1D46C),<code>𝓔</code> (U+1D4D4),<code>𝔈</code> (U+1D508),<code>𝔼</code> (U+1D53C),<code>𝕰</code> (U+1D570),<code>𝖤</code> (U+1D5A4),<code>𝗘</code> (U+1D5D8),<code>𝘌</code> (U+1D60C),<code>𝙀</code> (U+1D640),<code>𝙴</code> (U+1D674)</li>
+<li><code>F</code>: <code>ℱ</code> (U+2131),<code>Ｆ</code> (U+FF26),<code>𝐅</code> (U+1D405),<code>𝐹</code> (U+1D439),<code>𝑭</code> (U+1D46D),<code>𝓕</code> (U+1D4D5),<code>𝔉</code> (U+1D509),<code>𝔽</code> (U+1D53D),<code>𝕱</code> (U+1D571),<code>𝖥</code> (U+1D5A5),<code>𝗙</code> (U+1D5D9),<code>𝘍</code> (U+1D60D),<code>𝙁</code> (U+1D641),<code>𝙵</code> (U+1D675)</li>
+<li><code>G</code>: <code>ᴳ</code> (U+1D33),<code>Ｇ</code> (U+FF27),<code>𝐆</code> (U+1D406),<code>𝐺</code> (U+1D43A),<code>𝑮</code> (U+1D46E),<code>𝒢</code> (U+1D4A2),<code>𝓖</code> (U+1D4D6),<code>𝔊</code> (U+1D50A),<code>𝔾</code> (U+1D53E),<code>𝕲</code> (U+1D572),<code>𝖦</code> (U+1D5A6),<code>𝗚</code> (U+1D5DA),<code>𝘎</code> (U+1D60E),<code>𝙂</code> (U+1D642),<code>𝙶</code> (U+1D676)</li>
+<li><code>H</code>: <code>ᴴ</code> (U+1D34),<code>ℋ</code> (U+210B),<code>ℌ</code> (U+210C),<code>ℍ</code> (U+210D),<code>Ｈ</code> (U+FF28),<code>𝐇</code> (U+1D407),<code>𝐻</code> (U+1D43B),<code>𝑯</code> (U+1D46F),<code>𝓗</code> (U+1D4D7),<code>𝕳</code> (U+1D573),<code>𝖧</code> (U+1D5A7),<code>𝗛</code> (U+1D5DB),<code>𝘏</code> (U+1D60F),<code>𝙃</code> (U+1D643),<code>𝙷</code> (U+1D677)</li>
+<li><code>I</code>: <code>ᴵ</code> (U+1D35),<code>ℐ</code> (U+2110),<code>ℑ</code> (U+2111),<code>Ⅰ</code> (U+2160),<code>Ｉ</code> (U+FF29),<code>𝐈</code> (U+1D408),<code>𝐼</code> (U+1D43C),<code>𝑰</code> (U+1D470),<code>𝓘</code> (U+1D4D8),<code>𝕀</code> (U+1D540),<code>𝕴</code> (U+1D574),<code>𝖨</code> (U+1D5A8),<code>𝗜</code> (U+1D5DC),<code>𝘐</code> (U+1D610),<code>𝙄</code> (U+1D644),<code>𝙸</code> (U+1D678)</li>
+<li><code>II</code>: <code>Ⅱ</code> (U+2161)</li>
+<li><code>III</code>: <code>Ⅲ</code> (U+2162)</li>
+<li><code>IJ</code>: <code>Ĳ</code> (U+132)</li>
+<li><code>IV</code>: <code>Ⅳ</code> (U+2163)</li>
+<li><code>IX</code>: <code>Ⅸ</code> (U+2168)</li>
+<li><code>J</code>: <code>ᴶ</code> (U+1D36),<code>Ｊ</code> (U+FF2A),<code>𝐉</code> (U+1D409),<code>𝐽</code> (U+1D43D),<code>𝑱</code> (U+1D471),<code>𝒥</code> (U+1D4A5),<code>𝓙</code> (U+1D4D9),<code>𝔍</code> (U+1D50D),<code>𝕁</code> (U+1D541),<code>𝕵</code> (U+1D575),<code>𝖩</code> (U+1D5A9),<code>𝗝</code> (U+1D5DD),<code>𝘑</code> (U+1D611),<code>𝙅</code> (U+1D645),<code>𝙹</code> (U+1D679)</li>
+<li><code>K</code>: <code>ᴷ</code> (U+1D37),<code>K</code> (U+212A),<code>Ｋ</code> (U+FF2B),<code>𝐊</code> (U+1D40A),<code>𝐾</code> (U+1D43E),<code>𝑲</code> (U+1D472),<code>𝒦</code> (U+1D4A6),<code>𝓚</code> (U+1D4DA),<code>𝔎</code> (U+1D50E),<code>𝕂</code> (U+1D542),<code>𝕶</code> (U+1D576),<code>𝖪</code> (U+1D5AA),<code>𝗞</code> (U+1D5DE),<code>𝘒</code> (U+1D612),<code>𝙆</code> (U+1D646),<code>𝙺</code> (U+1D67A)</li>
+<li><code>L</code>: <code>ᴸ</code> (U+1D38),<code>ℒ</code> (U+2112),<code>Ⅼ</code> (U+216C),<code>Ｌ</code> (U+FF2C),<code>𝐋</code> (U+1D40B),<code>𝐿</code> (U+1D43F),<code>𝑳</code> (U+1D473),<code>𝓛</code> (U+1D4DB),<code>𝔏</code> (U+1D50F),<code>𝕃</code> (U+1D543),<code>𝕷</code> (U+1D577),<code>𝖫</code> (U+1D5AB),<code>𝗟</code> (U+1D5DF),<code>𝘓</code> (U+1D613),<code>𝙇</code> (U+1D647),<code>𝙻</code> (U+1D67B)</li>
+<li><code>LJ</code>: <code>Ǉ</code> (U+1C7)</li>
+<li><code>Lj</code>: <code>ǈ</code> (U+1C8)</li>
+<li><code>M</code>: <code>ᴹ</code> (U+1D39),<code>ℳ</code> (U+2133),<code>Ⅿ</code> (U+216F),<code>Ｍ</code> (U+FF2D),<code>𝐌</code> (U+1D40C),<code>𝑀</code> (U+1D440),<code>𝑴</code> (U+1D474),<code>𝓜</code> (U+1D4DC),<code>𝔐</code> (U+1D510),<code>𝕄</code> (U+1D544),<code>𝕸</code> (U+1D578),<code>𝖬</code> (U+1D5AC),<code>𝗠</code> (U+1D5E0),<code>𝘔</code> (U+1D614),<code>𝙈</code> (U+1D648),<code>𝙼</code> (U+1D67C)</li>
+<li><code>N</code>: <code>ᴺ</code> (U+1D3A),<code>ℕ</code> (U+2115),<code>Ｎ</code> (U+FF2E),<code>𝐍</code> (U+1D40D),<code>𝑁</code> (U+1D441),<code>𝑵</code> (U+1D475),<code>𝒩</code> (U+1D4A9),<code>𝓝</code> (U+1D4DD),<code>𝔑</code> (U+1D511),<code>𝕹</code> (U+1D579),<code>𝖭</code> (U+1D5AD),<code>𝗡</code> (U+1D5E1),<code>𝘕</code> (U+1D615),<code>𝙉</code> (U+1D649),<code>𝙽</code> (U+1D67D)</li>
+<li><code>NJ</code>: <code>Ǌ</code> (U+1CA)</li>
+<li><code>Nj</code>: <code>ǋ</code> (U+1CB)</li>
+<li><code>O</code>: <code>ᴼ</code> (U+1D3C),<code>Ｏ</code> (U+FF2F),<code>𝐎</code> (U+1D40E),<code>𝑂</code> (U+1D442),<code>𝑶</code> (U+1D476),<code>𝒪</code> (U+1D4AA),<code>𝓞</code> (U+1D4DE),<code>𝔒</code> (U+1D512),<code>𝕆</code> (U+1D546),<code>𝕺</code> (U+1D57A),<code>𝖮</code> (U+1D5AE),<code>𝗢</code> (U+1D5E2),<code>𝘖</code> (U+1D616),<code>𝙊</code> (U+1D64A),<code>𝙾</code> (U+1D67E)</li>
+<li><code>P</code>: <code>ᴾ</code> (U+1D3E),<code>ℙ</code> (U+2119),<code>Ｐ</code> (U+FF30),<code>𝐏</code> (U+1D40F),<code>𝑃</code> (U+1D443),<code>𝑷</code> (U+1D477),<code>𝒫</code> (U+1D4AB),<code>𝓟</code> (U+1D4DF),<code>𝔓</code> (U+1D513),<code>𝕻</code> (U+1D57B),<code>𝖯</code> (U+1D5AF),<code>𝗣</code> (U+1D5E3),<code>𝘗</code> (U+1D617),<code>𝙋</code> (U+1D64B),<code>𝙿</code> (U+1D67F)</li>
+<li><code>Q</code>: <code>ℚ</code> (U+211A),<code>Ｑ</code> (U+FF31),<code>𝐐</code> (U+1D410),<code>𝑄</code> (U+1D444),<code>𝑸</code> (U+1D478),<code>𝒬</code> (U+1D4AC),<code>𝓠</code> (U+1D4E0),<code>𝔔</code> (U+1D514),<code>𝕼</code> (U+1D57C),<code>𝖰</code> (U+1D5B0),<code>𝗤</code> (U+1D5E4),<code>𝘘</code> (U+1D618),<code>𝙌</code> (U+1D64C),<code>𝚀</code> (U+1D680)</li>
+<li><code>R</code>: <code>ᴿ</code> (U+1D3F),<code>ℛ</code> (U+211B),<code>ℜ</code> (U+211C),<code>ℝ</code> (U+211D),<code>Ｒ</code> (U+FF32),<code>𝐑</code> (U+1D411),<code>𝑅</code> (U+1D445),<code>𝑹</code> (U+1D479),<code>𝓡</code> (U+1D4E1),<code>𝕽</code> (U+1D57D),<code>𝖱</code> (U+1D5B1),<code>𝗥</code> (U+1D5E5),<code>𝘙</code> (U+1D619),<code>𝙍</code> (U+1D64D),<code>𝚁</code> (U+1D681)</li>
+<li><code>S</code>: <code>Ｓ</code> (U+FF33),<code>𝐒</code> (U+1D412),<code>𝑆</code> (U+1D446),<code>𝑺</code> (U+1D47A),<code>𝒮</code> (U+1D4AE),<code>𝓢</code> (U+1D4E2),<code>𝔖</code> (U+1D516),<code>𝕊</code> (U+1D54A),<code>𝕾</code> (U+1D57E),<code>𝖲</code> (U+1D5B2),<code>𝗦</code> (U+1D5E6),<code>𝘚</code> (U+1D61A),<code>𝙎</code> (U+1D64E),<code>𝚂</code> (U+1D682)</li>
+<li><code>T</code>: <code>ᵀ</code> (U+1D40),<code>Ｔ</code> (U+FF34),<code>𝐓</code> (U+1D413),<code>𝑇</code> (U+1D447),<code>𝑻</code> (U+1D47B),<code>𝒯</code> (U+1D4AF),<code>𝓣</code> (U+1D4E3),<code>𝔗</code> (U+1D517),<code>𝕋</code> (U+1D54B),<code>𝕿</code> (U+1D57F),<code>𝖳</code> (U+1D5B3),<code>𝗧</code> (U+1D5E7),<code>𝘛</code> (U+1D61B),<code>𝙏</code> (U+1D64F),<code>𝚃</code> (U+1D683)</li>
+<li><code>U</code>: <code>ᵁ</code> (U+1D41),<code>Ｕ</code> (U+FF35),<code>𝐔</code> (U+1D414),<code>𝑈</code> (U+1D448),<code>𝑼</code> (U+1D47C),<code>𝒰</code> (U+1D4B0),<code>𝓤</code> (U+1D4E4),<code>𝔘</code> (U+1D518),<code>𝕌</code> (U+1D54C),<code>𝖀</code> (U+1D580),<code>𝖴</code> (U+1D5B4),<code>𝗨</code> (U+1D5E8),<code>𝘜</code> (U+1D61C),<code>𝙐</code> (U+1D650),<code>𝚄</code> (U+1D684)</li>
+<li><code>V</code>: <code>Ⅴ</code> (U+2164),<code>ⱽ</code> (U+2C7D),<code>Ｖ</code> (U+FF36),<code>𝐕</code> (U+1D415),<code>𝑉</code> (U+1D449),<code>𝑽</code> (U+1D47D),<code>𝒱</code> (U+1D4B1),<code>𝓥</code> (U+1D4E5),<code>𝔙</code> (U+1D519),<code>𝕍</code> (U+1D54D),<code>𝖁</code> (U+1D581),<code>𝖵</code> (U+1D5B5),<code>𝗩</code> (U+1D5E9),<code>𝘝</code> (U+1D61D),<code>𝙑</code> (U+1D651),<code>𝚅</code> (U+1D685)</li>
+<li><code>VI</code>: <code>Ⅵ</code> (U+2165)</li>
+<li><code>VII</code>: <code>Ⅶ</code> (U+2166)</li>
+<li><code>VIII</code>: <code>Ⅷ</code> (U+2167)</li>
+<li><code>W</code>: <code>ᵂ</code> (U+1D42),<code>Ｗ</code> (U+FF37),<code>𝐖</code> (U+1D416),<code>𝑊</code> (U+1D44A),<code>𝑾</code> (U+1D47E),<code>𝒲</code> (U+1D4B2),<code>𝓦</code> (U+1D4E6),<code>𝔚</code> (U+1D51A),<code>𝕎</code> (U+1D54E),<code>𝖂</code> (U+1D582),<code>𝖶</code> (U+1D5B6),<code>𝗪</code> (U+1D5EA),<code>𝘞</code> (U+1D61E),<code>𝙒</code> (U+1D652),<code>𝚆</code> (U+1D686)</li>
+<li><code>X</code>: <code>Ⅹ</code> (U+2169),<code>Ｘ</code> (U+FF38),<code>𝐗</code> (U+1D417),<code>𝑋</code> (U+1D44B),<code>𝑿</code> (U+1D47F),<code>𝒳</code> (U+1D4B3),<code>𝓧</code> (U+1D4E7),<code>𝔛</code> (U+1D51B),<code>𝕏</code> (U+1D54F),<code>𝖃</code> (U+1D583),<code>𝖷</code> (U+1D5B7),<code>𝗫</code> (U+1D5EB),<code>𝘟</code> (U+1D61F),<code>𝙓</code> (U+1D653),<code>𝚇</code> (U+1D687)</li>
+<li><code>XI</code>: <code>Ⅺ</code> (U+216A)</li>
+<li><code>XII</code>: <code>Ⅻ</code> (U+216B)</li>
+<li><code>Y</code>: <code>Ｙ</code> (U+FF39),<code>𝐘</code> (U+1D418),<code>𝑌</code> (U+1D44C),<code>𝒀</code> (U+1D480),<code>𝒴</code> (U+1D4B4),<code>𝓨</code> (U+1D4E8),<code>𝔜</code> (U+1D51C),<code>𝕐</code> (U+1D550),<code>𝖄</code> (U+1D584),<code>𝖸</code> (U+1D5B8),<code>𝗬</code> (U+1D5EC),<code>𝘠</code> (U+1D620),<code>𝙔</code> (U+1D654),<code>𝚈</code> (U+1D688)</li>
+<li><code>Z</code>: <code>ℤ</code> (U+2124),<code>ℨ</code> (U+2128),<code>Ｚ</code> (U+FF3A),<code>𝐙</code> (U+1D419),<code>𝑍</code> (U+1D44D),<code>𝒁</code> (U+1D481),<code>𝒵</code> (U+1D4B5),<code>𝓩</code> (U+1D4E9),<code>𝖅</code> (U+1D585),<code>𝖹</code> (U+1D5B9),<code>𝗭</code> (U+1D5ED),<code>𝘡</code> (U+1D621),<code>𝙕</code> (U+1D655),<code>𝚉</code> (U+1D689)</li>
+<li><code>_</code>: <code>︳</code> (U+FE33),<code>︴</code> (U+FE34),<code>﹍</code> (U+FE4D),<code>﹎</code> (U+FE4E),<code>﹏</code> (U+FE4F),<code>＿</code> (U+FF3F)</li>
+<li><code>a</code>: <code>ª</code> (U+AA),<code>ᵃ</code> (U+1D43),<code>ₐ</code> (U+2090),<code>ａ</code> (U+FF41),<code>𝐚</code> (U+1D41A),<code>𝑎</code> (U+1D44E),<code>𝒂</code> (U+1D482),<code>𝒶</code> (U+1D4B6),<code>𝓪</code> (U+1D4EA),<code>𝔞</code> (U+1D51E),<code>𝕒</code> (U+1D552),<code>𝖆</code> (U+1D586),<code>𝖺</code> (U+1D5BA),<code>𝗮</code> (U+1D5EE),<code>𝘢</code> (U+1D622),<code>𝙖</code> (U+1D656),<code>𝚊</code> (U+1D68A)</li>
+<li><code>b</code>: <code>ᵇ</code> (U+1D47),<code>ｂ</code> (U+FF42),<code>𝐛</code> (U+1D41B),<code>𝑏</code> (U+1D44F),<code>𝒃</code> (U+1D483),<code>𝒷</code> (U+1D4B7),<code>𝓫</code> (U+1D4EB),<code>𝔟</code> (U+1D51F),<code>𝕓</code> (U+1D553),<code>𝖇</code> (U+1D587),<code>𝖻</code> (U+1D5BB),<code>𝗯</code> (U+1D5EF),<code>𝘣</code> (U+1D623),<code>𝙗</code> (U+1D657),<code>𝚋</code> (U+1D68B)</li>
+<li><code>c</code>: <code>ᶜ</code> (U+1D9C),<code>ⅽ</code> (U+217D),<code>ｃ</code> (U+FF43),<code>𝐜</code> (U+1D41C),<code>𝑐</code> (U+1D450),<code>𝒄</code> (U+1D484),<code>𝒸</code> (U+1D4B8),<code>𝓬</code> (U+1D4EC),<code>𝔠</code> (U+1D520),<code>𝕔</code> (U+1D554),<code>𝖈</code> (U+1D588),<code>𝖼</code> (U+1D5BC),<code>𝗰</code> (U+1D5F0),<code>𝘤</code> (U+1D624),<code>𝙘</code> (U+1D658),<code>𝚌</code> (U+1D68C)</li>
+<li><code>d</code>: <code>ᵈ</code> (U+1D48),<code>ⅆ</code> (U+2146),<code>ⅾ</code> (U+217E),<code>ｄ</code> (U+FF44),<code>𝐝</code> (U+1D41D),<code>𝑑</code> (U+1D451),<code>𝒅</code> (U+1D485),<code>𝒹</code> (U+1D4B9),<code>𝓭</code> (U+1D4ED),<code>𝔡</code> (U+1D521),<code>𝕕</code> (U+1D555),<code>𝖉</code> (U+1D589),<code>𝖽</code> (U+1D5BD),<code>𝗱</code> (U+1D5F1),<code>𝘥</code> (U+1D625),<code>𝙙</code> (U+1D659),<code>𝚍</code> (U+1D68D)</li>
+<li><code>dz</code>: <code>ǳ</code> (U+1F3)</li>
+<li><code>e</code>: <code>ᵉ</code> (U+1D49),<code>ₑ</code> (U+2091),<code>ℯ</code> (U+212F),<code>ⅇ</code> (U+2147),<code>ｅ</code> (U+FF45),<code>𝐞</code> (U+1D41E),<code>𝑒</code> (U+1D452),<code>𝒆</code> (U+1D486),<code>𝓮</code> (U+1D4EE),<code>𝔢</code> (U+1D522),<code>𝕖</code> (U+1D556),<code>𝖊</code> (U+1D58A),<code>𝖾</code> (U+1D5BE),<code>𝗲</code> (U+1D5F2),<code>𝘦</code> (U+1D626),<code>𝙚</code> (U+1D65A),<code>𝚎</code> (U+1D68E)</li>
+<li><code>f</code>: <code>ᶠ</code> (U+1DA0),<code>ｆ</code> (U+FF46),<code>𝐟</code> (U+1D41F),<code>𝑓</code> (U+1D453),<code>𝒇</code> (U+1D487),<code>𝒻</code> (U+1D4BB),<code>𝓯</code> (U+1D4EF),<code>𝔣</code> (U+1D523),<code>𝕗</code> (U+1D557),<code>𝖋</code> (U+1D58B),<code>𝖿</code> (U+1D5BF),<code>𝗳</code> (U+1D5F3),<code>𝘧</code> (U+1D627),<code>𝙛</code> (U+1D65B),<code>𝚏</code> (U+1D68F)</li>
+<li><code>ff</code>: <code>ﬀ</code> (U+FB00)</li>
+<li><code>ffi</code>: <code>ﬃ</code> (U+FB03)</li>
+<li><code>ffl</code>: <code>ﬄ</code> (U+FB04)</li>
+<li><code>fi</code>: <code>ﬁ</code> (U+FB01)</li>
+<li><code>fl</code>: <code>ﬂ</code> (U+FB02)</li>
+<li><code>g</code>: <code>ᵍ</code> (U+1D4D),<code>ℊ</code> (U+210A),<code>ｇ</code> (U+FF47),<code>𝐠</code> (U+1D420),<code>𝑔</code> (U+1D454),<code>𝒈</code> (U+1D488),<code>𝓰</code> (U+1D4F0),<code>𝔤</code> (U+1D524),<code>𝕘</code> (U+1D558),<code>𝖌</code> (U+1D58C),<code>𝗀</code> (U+1D5C0),<code>𝗴</code> (U+1D5F4),<code>𝘨</code> (U+1D628),<code>𝙜</code> (U+1D65C),<code>𝚐</code> (U+1D690)</li>
+<li><code>h</code>: <code>ʰ</code> (U+2B0),<code>ₕ</code> (U+2095),<code>ℎ</code> (U+210E),<code>ｈ</code> (U+FF48),<code>𝐡</code> (U+1D421),<code>𝒉</code> (U+1D489),<code>𝒽</code> (U+1D4BD),<code>𝓱</code> (U+1D4F1),<code>𝔥</code> (U+1D525),<code>𝕙</code> (U+1D559),<code>𝖍</code> (U+1D58D),<code>𝗁</code> (U+1D5C1),<code>𝗵</code> (U+1D5F5),<code>𝘩</code> (U+1D629),<code>𝙝</code> (U+1D65D),<code>𝚑</code> (U+1D691)</li>
+<li><code>i</code>: <code>ᵢ</code> (U+1D62),<code>ⁱ</code> (U+2071),<code>ℹ</code> (U+2139),<code>ⅈ</code> (U+2148),<code>ⅰ</code> (U+2170),<code>ｉ</code> (U+FF49),<code>𝐢</code> (U+1D422),<code>𝑖</code> (U+1D456),<code>𝒊</code> (U+1D48A),<code>𝒾</code> (U+1D4BE),<code>𝓲</code> (U+1D4F2),<code>𝔦</code> (U+1D526),<code>𝕚</code> (U+1D55A),<code>𝖎</code> (U+1D58E),<code>𝗂</code> (U+1D5C2),<code>𝗶</code> (U+1D5F6),<code>𝘪</code> (U+1D62A),<code>𝙞</code> (U+1D65E),<code>𝚒</code> (U+1D692)</li>
+<li><code>ii</code>: <code>ⅱ</code> (U+2171)</li>
+<li><code>iii</code>: <code>ⅲ</code> (U+2172)</li>
+<li><code>ij</code>: <code>ĳ</code> (U+133)</li>
+<li><code>iv</code>: <code>ⅳ</code> (U+2173)</li>
+<li><code>ix</code>: <code>ⅸ</code> (U+2178)</li>
+<li><code>j</code>: <code>ʲ</code> (U+2B2),<code>ⅉ</code> (U+2149),<code>ⱼ</code> (U+2C7C),<code>ｊ</code> (U+FF4A),<code>𝐣</code> (U+1D423),<code>𝑗</code> (U+1D457),<code>𝒋</code> (U+1D48B),<code>𝒿</code> (U+1D4BF),<code>𝓳</code> (U+1D4F3),<code>𝔧</code> (U+1D527),<code>𝕛</code> (U+1D55B),<code>𝖏</code> (U+1D58F),<code>𝗃</code> (U+1D5C3),<code>𝗷</code> (U+1D5F7),<code>𝘫</code> (U+1D62B),<code>𝙟</code> (U+1D65F),<code>𝚓</code> (U+1D693)</li>
+<li><code>k</code>: <code>ᵏ</code> (U+1D4F),<code>ₖ</code> (U+2096),<code>ｋ</code> (U+FF4B),<code>𝐤</code> (U+1D424),<code>𝑘</code> (U+1D458),<code>𝒌</code> (U+1D48C),<code>𝓀</code> (U+1D4C0),<code>𝓴</code> (U+1D4F4),<code>𝔨</code> (U+1D528),<code>𝕜</code> (U+1D55C),<code>𝖐</code> (U+1D590),<code>𝗄</code> (U+1D5C4),<code>𝗸</code> (U+1D5F8),<code>𝘬</code> (U+1D62C),<code>𝙠</code> (U+1D660),<code>𝚔</code> (U+1D694)</li>
+<li><code>l</code>: <code>ˡ</code> (U+2E1),<code>ₗ</code> (U+2097),<code>ℓ</code> (U+2113),<code>ⅼ</code> (U+217C),<code>ｌ</code> (U+FF4C),<code>𝐥</code> (U+1D425),<code>𝑙</code> (U+1D459),<code>𝒍</code> (U+1D48D),<code>𝓁</code> (U+1D4C1),<code>𝓵</code> (U+1D4F5),<code>𝔩</code> (U+1D529),<code>𝕝</code> (U+1D55D),<code>𝖑</code> (U+1D591),<code>𝗅</code> (U+1D5C5),<code>𝗹</code> (U+1D5F9),<code>𝘭</code> (U+1D62D),<code>𝙡</code> (U+1D661),<code>𝚕</code> (U+1D695)</li>
+<li><code>lj</code>: <code>ǉ</code> (U+1C9)</li>
+<li><code>m</code>: <code>ᵐ</code> (U+1D50),<code>ₘ</code> (U+2098),<code>ⅿ</code> (U+217F),<code>ｍ</code> (U+FF4D),<code>𝐦</code> (U+1D426),<code>𝑚</code> (U+1D45A),<code>𝒎</code> (U+1D48E),<code>𝓂</code> (U+1D4C2),<code>𝓶</code> (U+1D4F6),<code>𝔪</code> (U+1D52A),<code>𝕞</code> (U+1D55E),<code>𝖒</code> (U+1D592),<code>𝗆</code> (U+1D5C6),<code>𝗺</code> (U+1D5FA),<code>𝘮</code> (U+1D62E),<code>𝙢</code> (U+1D662),<code>𝚖</code> (U+1D696)</li>
+<li><code>n</code>: <code>ⁿ</code> (U+207F),<code>ₙ</code> (U+2099),<code>ｎ</code> (U+FF4E),<code>𝐧</code> (U+1D427),<code>𝑛</code> (U+1D45B),<code>𝒏</code> (U+1D48F),<code>𝓃</code> (U+1D4C3),<code>𝓷</code> (U+1D4F7),<code>𝔫</code> (U+1D52B),<code>𝕟</code> (U+1D55F),<code>𝖓</code> (U+1D593),<code>𝗇</code> (U+1D5C7),<code>𝗻</code> (U+1D5FB),<code>𝘯</code> (U+1D62F),<code>𝙣</code> (U+1D663),<code>𝚗</code> (U+1D697)</li>
+<li><code>nj</code>: <code>ǌ</code> (U+1CC)</li>
+<li><code>o</code>: <code>º</code> (U+BA),<code>ᵒ</code> (U+1D52),<code>ₒ</code> (U+2092),<code>ℴ</code> (U+2134),<code>ｏ</code> (U+FF4F),<code>𝐨</code> (U+1D428),<code>𝑜</code> (U+1D45C),<code>𝒐</code> (U+1D490),<code>𝓸</code> (U+1D4F8),<code>𝔬</code> (U+1D52C),<code>𝕠</code> (U+1D560),<code>𝖔</code> (U+1D594),<code>𝗈</code> (U+1D5C8),<code>𝗼</code> (U+1D5FC),<code>𝘰</code> (U+1D630),<code>𝙤</code> (U+1D664),<code>𝚘</code> (U+1D698)</li>
+<li><code>p</code>: <code>ᵖ</code> (U+1D56),<code>ₚ</code> (U+209A),<code>ｐ</code> (U+FF50),<code>𝐩</code> (U+1D429),<code>𝑝</code> (U+1D45D),<code>𝒑</code> (U+1D491),<code>𝓅</code> (U+1D4C5),<code>𝓹</code> (U+1D4F9),<code>𝔭</code> (U+1D52D),<code>𝕡</code> (U+1D561),<code>𝖕</code> (U+1D595),<code>𝗉</code> (U+1D5C9),<code>𝗽</code> (U+1D5FD),<code>𝘱</code> (U+1D631),<code>𝙥</code> (U+1D665),<code>𝚙</code> (U+1D699)</li>
+<li><code>q</code>: <code>ｑ</code> (U+FF51),<code>𝐪</code> (U+1D42A),<code>𝑞</code> (U+1D45E),<code>𝒒</code> (U+1D492),<code>𝓆</code> (U+1D4C6),<code>𝓺</code> (U+1D4FA),<code>𝔮</code> (U+1D52E),<code>𝕢</code> (U+1D562),<code>𝖖</code> (U+1D596),<code>𝗊</code> (U+1D5CA),<code>𝗾</code> (U+1D5FE),<code>𝘲</code> (U+1D632),<code>𝙦</code> (U+1D666),<code>𝚚</code> (U+1D69A)</li>
+<li><code>r</code>: <code>ʳ</code> (U+2B3),<code>ᵣ</code> (U+1D63),<code>ｒ</code> (U+FF52),<code>𝐫</code> (U+1D42B),<code>𝑟</code> (U+1D45F),<code>𝒓</code> (U+1D493),<code>𝓇</code> (U+1D4C7),<code>𝓻</code> (U+1D4FB),<code>𝔯</code> (U+1D52F),<code>𝕣</code> (U+1D563),<code>𝖗</code> (U+1D597),<code>𝗋</code> (U+1D5CB),<code>𝗿</code> (U+1D5FF),<code>𝘳</code> (U+1D633),<code>𝙧</code> (U+1D667),<code>𝚛</code> (U+1D69B)</li>
+<li><code>s</code>: <code>ſ</code> (U+17F),<code>ˢ</code> (U+2E2),<code>ₛ</code> (U+209B),<code>ｓ</code> (U+FF53),<code>𝐬</code> (U+1D42C),<code>𝑠</code> (U+1D460),<code>𝒔</code> (U+1D494),<code>𝓈</code> (U+1D4C8),<code>𝓼</code> (U+1D4FC),<code>𝔰</code> (U+1D530),<code>𝕤</code> (U+1D564),<code>𝖘</code> (U+1D598),<code>𝗌</code> (U+1D5CC),<code>𝘀</code> (U+1D600),<code>𝘴</code> (U+1D634),<code>𝙨</code> (U+1D668),<code>𝚜</code> (U+1D69C)</li>
+<li><code>st</code>: <code>ﬅ</code> (U+FB05),<code>ﬆ</code> (U+FB06)</li>
+<li><code>t</code>: <code>ᵗ</code> (U+1D57),<code>ₜ</code> (U+209C),<code>ｔ</code> (U+FF54),<code>𝐭</code> (U+1D42D),<code>𝑡</code> (U+1D461),<code>𝒕</code> (U+1D495),<code>𝓉</code> (U+1D4C9),<code>𝓽</code> (U+1D4FD),<code>𝔱</code> (U+1D531),<code>𝕥</code> (U+1D565),<code>𝖙</code> (U+1D599),<code>𝗍</code> (U+1D5CD),<code>𝘁</code> (U+1D601),<code>𝘵</code> (U+1D635),<code>𝙩</code> (U+1D669),<code>𝚝</code> (U+1D69D)</li>
+<li><code>u</code>: <code>ᵘ</code> (U+1D58),<code>ᵤ</code> (U+1D64),<code>ｕ</code> (U+FF55),<code>𝐮</code> (U+1D42E),<code>𝑢</code> (U+1D462),<code>𝒖</code> (U+1D496),<code>𝓊</code> (U+1D4CA),<code>𝓾</code> (U+1D4FE),<code>𝔲</code> (U+1D532),<code>𝕦</code> (U+1D566),<code>𝖚</code> (U+1D59A),<code>𝗎</code> (U+1D5CE),<code>𝘂</code> (U+1D602),<code>𝘶</code> (U+1D636),<code>𝙪</code> (U+1D66A),<code>𝚞</code> (U+1D69E)</li>
+<li><code>v</code>: <code>ᵛ</code> (U+1D5B),<code>ᵥ</code> (U+1D65),<code>ⅴ</code> (U+2174),<code>ｖ</code> (U+FF56),<code>𝐯</code> (U+1D42F),<code>𝑣</code> (U+1D463),<code>𝒗</code> (U+1D497),<code>𝓋</code> (U+1D4CB),<code>𝓿</code> (U+1D4FF),<code>𝔳</code> (U+1D533),<code>𝕧</code> (U+1D567),<code>𝖛</code> (U+1D59B),<code>𝗏</code> (U+1D5CF),<code>𝘃</code> (U+1D603),<code>𝘷</code> (U+1D637),<code>𝙫</code> (U+1D66B),<code>𝚟</code> (U+1D69F)</li>
+<li><code>vi</code>: <code>ⅵ</code> (U+2175)</li>
+<li><code>vii</code>: <code>ⅶ</code> (U+2176)</li>
+<li><code>viii</code>: <code>ⅷ</code> (U+2177)</li>
+<li><code>w</code>: <code>ʷ</code> (U+2B7),<code>ｗ</code> (U+FF57),<code>𝐰</code> (U+1D430),<code>𝑤</code> (U+1D464),<code>𝒘</code> (U+1D498),<code>𝓌</code> (U+1D4CC),<code>𝔀</code> (U+1D500),<code>𝔴</code> (U+1D534),<code>𝕨</code> (U+1D568),<code>𝖜</code> (U+1D59C),<code>𝗐</code> (U+1D5D0),<code>𝘄</code> (U+1D604),<code>𝘸</code> (U+1D638),<code>𝙬</code> (U+1D66C),<code>𝚠</code> (U+1D6A0)</li>
+<li><code>x</code>: <code>ˣ</code> (U+2E3),<code>ₓ</code> (U+2093),<code>ⅹ</code> (U+2179),<code>ｘ</code> (U+FF58),<code>𝐱</code> (U+1D431),<code>𝑥</code> (U+1D465),<code>𝒙</code> (U+1D499),<code>𝓍</code> (U+1D4CD),<code>𝔁</code> (U+1D501),<code>𝔵</code> (U+1D535),<code>𝕩</code> (U+1D569),<code>𝖝</code> (U+1D59D),<code>𝗑</code> (U+1D5D1),<code>𝘅</code> (U+1D605),<code>𝘹</code> (U+1D639),<code>𝙭</code> (U+1D66D),<code>𝚡</code> (U+1D6A1)</li>
+<li><code>xi</code>: <code>ⅺ</code> (U+217A)</li>
+<li><code>xii</code>: <code>ⅻ</code> (U+217B)</li>
+<li><code>y</code>: <code>ʸ</code> (U+2B8),<code>ｙ</code> (U+FF59),<code>𝐲</code> (U+1D432),<code>𝑦</code> (U+1D466),<code>𝒚</code> (U+1D49A),<code>𝓎</code> (U+1D4CE),<code>𝔂</code> (U+1D502),<code>𝔶</code> (U+1D536),<code>𝕪</code> (U+1D56A),<code>𝖞</code> (U+1D59E),<code>𝗒</code> (U+1D5D2),<code>𝘆</code> (U+1D606),<code>𝘺</code> (U+1D63A),<code>𝙮</code> (U+1D66E),<code>𝚢</code> (U+1D6A2)</li>
+<li><code>z</code>: <code>ᶻ</code> (U+1DBB),<code>ｚ</code> (U+FF5A),<code>𝐳</code> (U+1D433),<code>𝑧</code> (U+1D467),<code>𝒛</code> (U+1D49B),<code>𝓏</code> (U+1D4CF),<code>𝔃</code> (U+1D503),<code>𝔷</code> (U+1D537),<code>𝕫</code> (U+1D56B),<code>𝖟</code> (U+1D59F),<code>𝗓</code> (U+1D5D3),<code>𝘇</code> (U+1D607),<code>𝘻</code> (U+1D63B),<code>𝙯</code> (U+1D66F),<code>𝚣</code> (U+1D6A3)</li>
+</ul></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

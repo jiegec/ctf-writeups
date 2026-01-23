@@ -1,0 +1,644 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-10-watctf-f25/stream-cipher-fans-when.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>stream-cipher-fans-when - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#stream-cipher-fans-when" class="nav-link">stream-cipher-fans-when</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="stream-cipher-fans-when">stream-cipher-fans-when</h1>
+<pre class="highlight"><code>Written by virchau13
+
+They don't call it a CHF for nothing</code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">import numpy as np, itertools, random
+
+CHUNK_SIZE = 256
+shared_key = np.random.permutation(np.arange(CHUNK_SIZE))
+
+def apply_perm(chunk):
+    global shared_key
+    assert len(chunk) == CHUNK_SIZE
+    return np.array(list(chunk), dtype=np.uint8)[shared_key]
+
+def chf(data):
+    state = np.zeros(CHUNK_SIZE, dtype=np.uint8)
+    for i in range(0, len(data), CHUNK_SIZE):
+        chunk = data[i:i+CHUNK_SIZE]
+        chunk += b'\0'*(CHUNK_SIZE-len(chunk))
+        state ^= apply_perm(chunk)
+    return bytes(state.tolist())
+
+def csprng():
+    counter = 0
+    while True:
+        block = chf((1337*str(counter)).encode())
+        yield block
+        counter += 1
+
+def encrypt(data):
+    for enc_block in csprng():
+        plain_block = data[:CHUNK_SIZE]
+        if len(plain_block) == 0:
+            break
+        plain_block += b'\0'*(CHUNK_SIZE - len(plain_block))
+        cipher_block = bytes([x^y for x,y in zip(plain_block, enc_block)])
+        yield cipher_block
+        data = data[CHUNK_SIZE:]
+
+with open('AIW.txt', 'rb') as f:
+    aiw = f.read()[random.randint(0, 1000):]
+
+with open('encrypted.bin', 'wb') as f:
+    for block in encrypt(aiw):
+        f.write(block)</code></pre>
+<p>The program generates key using <code>chf</code> and xors with data in <code>AIW.txt</code>, starting from random offset. Since the first key <code>chf(0)</code> is constant regardless of the private key, we can find the correct offset:</p>
+<pre class="highlight"><code class="language-python">CHUNK_SIZE = 256
+f = open("encrypted.bin", "rb")
+data = f.read()
+aiw = open("AIW-truncated.txt", "rb").read()
+for offset in range(0, 1000):
+    plain_block = aiw[offset : offset + CHUNK_SIZE]
+    cipher_block = data[0:CHUNK_SIZE]
+    enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+    if b"00000000" in enc_block:
+        # found correct offset
+        print(enc_block, offset)
+        break</code></pre>
+<p>Then for <code>chf(1)</code> to <code>chf(9)</code>, we know that the bytes of the keys can only have two possibilities and their location is the same. Since we know the plaintext, we can deduce <code>chf(1)</code> is:</p>
+<pre class="highlight"><code>b'1111111111111\x001111\x001111\x001111\x0011\x001\x001111\x0011\x00\x00\x00\x0011111111\x00111111\x00111111111\x001\x00\x0011111111111111\x00\x00\x
+001\x0011111\x00\x0011111\x0011\x001\x00\x001111111111\x00\x00111\x001\x001\x00\x00\x00111111\x00111111111111111111\x001111111\x001\x00\x00\x0011\x0
+0111111111\x0011\x00\x00111111\x001111\x00111\x001\x00\x00\x001111111111111\x0011111111\x001111111111\x00111\x0011\x0011\x00\x00\x001'</code></pre>
+<p>For <code>chf(10)</code>, the key may contain <code>\x00</code>, <code>"1"</code> or <code>"0"</code>. So we use known plaintext to recover the key:</p>
+<pre class="highlight"><code class="language-python">j = CHUNK_SIZE * 10
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b"his time?\xe2\x80\x9d she said aloud. \xe2\x80\x9cI must be\r\ngetting somewhere near the centre of the earth. Let me see: that would\r\nbe four thousand miles down, I think\xe2\x80\x94\xe2\x80\x95 (for, you see, Alice had learnt\r\nseveral things of this sort in her lessons in the schoolroom, and though this"
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+    ):
+        print(
+            i,
+            temp_enc_block[i],
+            chr(cipher_block[i]),
+            chr(cipher_block[i] ^ ord("1")),
+            chr(cipher_block[i] ^ ord("0")),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)</code></pre>
+<p>By replacing <code>1</code> and <code>0</code> to other digits, we can find all keys of <code>chf(11)</code> to <code>chf(99)</code>:</p>
+<pre class="highlight"><code class="language-python">for i in range(11, 100):
+    # 10 -&gt; xy
+    last_enc_block = (
+        temp_enc_block.replace(b"0", b"x")
+        .replace(b"1", b"y")
+        .replace(b"x", str(i % 10).encode())
+        .replace(b"y", str(i // 10).encode())
+    )
+    j = CHUNK_SIZE * i
+    cipher_block = data[j : j + CHUNK_SIZE]
+    plain_block = bytes([x ^ y for x, y in zip(last_enc_block, cipher_block)])
+    print(plain_block)
+    recons.write(plain_block)</code></pre>
+<p>Then, we manually recover <code>chf(100)</code>, <code>chf(101)</code> and <code>chf(102)</code> using known plaintext:</p>
+<pre class="highlight"><code class="language-python">j = CHUNK_SIZE * 100
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b" advisable to go with Edgar Atheling to meet William and offer him\r\nthe crown. William\xe2\x80\x99s conduct at first was moderate. But the insolence\r\nof his Normans\xe2\x80\x94\xe2\x80\x99 How are you getting on now, my dear?\xe2\x80\x9d it continued,\r\nturning to Alice as it spoke.\r\n\r\n\xe2\x80\x9cAs "
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != 1
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+    ):
+        print(
+            i,
+            temp_enc_block[i],
+            repr(chr(cipher_block[i])),
+            repr(chr(cipher_block[i] ^ 1)),
+            repr(chr(cipher_block[i] ^ ord("1"))),
+            repr(chr(cipher_block[i] ^ ord("0"))),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+enc_block_100 = temp_enc_block
+
+j = CHUNK_SIZE * 101
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b"wet as ever,\xe2\x80\x9d said Alice in a melancholy tone: \xe2\x80\x9cit doesn\xe2\x80\x99t seem to\r\ndry me at all.\xe2\x80\x9d\r\n\r\n\xe2\x80\x9cIn that case,\xe2\x80\x9d said the Dodo solemnly, rising to its feet, \xe2\x80\x9cI move\r\nthat the meeting adjourn, for the immediate adoption of more energetic\r\nremedies\xe2\x80\x94\xe2\x80\x9d"
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != 1
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+    ):
+        print(
+            i,
+            cipher_block[i],
+            repr(chr(cipher_block[i])),
+            repr(chr(cipher_block[i] ^ 1)),
+            repr(chr(cipher_block[i] ^ ord("1"))),
+            repr(chr(cipher_block[i] ^ ord("0"))),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+enc_block_101 = temp_enc_block
+
+j = CHUNK_SIZE * 102
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b"\r\n\r\n\xe2\x80\x9cSpeak English!\xe2\x80\x9d said the Eaglet. \xe2\x80\x9cI don\xe2\x80\x99t know the meaning of half\r\nthose long words, and, what\xe2\x80\x99s more, I don\xe2\x80\x99t believe you do either!\xe2\x80\x9d And\r\nthe Eaglet bent down its head to hide a smile: some of the other birds\r\ntittered audibly.\r\n\r\n\xe2\x80\x9c"
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != 1
+        and temp_enc_block[i] != 2
+        and temp_enc_block[i] != 3
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+        and temp_enc_block[i] != ord("2")
+        and temp_enc_block[i] != ord("3")
+    ):
+        print(
+            i,
+            cipher_block[i],
+            repr(chr(cipher_block[i])),
+            repr(chr(cipher_block[i] ^ 1)),
+            repr(chr(cipher_block[i] ^ 2)),
+            repr(chr(cipher_block[i] ^ 3)),
+            repr(chr(cipher_block[i] ^ ord("1"))),
+            repr(chr(cipher_block[i] ^ ord("0"))),
+            repr(chr(cipher_block[i] ^ ord("2"))),
+            repr(chr(cipher_block[i] ^ ord("3"))),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+enc_block_102 = temp_enc_block</code></pre>
+<p>The key is a xor-combination of three bytes of <code>str(counter)</code>, so we classify each byte of key using <code>chf(100)</code>, <code>chf(101)</code> and <code>chf(102)</code>:</p>
+<pre class="highlight"><code class="language-python"># classify each byte, 100/101/102 -&gt; xyz, xor between xyz and \x00
+res = []
+for a, b, c, index in zip(enc_block_100, enc_block_101, enc_block_102, range(256)):
+    if a == 0 and b == 1 and c == 2:
+        res.append("y xor z")
+    elif a == 1 and b == 1 and c == 1:
+        res.append("x xor y")
+    elif a == 1 and b == 0 and c == 3:
+        res.append("x xor z")
+    elif a == 49 and b == 48 and c == 51: # 103
+        res.append("x xor y xor z")
+    else:
+        res.append("unknown")
+        print(index, ":", a, b, c)</code></pre>
+<p>At last, we can recover all <code>chf(103)</code> to <code>chf(999)</code> keys using the information:</p>
+<pre class="highlight"><code class="language-python">for i in range(103, 1000):
+    x = str(i // 100).encode()
+    y = str((i / 10) % 10).encode()
+    z = str(i % 10).encode()
+    # 100/101 -&gt; xyz
+    last_enc_block = bytearray()
+    for type in res:
+        if type == "y xor z":
+            last_enc_block.append(y[0] ^ z[0])
+        elif type == "x xor y":
+            last_enc_block.append(x[0] ^ y[0])
+        elif type == "x xor z":
+            last_enc_block.append(x[0] ^ z[0])
+        elif type == "x xor y xor z":
+            last_enc_block.append(x[0] ^ y[0] ^ z[0])
+        else:
+            last_enc_block.append(0)
+    j = CHUNK_SIZE * i
+    cipher_block = data[j : j + CHUNK_SIZE]
+    if len(cipher_block) == 0:
+        break
+    plain_block = bytes([x ^ y for x, y in zip(last_enc_block, cipher_block)])
+    # print(plain_block)
+    recons.write(plain_block)</code></pre>
+<p>In the reconstructed file, at 2249th row:</p>
+<pre class="highlight"><code>“Of course it is,” said the Duchess, who seemed ready to agree to
+everything that Alice said; “there’s a large mustard-mine near here.
+And the moral of that is—‘The more there is of mine, the less there is
+of yours.’”
+
+watctf{https://graydon2.dreamwidth.org/319755.html}
+
+“Oh, I know!” exclaimed Alice, who had not attended to this last
+remark, “it’s a vegetable. It doesn’t look like one, but it is.”</code></pre>
+<p>The flag is <code>watctf{https://graydon2.dreamwidth.org/319755.html}</code>.</p>
+<p>Full code:</p>
+<pre class="highlight"><code class="language-python">CHUNK_SIZE = 256
+f = open("encrypted.bin", "rb")
+data = f.read()
+aiw = open("AIW-truncated.txt", "rb").read()
+for offset in range(0, 1000):
+    plain_block = aiw[offset : offset + CHUNK_SIZE]
+    cipher_block = data[0:CHUNK_SIZE]
+    enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+    if b"00000000" in enc_block:
+        # found correct offset
+        print(enc_block, offset)
+        break
+
+recons = open("AIW-reconstructed.txt", "wb")
+for j in range(0, CHUNK_SIZE * 9, CHUNK_SIZE):
+    plain_block = aiw[offset + j : offset + j + CHUNK_SIZE]
+    cipher_block = data[j : j + CHUNK_SIZE]
+    enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+    print(enc_block, plain_block.decode())
+    recons.write(plain_block)
+
+j = CHUNK_SIZE * 7
+plain_block = aiw[offset + j : offset + j + CHUNK_SIZE]
+cipher_block = data[j : j + CHUNK_SIZE]
+enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+print(enc_block)
+
+last_enc_block = enc_block.replace(b"7", b"8")
+j = CHUNK_SIZE * 8
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = bytes([x ^ y for x, y in zip(last_enc_block, cipher_block)])
+print(plain_block)
+
+last_enc_block = enc_block.replace(b"7", b"9")
+j = CHUNK_SIZE * 9
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = bytes([x ^ y for x, y in zip(last_enc_block, cipher_block)])
+print(plain_block)
+recons.write(plain_block)
+
+j = CHUNK_SIZE * 10
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b"his time?\xe2\x80\x9d she said aloud. \xe2\x80\x9cI must be\r\ngetting somewhere near the centre of the earth. Let me see: that would\r\nbe four thousand miles down, I think\xe2\x80\x94\xe2\x80\x95 (for, you see, Alice had learnt\r\nseveral things of this sort in her lessons in the schoolroom, and though this"
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+    ):
+        print(
+            i,
+            temp_enc_block[i],
+            chr(cipher_block[i]),
+            chr(cipher_block[i] ^ ord("1")),
+            chr(cipher_block[i] ^ ord("0")),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+
+for i in range(11, 100):
+    # 10 -&gt; xy
+    last_enc_block = (
+        temp_enc_block.replace(b"0", b"x")
+        .replace(b"1", b"y")
+        .replace(b"x", str(i % 10).encode())
+        .replace(b"y", str(i // 10).encode())
+    )
+    j = CHUNK_SIZE * i
+    cipher_block = data[j : j + CHUNK_SIZE]
+    plain_block = bytes([x ^ y for x, y in zip(last_enc_block, cipher_block)])
+    print(plain_block)
+    recons.write(plain_block)
+
+j = CHUNK_SIZE * 100
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b" advisable to go with Edgar Atheling to meet William and offer him\r\nthe crown. William\xe2\x80\x99s conduct at first was moderate. But the insolence\r\nof his Normans\xe2\x80\x94\xe2\x80\x99 How are you getting on now, my dear?\xe2\x80\x9d it continued,\r\nturning to Alice as it spoke.\r\n\r\n\xe2\x80\x9cAs "
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != 1
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+    ):
+        print(
+            i,
+            temp_enc_block[i],
+            repr(chr(cipher_block[i])),
+            repr(chr(cipher_block[i] ^ 1)),
+            repr(chr(cipher_block[i] ^ ord("1"))),
+            repr(chr(cipher_block[i] ^ ord("0"))),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+enc_block_100 = temp_enc_block
+
+j = CHUNK_SIZE * 101
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b"wet as ever,\xe2\x80\x9d said Alice in a melancholy tone: \xe2\x80\x9cit doesn\xe2\x80\x99t seem to\r\ndry me at all.\xe2\x80\x9d\r\n\r\n\xe2\x80\x9cIn that case,\xe2\x80\x9d said the Dodo solemnly, rising to its feet, \xe2\x80\x9cI move\r\nthat the meeting adjourn, for the immediate adoption of more energetic\r\nremedies\xe2\x80\x94\xe2\x80\x9d"
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != 1
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+    ):
+        print(
+            i,
+            cipher_block[i],
+            repr(chr(cipher_block[i])),
+            repr(chr(cipher_block[i] ^ 1)),
+            repr(chr(cipher_block[i] ^ ord("1"))),
+            repr(chr(cipher_block[i] ^ ord("0"))),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+enc_block_101 = temp_enc_block
+
+j = CHUNK_SIZE * 102
+cipher_block = data[j : j + CHUNK_SIZE]
+plain_block = b"\r\n\r\n\xe2\x80\x9cSpeak English!\xe2\x80\x9d said the Eaglet. \xe2\x80\x9cI don\xe2\x80\x99t know the meaning of half\r\nthose long words, and, what\xe2\x80\x99s more, I don\xe2\x80\x99t believe you do either!\xe2\x80\x9d And\r\nthe Eaglet bent down its head to hide a smile: some of the other birds\r\ntittered audibly.\r\n\r\n\xe2\x80\x9c"
+print(len(plain_block))
+recons.write(plain_block)
+temp_enc_block = bytes([x ^ y for x, y in zip(plain_block, cipher_block)])
+for i in range(len(temp_enc_block)):
+    if (
+        temp_enc_block[i] != 0
+        and temp_enc_block[i] != 1
+        and temp_enc_block[i] != 2
+        and temp_enc_block[i] != 3
+        and temp_enc_block[i] != ord("0")
+        and temp_enc_block[i] != ord("1")
+        and temp_enc_block[i] != ord("2")
+        and temp_enc_block[i] != ord("3")
+    ):
+        print(
+            i,
+            cipher_block[i],
+            repr(chr(cipher_block[i])),
+            repr(chr(cipher_block[i] ^ 1)),
+            repr(chr(cipher_block[i] ^ 2)),
+            repr(chr(cipher_block[i] ^ 3)),
+            repr(chr(cipher_block[i] ^ ord("1"))),
+            repr(chr(cipher_block[i] ^ ord("0"))),
+            repr(chr(cipher_block[i] ^ ord("2"))),
+            repr(chr(cipher_block[i] ^ ord("3"))),
+        )
+        print(plain_block[i:])
+        break
+print(temp_enc_block)
+enc_block_102 = temp_enc_block
+
+# classify each byte, 100/101/102 -&gt; xyz, xor between xyz and \x00
+res = []
+for a, b, c, index in zip(enc_block_100, enc_block_101, enc_block_102, range(256)):
+    if a == 0 and b == 1 and c == 2:
+        res.append("y xor z")
+    elif a == 1 and b == 1 and c == 1:
+        res.append("x xor y")
+    elif a == 1 and b == 0 and c == 3:
+        res.append("x xor z")
+    elif a == 49 and b == 48 and c == 51: # 103
+        res.append("x xor y xor z")
+    else:
+        res.append("unknown")
+        print(index, ":", a, b, c)
+
+for i in range(103, 1000):
+    x = str(i // 100).encode()
+    y = str((i / 10) % 10).encode()
+    z = str(i % 10).encode()
+    # 100/101 -&gt; xyz
+    last_enc_block = bytearray()
+    for type in res:
+        if type == "y xor z":
+            last_enc_block.append(y[0] ^ z[0])
+        elif type == "x xor y":
+            last_enc_block.append(x[0] ^ y[0])
+        elif type == "x xor z":
+            last_enc_block.append(x[0] ^ z[0])
+        elif type == "x xor y xor z":
+            last_enc_block.append(x[0] ^ y[0] ^ z[0])
+        else:
+            last_enc_block.append(0)
+    j = CHUNK_SIZE * i
+    cipher_block = data[j : j + CHUNK_SIZE]
+    if len(cipher_block) == 0:
+        break
+    plain_block = bytes([x ^ y for x, y in zip(last_enc_block, cipher_block)])
+    # print(plain_block)
+    recons.write(plain_block)</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,433 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/puppeteer/week1/easy-re-1.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Easy RE 1 Writeup - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#easy-re-1-writeup" class="nav-link">Easy RE 1 Writeup</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#_1" class="nav-link">题目描述</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_2" class="nav-link">逆向分析</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_5" class="nav-link">攻击思路</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_6" class="nav-link">解题步骤</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#ai" class="nav-link">使用 AI 辅助逆向</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_7" class="nav-link">总结</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="easy-re-1-writeup">Easy RE 1 Writeup</h1>
+<h2 id="_1">题目描述</h2>
+<p>本题是一个简单的逆向工程挑战。程序对输入的字符串进行三个可逆的变换，然后将结果与预设的字符串进行比较。如果匹配，则说明输入的是正确的 Flag。</p>
+<h2 id="_2">逆向分析</h2>
+<p>通过反编译分析，可以识别出三个变换函数：</p>
+<h3 id="_3">变换函数分析</h3>
+<pre class="highlight"><code class="language-c">__int64 __fastcall sub_401785(__int64 a1)
+{
+  __int64 result; // rax
+  char v2; // [rsp+1Fh] [rbp-11h]
+  int v3; // [rsp+20h] [rbp-10h]
+  unsigned int k; // [rsp+24h] [rbp-Ch]
+  int j; // [rsp+28h] [rbp-8h]
+  int i; // [rsp+2Ch] [rbp-4h]
+
+  v3 = j_ifunc_417390(a1);
+  for ( i = 0; i &lt; v3; ++i )
+    *(_BYTE *)(i + a1) ^= 0x42u;
+  for ( j = 0; j &lt; v3 / 2; ++j )
+  {
+    v2 = *(_BYTE *)(j + a1);
+    *(_BYTE *)(j + a1) = *(_BYTE *)(v3 - j - 1LL + a1);
+    *(_BYTE *)(a1 + v3 - j - 1LL) = v2;
+  }
+  for ( k = 0; ; ++k )
+  {
+    result = k;
+    if ( (int)k &gt;= v3 )
+      break;
+    if ( *(char *)((int)k + a1) &lt;= 96 || *(char *)((int)k + a1) &gt; 122 )
+    {
+      if ( *(char *)((int)k + a1) &gt; 64 &amp;&amp; *(char *)((int)k + a1) &lt;= 90 )
+        *(_BYTE *)((int)k + a1) = (*(char *)((int)k + a1) - 62) % 26 + 65;
+    }
+    else
+    {
+      *(_BYTE *)((int)k + a1) = (*(char *)((int)k + a1) - 94) % 26 + 97;
+    }
+  }
+  return result;
+}</code></pre>
+<h3 id="_4">变换总结</h3>
+<ol>
+<li><strong>异或变换</strong>：每个字符与 0x42 进行异或操作</li>
+<li><strong>字符串反转</strong>：将整个字符串反转</li>
+<li><strong>凯撒密码</strong>：<ul>
+<li>小写字母 (a-z): <code>(char - 94) % 26 + 97</code>（相当于 ROT3）</li>
+<li>大写字母 (A-Z): <code>(char - 62) % 26 + 65</code>（相当于 ROT3）</li>
+<li>其他字符保持不变</li>
+</ul>
+</li>
+</ol>
+<h2 id="_5">攻击思路</h2>
+<p>由于所有变换都是可逆的，我们可以从目标字符串反向应用这些变换来恢复原始 Flag。</p>
+<h2 id="_6">解题步骤</h2>
+<pre class="highlight"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+// Reverse the transformations to find the original flag
+void reverse_transform(char *input) {
+  int len = strlen(input);
+
+  // Reverse Transformation 3: Caesar cipher -3
+  for (int i = 0; i &lt; len; i++) {
+    if (input[i] &gt;= 'a' &amp;&amp; input[i] &lt;= 'z') {
+      input[i] = ((input[i] - 'a' - 3 + 26) % 26) + 'a';
+    } else if (input[i] &gt;= 'A' &amp;&amp; input[i] &lt;= 'Z') {
+      input[i] = ((input[i] - 'A' - 3 + 26) % 26) + 'A';
+    }
+  }
+
+  // Reverse Transformation 2: Reverse the string (same as forward)
+  for (int i = 0; i &lt; len / 2; i++) {
+    char temp = input[i];
+    input[i] = input[len - i - 1];
+    input[len - i - 1] = temp;
+  }
+
+  // Reverse Transformation 1: XOR with same pattern (XOR is self-reversible)
+  for (int i = 0; i &lt; len; i++) {
+    input[i] ^= 0x42;
+  }
+}
+
+int main() {
+  char target[] = "?'/\035&amp;,7-$\0357-;9%#.$"; // The transformed flag
+
+  printf("Target string: %s\n", target);
+
+  // Create a copy to reverse
+  char flag[100];
+  strcpy(flag, target);
+
+  // Apply reverse transformations
+  reverse_transform(flag);
+
+  printf("Original flag: %s\n", flag);
+
+  return 0;
+}</code></pre>
+<h2 id="ai">使用 AI 辅助逆向</h2>
+<p>本题是由 DeepSeek 生成的，同时 DeepSeek 也能求解出本题。AI 大模型对逆向工程题目的求解能力相对较强，建议初学者在学习逆向工程时，学会如何利用大模型来辅助解题。下面是 DeepSeek 给出的分析：</p>
+<pre class="highlight"><code>Analysis Summary
+
+The binary main is a 64-bit ELF executable that performs the following
+transformations on the input flag:
+
+1. XOR with 0x42: Each character is XORed with 0x42
+2. String reversal: The entire string is reversed
+3. Caesar cipher transformation:
+  - Lowercase letters (a-z): (char - 94) % 26 + 97
+  - Uppercase letters (A-Z): (char - 62) % 26 + 65
+  - Other characters remain unchanged
+
+The expected result after these transformations is stored at memory address
+0x477010 as bytes: 0x3f 0x27 0x2f 0x1d 0x26 0x2c 0x37 0x2d 0x24 0x1d 0x37 0x2d
+0x3b 0x39 0x25 0x23 0x2e 0x24
+
+Solution
+
+I wrote a Python script that reverses these transformations and found the flag:
+
+Flag: flag{you_found_me}
+
+The flag has been verified by running it through the original binary, which
+outputs "Correct! You found the flag!"
+
+The key functions analyzed were:
+- sub_40194E: Main function that reads input and checks the flag
+- sub_401785: Transformation function that applies the three operations
+- The comparison is done against the hardcoded bytes at 0x477010</code></pre>
+<p>DeepSeek 生成的求解代码：</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+
+# The binary performs the following transformations on the input:
+# 1. XOR each character with 0x42
+# 2. Reverse the string
+# 3. Apply a Caesar cipher-like transformation:
+#    - For lowercase letters (a-z): (char - 94) % 26 + 97
+#    - For uppercase letters (A-Z): (char - 62) % 26 + 65
+#    - Other characters remain unchanged
+
+# The expected result after transformations is stored at 0x477010
+# Bytes: 0x3f 0x27 0x2f 0x1d 0x26 0x2c 0x37 0x2d 0x24 0x1d 0x37 0x2d 0x3b 0x39
+# 0x25 0x23 0x2e 0x24
+
+expected = bytes(
+    [
+        0x3F,
+        0x27,
+        0x2F,
+        0x1D,
+        0x26,
+        0x2C,
+        0x37,
+        0x2D,
+        0x24,
+        0x1D,
+        0x37,
+        0x2D,
+        0x3B,
+        0x39,
+        0x25,
+        0x23,
+        0x2E,
+        0x24,
+    ]
+)
+
+
+def reverse_transform(data):
+    # Step 3: Reverse the Caesar cipher
+    result = []
+    for byte in data:
+        if 97 &lt;= byte &lt;= 122:  # lowercase
+            # Original: (char - 94) % 26 + 97
+            # Reverse: (char - 97 + 94) % 26 + 97
+            result.append((byte - 97 + 94) % 26 + 97)
+        elif 65 &lt;= byte &lt;= 90:  # uppercase
+            # Original: (char - 62) % 26 + 65
+            # Reverse: (char - 65 + 62) % 26 + 65
+            result.append((byte - 65 + 62) % 26 + 65)
+        else:
+            result.append(byte)
+
+    # Step 2: Reverse the string
+    result = result[::-1]
+
+    # Step 1: XOR with 0x42
+    result = [byte ^ 0x42 for byte in result]
+
+    return bytes(result)
+
+
+flag = reverse_transform(expected)
+print(f"Flag: {flag.decode()}")</code></pre>
+<h2 id="_7">总结</h2>
+<p>本题展示了逆向工程中的常见模式：</p>
+<ol>
+<li><strong>识别变换序列</strong>：通过反编译识别程序对输入数据执行的操作</li>
+<li><strong>分析可逆性</strong>：确定哪些变换是可逆的，以及如何反向应用它们</li>
+<li><strong>编写求解脚本</strong>：实现反向变换来恢复原始数据</li>
+<li><strong>验证结果</strong>：确保恢复的数据符合预期格式（如 Flag 格式）</li>
+</ol>
+<p>对于初学者，建议从简单的变换序列开始练习，逐步提高对复杂算法的分析能力。同时，合理利用 AI 工具可以大大提高逆向工程的效率。</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

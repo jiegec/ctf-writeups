@@ -1,0 +1,385 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-19-hkcert-ctf-2025-quals/ezc.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>ezc - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#ezc" class="nav-link">ezc</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="ezc">ezc</h1>
+<p>Decompile the attachment:</p>
+<pre class="highlight"><code class="language-c">int __fastcall main(int argc, const char **argv, const char **envp)
+{
+  unsigned int v3; // ebx
+  __pid_t v4; // eax
+  void *v5; // rsp
+  void *v7; // rsp
+  _QWORD v8[7]; // [rsp+8h] [rbp-4A0h] BYREF
+  unsigned __int64 j; // [rsp+40h] [rbp-468h]
+  size_t v10; // [rsp+48h] [rbp-460h]
+  unsigned __int64 i; // [rsp+50h] [rbp-458h]
+  __int64 v12; // [rsp+58h] [rbp-450h]
+  _QWORD *v13; // [rsp+60h] [rbp-448h]
+  __int64 v14; // [rsp+68h] [rbp-440h]
+  void *s1; // [rsp+70h] [rbp-438h]
+  char s[1032]; // [rsp+78h] [rbp-430h] BYREF
+  unsigned __int64 v17; // [rsp+480h] [rbp-28h]
+
+  v17 = __readfsqword(0x28u);
+  v3 = time(0);
+  v4 = getpid();
+  srand((v4 ^ v3) % 0x14);
+  v12 = 35;
+  v8[4] = 36;
+  v8[5] = 0;
+  v8[2] = 36;
+  v8[3] = 0;
+  v5 = alloca(48);
+  v13 = v8;
+  for ( i = 0; i &lt; 0x24; ++i )
+    *((_BYTE *)v13 + i) = rand();
+  printf("Enter your guess (exactly %zu bytes): ", 0x24u);
+  if ( fgets(s, 1024, stdin) )
+  {
+    v10 = strlen(s);
+    if ( v10 &amp;&amp; s[v10 - 1] == 10 )
+      s[--v10] = 0;
+    if ( v10 == 36 )
+    {
+      v14 = 35;
+      v8[0] = 36;
+      v8[1] = 0;
+      v7 = alloca(48);
+      s1 = v8;
+      for ( j = 0; j &lt; 0x24; ++j )
+        *((_BYTE *)s1 + j) = *((_BYTE *)v13 + j) ^ s[j];
+      if ( !memcmp(s1, &amp;cipher, 0x24u) )
+        puts("Correct! Your input is the plaintext.");
+      else
+        puts("Incorrect.");
+      return 0;
+    }
+    else
+    {
+      printf("Wrong length: expected %zu, got %zu\n", 0x24u, v10);
+      return 1;
+    }
+  }
+  else
+  {
+    fwrite("No input\n", 1u, 9u, stderr);
+    return 1;
+  }
+}</code></pre>
+<p>Based on a random seed, it generates random array and XOR it with input. The result is compared with the <code>cipher</code> array. Since the seed is small, we can simply bruteforce it:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import subprocess
+import time
+import os
+import sys
+
+# Cipher data from binary
+cipher = bytes(
+    [
+        0x1F,
+        0xC9,
+        0xED,
+        0x29,
+        0xA6,
+        0xFE,
+        0x44,
+        0xEE,
+        0x82,
+        0x45,
+        0xE9,
+        0xD8,
+        0x7F,
+        0x42,
+        0x10,
+        0xE0,
+        0xBB,
+        0x4B,
+        0xD0,
+        0x05,
+        0x4C,
+        0x76,
+        0x90,
+        0xCB,
+        0x48,
+        0x9C,
+        0x7A,
+        0xA9,
+        0xF0,
+        0x33,
+        0x55,
+        0x25,
+        0x64,
+        0x88,
+        0x3D,
+        0xF7,
+    ]
+)
+
+
+def generate_random_bytes(seed, count=36):
+    """Generate random bytes using C rand() with given seed"""
+    import ctypes
+    import ctypes.util
+
+    # Load libc
+    libc = ctypes.CDLL(ctypes.util.find_library("c"))
+
+    # Seed rand
+    libc.srand(seed)
+
+    # Generate random bytes (rand() returns int between 0 and RAND_MAX)
+    result = bytearray()
+    for _ in range(count):
+        rand_val = libc.rand() &amp; 0xFF  # Take only lower byte
+        result.append(rand_val)
+
+    return bytes(result)
+
+
+def brute_force():
+    """Brute force all 20 possible seeds"""
+    print("Brute forcing all 20 possible seeds...")
+
+    for seed in range(20):
+        # Generate random bytes for this seed
+        random_bytes = generate_random_bytes(seed)
+
+        # Calculate plaintext: cipher XOR random_bytes
+        plaintext = bytes([cipher[i] ^ random_bytes[i] for i in range(36)])
+
+        # Check if plaintext looks like printable ASCII/flag
+        # Flag format might be hkcert25{...} or similar
+        try:
+            plaintext_str = plaintext.decode("ascii")
+            # Check if it's mostly printable
+            if all(32 &lt;= c &lt;= 126 for c in plaintext):
+                print(f"\nSeed {seed}: {plaintext_str}")
+
+                # Check for common flag patterns
+                if (
+                    b"hkcert" in plaintext.lower()
+                    or b"flag" in plaintext.lower()
+                    or b"{" in plaintext
+                ):
+                    print(f"*** POTENTIAL FLAG FOUND ***")
+                    return seed, plaintext
+        except UnicodeDecodeError:
+            # Not ASCII, skip
+            pass
+
+    return None, None
+
+
+if __name__ == "__main__":
+    print("=== ezc Challenge Solver ===")
+    print(f"Cipher length: {len(cipher)} bytes")
+
+    # First, brute force to find the correct seed
+    seed, plaintext = brute_force()
+
+    if seed is not None:
+        print(f"\nFound potential solution:")
+        print(f"  Seed: {seed}")
+        print(f"  Plaintext: {plaintext}")
+        print(f"  Plaintext (hex): {plaintext.hex()}")</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

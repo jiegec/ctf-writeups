@@ -1,0 +1,296 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-06-cracconctf2025/ecg.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>ECG - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#ecg" class="nav-link">ECG</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="ecg">ECG</h1>
+<pre class="highlight"><code>I heard that LCG can be cracked so I made my own PRNG - Exponential Congruence Generator. I used a large exponent so you can never predict it!</code></pre>
+<p>In attachment:</p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import *
+flag = "craccon{REDACTED}".encode()
+message = flag[8:-1]
+blocks = []
+
+for i in range(len(message)//4):
+  blocks.append(message[i*4:i*4+4])
+
+n = bytes_to_long(blocks[0])
+s0 =  bytes_to_long(blocks[1])
+c = bytes_to_long(blocks[2])
+m = bytes_to_long(blocks[3])
+
+assert len(blocks)==4 
+
+e = 2**65537
+s=[]
+s.append((s0*pow(m,e,n)+c)%n)
+for i in range(10):
+  s.append((s[-1]*pow(m,e,n)+c)%n)
+print(s)
+"[1471188920,8580498,528503476,577384753,534687615,631132756,1181691587,494356384,450508778,224733577,240456085]"</code></pre>
+<p>It is still a Linear Congruential Generator: <span class="arithmatex">\(s_{n+1} = as_n + b \pmod n\)</span>, here <span class="arithmatex">\(a = \mathrm{pow}(m, e, n), b = c\)</span>. So we need to recover <span class="arithmatex">\(a, b, n\)</span> first.</p>
+<p>Following <a href="https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator">Cracking a linear congruential generator</a>, we can solve <span class="arithmatex">\(n\)</span> by:</p>
+<ol>
+<li>compute differentials, <span class="arithmatex">\(t_{n+1} = s_{n+1} - s_n = as_n + b - (as_{n-1} + b) = a(s_n - s_{n-1}) = at_n \pmod n\)</span></li>
+<li>so <span class="arithmatex">\(t_{n+1}^2 - t_nt_{n+2} = 0 \pmod n\)</span>, we can solve <span class="arithmatex">\(n\)</span> by computing gcd of all <span class="arithmatex">\(t_{n+1}^2 - t_nt_{n+2}\)</span></li>
+<li>now that <code>n</code> is known, we can find <span class="arithmatex">\(a = t_{n+1}t_n^{-1} \pmod n\)</span>, and <span class="arithmatex">\(b = s_{n+1} - as_n \pmod n\)</span></li>
+<li>the last thing is to solve <span class="arithmatex">\(m^e = a \pmod n\)</span>, which is supported by sage <code>.nth_root()</code></li>
+</ol>
+<p>Code:</p>
+<pre class="highlight"><code class="language-python">from Cryptodome.Util.number import *
+import math
+
+# https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator
+numbers = [
+    1471188920,
+    8580498,
+    528503476,
+    577384753,
+    534687615,
+    631132756,
+    1181691587,
+    494356384,
+    450508778,
+    224733577,
+    240456085,
+]
+differential = []
+for i in range(len(numbers) - 1):
+    differential.append(numbers[i + 1] - numbers[i])
+
+multiples = []
+for i in range(len(differential) - 2):
+    multiples.append(differential[i] * differential[i + 2] - differential[i + 1] ** 2)
+n = math.gcd(*multiples)
+print("n", long_to_bytes(int(n)))
+
+# this is pow(m,e,n)
+a = differential[2] * pow(differential[1], -1, n) % n
+c = (numbers[1] - a * numbers[0]) % n
+print("c", long_to_bytes(int(c)))
+
+# solve pow(m,e,n)=a
+e = 2**65537
+K = GF(n)
+ms = K(a).nth_root(e, all=True)
+for m in ms:
+    print("m", long_to_bytes(int(m)))
+
+# solve (s0*a+c)%n=numbers[0]
+s0 = (numbers[0] - c) * pow(a, -1, n) % n
+print("s0", long_to_bytes(int(s0)))
+
+print(
+    long_to_bytes(int(n))
+    + long_to_bytes(int(s0))
+    + long_to_bytes(int(c))
+    + long_to_bytes(int(m))
+)</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code>n b'Y0U_'
+c b'K3D_'
+m b'%\xed\x0e&gt;'
+m b'3CG!'
+s0 b'CR4C'
+b'Y0U_CR4CK3D_3CG!'</code></pre>
+<p>Note that there are more then one possible <code>m</code>, but only one of them corresponds to printable characters.</p>
+<p>Flag: <code>CRACCON{Y0U_CR4CK3D_3CG!}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

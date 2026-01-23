@@ -1,0 +1,440 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-20-tsg-ctf-2025/ptqagain.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>PtQagain - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#ptqagain" class="nav-link">PtQagain</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#tsg-ctf-2025-ptqagain-writeup" class="nav-link">TSG CTF 2025 - PtQagain Writeup</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#challenge-description" class="nav-link">Challenge Description</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#files-provided" class="nav-link">Files Provided</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#initial-observations" class="nav-link">Initial Observations</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#mathematical-analysis" class="nav-link">Mathematical Analysis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#attack-strategy" class="nav-link">Attack Strategy</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#exploit-implementation" class="nav-link">Exploit Implementation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#results" class="nav-link">Results</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#why-this-works" class="nav-link">Why This Works</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#lessons-learned" class="nav-link">Lessons Learned</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#flag" class="nav-link">Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="ptqagain">PtQagain</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">from secret import p, q
+import os
+from Crypto.Util.number import bytes_to_long, isPrime
+
+assert isPrime(p) and p.bit_length() &lt;= 512
+assert isPrime(q) and q.bit_length() &lt;= 512
+
+with open('flag.txt', 'rb') as f:
+    FLAG = f.read()
+
+N = p * q
+
+e1 = 65537
+e2 = 65583
+
+m = bytes_to_long(FLAG)
+c = pow(m, e1, N)
+
+c1 = pow(p + q, e2, N)
+
+p = str(p)
+q = str(q)
+c2 = pow(int(p + q), e2, N)
+
+print(f'{N = }')
+print(f'{e1 = }')
+print(f'{e2 = }')
+print(f'{c = }')
+print(f'{c1 = }')
+print(f'{c2 = }')</code></pre>
+<pre class="highlight"><code>N = 8415991046378822808678417368330656853369287762382257778863000234996179456832593823172163438175141897794450973258850755059008064965170892039119019048620633841637561375984016774249397631671121650489315360389403325290330278785155612107593553850666774120554971030956010302235061389242836031692105637093
+e1 = 65537
+e2 = 65583
+c = 5574165375242524333573826610902926393700854735994229967966464169834696611810072076594787795367537651736635669504446868847168099681864093409935801174468222766808668365620150398151512438201199626223130807413078543403236814636420490358773639850910401283271784777683577389622203357416804633487506912900
+c1 = 3733372451275945143106630642525005607134287402204217261131967501254130116356869822445109935329406396349828170813887809941457012269457680164427423918812605964033393533444248389803553681873885855742856069057392986629579993551342614294600091763375588208870704928674561853194758243753269168083341300444
+c2 = 3733372451275945143106630642525005607134287402204217261131967501254130116356869822445109935329406396349828170813887809941457012269457680164427423918812605964033393533444248389803553681873885855742856069057392986629579993551342614294600091763375588208870704928674561853194758243753269168083341300444</code></pre>
+<p>Solved by AI:</p>
+<h1 id="tsg-ctf-2025-ptqagain-writeup">TSG CTF 2025 - PtQagain Writeup</h1>
+<p><strong>Challenge</strong>: PtQagain<br />
+<strong>Category</strong>: Crypto<br />
+<strong>Difficulty</strong>: Medium<br />
+<strong>Author</strong>: TSG<br />
+<strong>Flag</strong>: <code>TSGCTF{p+q_4nd_p+q_b3in9_th3_s4me_1s_0bv1ous_ri9h7?aZ3mQ9Lk7P2xB8R}</code></p>
+<h2 id="challenge-description">Challenge Description</h2>
+<blockquote>
+<p>I'll give you p + q encrypted twice with the same scheme! It's the same thing anyway, so no problem... right?</p>
+</blockquote>
+<p>We're given a Python script <code>problem.py</code> and its output <code>output.txt</code>. The script encrypts a flag using RSA and also provides some additional encrypted values that leak information about the primes.</p>
+<h2 id="files-provided">Files Provided</h2>
+<ul>
+<li><code>problem.py</code> - The encryption script</li>
+<li><code>output.txt</code> - The output containing public parameters and ciphertexts</li>
+</ul>
+<h3 id="problempy">problem.py</h3>
+<pre class="highlight"><code class="language-python">from secret import p, q
+import os
+from Crypto.Util.number import bytes_to_long, isPrime
+
+assert isPrime(p) and p.bit_length() &lt;= 512
+assert isPrime(q) and q.bit_length() &lt;= 512
+
+with open('flag.txt', 'rb') as f:
+    FLAG = f.read()
+
+N = p * q
+
+e1 = 65537
+e2 = 65583
+
+m = bytes_to_long(FLAG)
+c = pow(m, e1, N)
+
+c1 = pow(p + q, e2, N)
+
+p = str(p)
+q = str(q)
+c2 = pow(int(p + q), e2, N)
+
+print(f'{N = }')
+print(f'{e1 = }')
+print(f'{e2 = }')
+print(f'{c = }')
+print(f'{c1 = }')
+print(f'{c2 = }')</code></pre>
+<h3 id="outputtxt">output.txt</h3>
+<pre class="highlight"><code>N = 8415991046378822808678417368330656853369287762382257778863000234996179456832593823172163438175141897794450973258850755059008064965170892039119019048620633841637561375984016774249397631671121650489315360389403325290330278785155612107593553850666774120554971030956010302235061389242836031692105637093
+e1 = 65537
+e2 = 65583
+c = 5574165375242524333573826610902926393700854735994229967966464169834696611810072076594787795367537651736635669504446868847168099681864093409935801174468222766808668365620150398151512438201199626223130807413078543403236814636420490358773639850910401283271784777683577389622203357416804633487506912900
+c1 = 3733372451275945143106630642525005607134287402204217261131967501254130116356869822445109935329406396349828170813887809941457012269457680164427423918812605964033393533444248389803553681873885855742856069057392986629579993551342614294600091763375588208870704928674561853194758243753269168083341300444
+c2 = 3733372451275945143106630642525005607134287402204217261131967501254130116356869822445109935329406396349828170813887809941457012269457680164427423918812605964033393533444248389803553681873885855742856069057392986629579993551342614294600091763375588208870704928674561853194758243753269168083341300444</code></pre>
+<h2 id="initial-observations">Initial Observations</h2>
+<ol>
+<li><strong>Standard RSA encryption</strong>: The flag is encrypted with RSA using <code>e1 = 65537</code></li>
+<li><strong>Interesting leak</strong>: Two additional values are encrypted with <code>e2 = 65583</code>:<ul>
+<li><code>c1 = (p + q)^e2 mod N</code></li>
+<li><code>c2 = (int(str(p) + str(q)))^e2 mod N</code></li>
+</ul>
+</li>
+<li><strong>Critical observation</strong>: <code>c1 = c2</code> in the output!</li>
+</ol>
+<p>The equality <code>c1 = c2</code> is the key to solving this challenge. It means:
+<pre class="highlight"><code>(p + q)^e2 ≡ (int(str(p) + str(q)))^e2 mod N</code></pre></p>
+<h2 id="mathematical-analysis">Mathematical Analysis</h2>
+<p>Let's define:</p>
+<ul>
+<li><code>x = p + q</code> (integer sum)</li>
+<li><code>y = int(str(p) + str(q))</code> (concatenation of decimal representations)</li>
+<li><code>len_q</code> = number of decimal digits in <code>q</code></li>
+</ul>
+<p>Then:
+<pre class="highlight"><code>y = p * 10^len_q + q</code></pre></p>
+<p>From <code>c1 = c2</code>, we have:
+<pre class="highlight"><code>x^e2 ≡ y^e2 mod N</code></pre></p>
+<p>Since <code>N = p * q</code>, we can analyze this modulo <code>q</code>:</p>
+<ol>
+<li><code>x ≡ p + q ≡ p (mod q)</code></li>
+<li><code>y ≡ p * 10^len_q + q ≡ p * 10^len_q (mod q)</code></li>
+<li>Therefore: <code>p^e2 ≡ (p * 10^len_q)^e2 ≡ p^e2 * (10^len_q)^e2 (mod q)</code></li>
+<li>Assuming <code>p ≠ 0 (mod q)</code> (true since <code>p</code> and <code>q</code> are distinct primes), we can divide by <code>p^e2</code>:
+   <pre class="highlight"><code>(10^len_q)^e2 ≡ 1 (mod q)</code></pre></li>
+<li>Which gives us:
+   <pre class="highlight"><code>10^(len_q * e2) ≡ 1 (mod q)</code></pre></li>
+</ol>
+<p>This is the key insight: <strong><code>q</code> divides <code>10^(len_q * e2) - 1</code></strong>.</p>
+<h2 id="attack-strategy">Attack Strategy</h2>
+<p>Since we know <code>q</code> divides <code>10^(len_q * e2) - 1</code>, we can try to find <code>q</code> by computing:
+<pre class="highlight"><code>gcd(10^(k * e2) - 1, N)</code></pre>
+for reasonable values of <code>k</code> (the candidate for <code>len_q</code>).</p>
+<p>We need to estimate <code>len_q</code>:
+- <code>q</code> is ≤ 512 bits
+- Number of decimal digits ≈ <code>bits * log10(2)</code> ≈ <code>512 * 0.3010 ≈ 154</code>
+- But <code>N</code> is 990 bits, so <code>p</code> and <code>q</code> are roughly 495 bits each
+- <code>495 * log10(2) ≈ 149</code> decimal digits</p>
+<p>So we should search <code>k</code> in the range 140-160.</p>
+<h2 id="exploit-implementation">Exploit Implementation</h2>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import long_to_bytes, GCD
+
+N = 8415991046378822808678417368330656853369287762382257778863000234996179456832593823172163438175141897794450973258850755059008064965170892039119019048620633841637561375984016774249397631671121650489315360389403325290330278785155612107593553850666774120554971030956010302235061389242836031692105637093
+e1 = 65537
+e2 = 65583
+c = 5574165375242524333573826610902926393700854735994229967966464169834696611810072076594787795367537651736635669504446868847168099681864093409935801174468222766808668365620150398151512438201199626223130807413078543403236814636420490358773639850910401283271784777683577389622203357416804633487506912900
+
+# Search for the correct digit length of q
+for k in range(140, 160):
+    value = pow(10, k * e2, N) - 1
+    g = GCD(value, N)
+
+    if g &gt; 1 and g &lt; N:
+        q = g
+        p = N // q
+
+        # Decrypt the flag
+        phi = (p - 1) * (q - 1)
+        d = pow(e1, -1, phi)
+        m = pow(c, d, N)
+        flag = long_to_bytes(m)
+
+        print(f"Found with k={k}: {flag}")
+        break</code></pre>
+<h2 id="results">Results</h2>
+<p>The exploit finds a factor when <code>k = 144</code>:</p>
+<ul>
+<li><code>q = 899718757349577828631761341730093220713822770643140264600436229195941807849819816835925771559643276518390048146301688389176642719947087961896703</code></li>
+<li><code>q</code> has 479 bits and 144 decimal digits</li>
+<li><code>p = N // q</code> has 512 bits and 154 decimal digits</li>
+</ul>
+<p>Decrypting the flag gives:
+<pre class="highlight"><code>TSGCTF{p+q_4nd_p+q_b3in9_th3_s4me_1s_0bv1ous_ri9h7?aZ3mQ9Lk7P2xB8R}</code></pre></p>
+<h2 id="why-this-works">Why This Works</h2>
+<p>The challenge creator made a subtle but critical mistake: they assumed that encrypting <code>p+q</code> and the concatenation of <code>p</code> and <code>q</code> as strings would produce different ciphertexts. However, when these values are encrypted with the same exponent <code>e2</code> modulo <code>N</code>, and the resulting ciphertexts are equal, it reveals a mathematical relationship between <code>p</code>, <code>q</code>, and <code>N</code>.</p>
+<p>The equality <code>c1 = c2</code> implies that <code>(p+q)^e2 ≡ (p*10^len_q + q)^e2 mod N</code>. When analyzed modulo <code>q</code>, this simplifies to <code>10^(len_q * e2) ≡ 1 mod q</code>, which means <code>q</code> divides <code>10^(len_q * e2) - 1</code>. Since <code>len_q</code> is the decimal digit length of <code>q</code> (which we can estimate), we can find <code>q</code> by checking <code>gcd(10^(k*e2) - 1, N)</code> for reasonable <code>k</code> values.</p>
+<h2 id="lessons-learned">Lessons Learned</h2>
+<ol>
+<li>
+<p><strong>Never reuse encryption keys/schemes for different values</strong>: Even if values seem different (like <code>p+q</code> vs. string concatenation), encrypting them with the same parameters can leak information.</p>
+</li>
+<li>
+<p><strong>Mathematical relationships matter</strong>: The equality of ciphertexts reveals algebraic relationships that can be exploited.</p>
+</li>
+<li>
+<p><strong>Estimation is key</strong>: Knowing approximate sizes (bit lengths, digit lengths) helps narrow down brute-force searches.</p>
+</li>
+<li>
+<p><strong>Modular arithmetic is powerful</strong>: Analyzing equations modulo the unknown factors (<code>p</code> and <code>q</code>) can simplify complex relationships.</p>
+</li>
+</ol>
+<h2 id="flag">Flag</h2>
+<p><code>TSGCTF{p+q_4nd_p+q_b3in9_th3_s4me_1s_0bv1ous_ri9h7?aZ3mQ9Lk7P2xB8R}</code></p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,1640 @@
+000002e9: AppleScript: Error while loading script, RefID doesn't match. Expected 0, found -32.
+00000340: AppleScript: Error while loading script, RefID doesn't match. Expected 0, found -35.
+=== data offset 2 ===
+<maybe binding?> [4, <Value type=fixnum value=0x2>, [0, <Binding a=<Value type=object value=<Value type=constant value=0x636f626a>> b=[20, [24, <Value type=special value=nil>, <Value type=object value=<Value type=constant value=0x66726d6b>>, [177, <Value type=string value=b'\x00F\x00o\x00u\x00n\x00d\x00a\x00t\x00i\x00o\x00n'>]]] c=<Value type=special value=nil> next=None>, <Binding a=<Value type=object value=<Value type=constant value=0x636f626a>> b=[20, [22, <Value type=special value=nil>, <Value type=object value=<Value type=constant value=0x6f736178>>]] c=<Value type=special value=nil> next=None>]]
+=== data offset 3 ===
+<maybe binding?> [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]
+=== data offset 4 ===
+<maybe binding?> [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]
+=== data offset 5 ===
+<maybe binding?> [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]]
+=== data offset 6 ===
+<maybe binding?> [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]]]]
+=== data offset 7 ===
+<maybe binding?> [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]], [4, <Value type=fixnum value=0x2>, [0, [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]], [4, <Value type=fixnum value=0x2>, [0, <Value type=fixnum value=0x9>, <Value type=fixnum value=0x1>]]]]]]]]]]
+=== data offset 8 ===
+<not a function>
+=== data offset 9 ===
+<not a function>
+=== data offset 10 ===
+<not a function>
+=== data offset 11 ===
+<not a function>
+=== data offset 12 ===
+<maybe binding?> [4, <Value type=fixnum value=0x5>, [0, <Value type=fixnum value=0x5>, <Value type=fixnum value=0x4>, <Value type=fixnum value=0x3>, <Value type=fixnum value=0x2>, <Value type=fixnum value=0x1>]]
+=== data offset 13 ===
+<not a function>
+=== data offset 14 ===
+Function name : <Value type=object value=<Value type=event_identifier value=b'aevt'-b'oapp'-b'null'-b'\x00\x00\x80\x00'-b'****'-b'\x00\x00\x90\x00'>>
+Function arguments:  <empty or unknown>
+ 00000 PushLiteral 0 # [177, <Value type=string value=b'\x00E\x00n\x00t\x00e\x00r\x00 \x00t\x00h\x00e\x00 \x00f\x00l\x00a\x00g'>] 
+ 00001 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x64747874>> 
+ 00002 PushLiteral 2 # [177, <Value type=string value=b''>] 
+ 00003 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x62746e73>> 
+ 00004 PushLiteral 4 # [177, <Value type=string value=b'\x00O\x00K'>] 
+ 00005 Push1 
+ 00006 MakeVector 
+ 00007 PushLiteral 5 # <Value type=object value=<Value type=constant value=0x64666c74>> 
+ 00008 Push1 
+ 00009 PushLiteral 6 # <Value type=fixnum value=0x6> 
+ 0000a MessageSend 7 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'dlog'-b'askr'-b'\x00\x00\x00\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+ 0000d PushLiteral 8 # <Value type=object value=<Value type=constant value=0x74747874>> 
+ 0000e MakeObjectAlias 21 # GetProperty
+
+ 0000f GetData 
+ 00010 PopGlobal b'oregon' 
+ 00011 StoreResult 
+ 00012 PushLiteral 10 # <Value type=pair first=<Value type=object value=<Value type=constant value=0x636f6e736e756d65>> second=<Value type=pair empty>> 
+ 00013 PushEmpty <disassembler not implemented> 
+ 00014 Consider <disassembler not implemented> 
+ 00015 Equal 
+ 00016 PopGlobalExtended [L-5266] 
+ 00019 Push0 
+ 0001a MakeVector 
+ 0001b GetData 
+ 0001c PopGlobal b'codex' 
+ 0001d StoreResult 
+ 0001e PushGlobal b'codex' 
+ 0001f GetData 
+ 00020 Clone <disassembler not implemented> 
+ 00021 PopGlobal b'claude' 
+ 00022 StoreResult 
+ 00023 PushParentVariable 1 [var_1] 
+ 00028 PushParentVariable 1 [var_1] 
+ 0002d Push2 
+ 0002e MakeVector 
+ 0002f GetData 
+ 00030 PopGlobal b'FLAG' 
+ 00031 StoreResult 
+ 00032 PushParentVariable 1 [var_6] 
+ 00037 PushParentVariable 1 [var_6] 
+ 0003c Push2 
+ 0003d MakeVector 
+ 0003e GetData 
+ 0003f PopGlobal b'harrison' 
+ 00040 StoreResult 
+ 00041 PushMe 
+ 00042 PushGlobal b'oregon' 
+ 00043 Push1 
+ 00044 PositionalMessageSend 16 # b'Iidabashi' 
+ 00047 TestIf 0x5e 
+ 0004a PushLiteralExtended 17 # [177, <Value type=string value=b'\x00C\x00o\x00r\x00r\x00e\x00c\x00t\x00!'>] 
+ 0004d PushLiteral 3 # <Value type=object value=<Value type=constant value=0x62746e73>> 
+ 0004e PushLiteralExtended 18 # [177, <Value type=string value=b'\xd8<\xdf\x89'>] 
+ 00051 Push1 
+ 00052 MakeVector 
+ 00053 PushLiteral 5 # <Value type=object value=<Value type=constant value=0x64666c74>> 
+ 00054 Push1 
+ 00055 PushLiteralExtended 19 # <Value type=fixnum value=0x4> 
+ 00058 MessageSend 7 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'dlog'-b'askr'-b'\x00\x00\x00\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+ 0005b Jump 0x73 
+ 0005e PushLiteralExtended 20 # [177, <Value type=string value=b'\x00N\x00o\x00p\x00e\x00,\x00 \x00k\x00e\x00e\x00p\x00 \x00t\x00r\x00y\x00i\x00n\x00g\x00.'>] 
+ 00061 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x62746e73>> 
+ 00062 PushLiteralExtended 21 # [177, <Value type=string value=b'\x00T\x00r\x00y\x00 \x00a\x00g\x00a\x00i\x00n'>] 
+ 00065 Push1 
+ 00066 MakeVector 
+ 00067 PushLiteral 5 # <Value type=object value=<Value type=constant value=0x64666c74>> 
+ 00068 Push1 
+ 00069 PushLiteralExtended 22 # <Value type=object value=<Value type=constant value=0x64697370>> 
+ 0006c PushLiteralExtended 23 # <Value type=object value=<Value type=constant value=0x7374696300000002>> 
+ 0006f PushLiteral 6 # <Value type=fixnum value=0x6> 
+ 00070 MessageSend 7 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'dlog'-b'askr'-b'\x00\x00\x00\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+ 00073 EndTimeout <disassembler not implemented> 
+ 00074 EndConsider <disassembler not implemented> 
+ 00075 StoreResult 
+ 00076 GetResult 
+ 00077 Return 
+=== data offset 15 ===
+Function name : b'Iidabashi'
+Function arguments:  [b'candidate']
+ 00000 PushMe 
+ 00001 PushVariable [var_0 (b'candidate')] 
+ 00002 Push1 
+ 00003 PositionalMessageSend 0 # b'Jimbocho' 
+ 00006 GetData 
+ 00007 PopVariable [var_1] 
+ 00008 StoreResult 
+ 00009 PushMe 
+ 0000a PushVariable [var_1] 
+ 0000b Push1 
+ 0000c PositionalMessageSend 1 # b'trimNSString' 
+ 0000f GetData 
+ 00010 PopVariable [var_2] 
+ 00011 StoreResult 
+ 00012 PushLiteral 2 # <Value type=fixnum value=0x53> 
+ 00013 PushLiteral 3 # <Value type=fixnum value=0x45> 
+ 00014 PushLiteral 4 # <Value type=fixnum value=0x43> 
+ 00015 PushLiteral 4 # <Value type=fixnum value=0x43> 
+ 00016 PushLiteral 5 # <Value type=fixnum value=0x4f> 
+ 00017 PushLiteral 6 # <Value type=fixnum value=0x4e> 
+ 00018 PushLiteral 7 # <Value type=fixnum value=0x7b> 
+ 00019 PushLiteral 8 # <Value type=fixnum value=0x7> 
+ 0001a MakeVector 
+ 0001b GetData 
+ 0001c PopVariable [var_3] 
+ 0001d StoreResult 
+ 0001e PushLiteral 9 # <Value type=fixnum value=0x7d> 
+ 0001f GetData 
+ 00020 PopVariable [var_4] 
+ 00021 StoreResult 
+ 00022 PushLiteral 10 # <Value type=fixnum value=0xd> 
+ 00023 GetData 
+ 00024 PopVariable [var_5] 
+ 00025 StoreResult 
+ 00026 PushLiteral 11 # <Value type=fixnum value=0x1abb> 
+ 00027 GetData 
+ 00028 PopVariable [var_6] 
+ 00029 StoreResult 
+ 0002a PushLiteral 12 # <Value type=fixnum value=0x1ac8> 
+ 0002b GetData 
+ 0002c PopVariable [var_7] 
+ 0002d StoreResult 
+ 0002e PushLiteral 13 # <Value type=fixnum value=0x37> 
+ 0002f PushLiteral 14 # <Value type=fixnum value=0xa9> 
+ 00030 PushLiteral 15 # <Value type=fixnum value=0x5d> 
+ 00031 Push3 
+ 00032 MakeVector 
+ 00033 GetData 
+ 00034 PopVariable [var_8] 
+ 00035 StoreResult 
+ 00036 PushLiteralExtended 16 # <Value type=fixnum value=0x9d> 
+ 00039 GetData 
+ 0003a PopVariable [var_9] 
+ 0003b StoreResult 
+ 0003c PushLiteralExtended 17 # <Value type=fixnum value=0x18> 
+ 0003f GetData 
+ 00040 PopVariable [var_10] 
+ 00041 StoreResult 
+ 00042 PushLiteralExtended 18 # <Value type=fixnum value=0x72> 
+ 00045 PushLiteralExtended 19 # <Value type=fixnum value=0x83> 
+ 00048 PushLiteralExtended 20 # <Value type=fixnum value=0x7f> 
+ 0004b PushLiteral 9 # <Value type=fixnum value=0x7d> 
+ 0004c PushLiteralExtended 21 # <Value type=fixnum value=0x78> 
+ 0004f PushLiteralExtended 22 # <Value type=fixnum value=0x82> 
+ 00052 PushLiteralExtended 23 # <Value type=fixnum value=0x74> 
+ 00055 PushLiteralExtended 24 # <Value type=fixnum value=0x85> 
+ 00058 PushLiteralExtended 21 # <Value type=fixnum value=0x78> 
+ 0005b PushLiteralExtended 25 # <Value type=fixnum value=0x81> 
+ 0005e PushLiteralExtended 26 # <Value type=fixnum value=0x87> 
+ 00061 PushLiteralExtended 27 # <Value type=fixnum value=0x75> 
+ 00064 PushLiteralExtended 28 # <Value type=fixnum value=0x86> 
+ 00067 PushLiteralExtended 25 # <Value type=fixnum value=0x81> 
+ 0006a PushLiteralExtended 29 # <Value type=fixnum value=0x4b> 
+ 0006d PushLiteralExtended 30 # <Value type=fixnum value=0x44> 
+ 00070 PushLiteralExtended 31 # <Value type=fixnum value=0x10> 
+ 00073 MakeVector 
+ 00074 Push1 
+ 00075 MakeVector 
+ 00076 GetData 
+ 00077 PopVariable [var_11] 
+ 00078 StoreResult 
+ 00079 PushLiteralExtended 32 # <Value type=fixnum value=0x5f> 
+ 0007c GetData 
+ 0007d PopVariable [var_12] 
+ 0007e StoreResult 
+ 0007f PushLiteralExtended 33 # b'U1F41D' 
+ 00082 PushLiteralExtended 34 # <Value type=fixnum value=0x7c3> 
+ 00085 PushLiteralExtended 35 # b'U1F99C' 
+ 00088 PushLiteralExtended 36 # 64104 
+ 0008b PushLiteralExtended 37 # b'U1F11D' 
+ 0008e PushLiteralExtended 38 # <Value type=fixnum value=0x1523> 
+ 00091 PushLiteralExtended 39 # b'U1F41C' 
+ 00094 PushLiteralExtended 40 # 56473 
+ 00097 PushLiteralExtended 41 # b'len' 
+ 0009a PushLiteralExtended 31 # <Value type=fixnum value=0x10> 
+ 0009d PushLiteralExtended 42 # b'U1F41B' 
+ 000a0 PushLiteralExtended 43 # <Value type=fixnum value=0x4d16> 
+ 000a3 PushLiteralExtended 44 # <Value type=fixnum value=0xc> 
+ 000a6 MakeRecord 
+ 000a7 GetData 
+ 000a8 PopVariable [var_13] 
+ 000a9 StoreResult 
+ 000aa PushLiteralExtended 33 # b'U1F41D' 
+ 000ad PushLiteralExtended 45 # 62601 
+ 000b0 PushLiteralExtended 35 # b'U1F99C' 
+ 000b3 PushLiteralExtended 46 # 65475 
+ 000b6 PushLiteralExtended 37 # b'U1F11D' 
+ 000b9 PushLiteralExtended 47 # 65339 
+ 000bc PushLiteralExtended 41 # b'len' 
+ 000bf PushLiteralExtended 48 # <Value type=fixnum value=0x6> 
+ 000c2 PushLiteralExtended 49 # <Value type=fixnum value=0x8> 
+ 000c5 MakeRecord 
+ 000c6 GetData 
+ 000c7 PopVariable [var_14] 
+ 000c8 StoreResult 
+ 000c9 PushMe 
+ 000ca PushVariable [var_3] 
+ 000cb Push1 
+ 000cc PositionalMessageSend 50 # b'Roppongi' 
+ 000cf GetData 
+ 000d0 PopVariable [var_15] 
+ 000d1 StoreResult 
+ 000d2 PushMe 
+ 000d3 PushVariable [var_4] 
+ 000d4 Push1 
+ 000d5 PositionalMessageSend 51 # b'Otemachi' 
+ 000d8 GetData 
+ 000d9 PopVariableExtended [var_16] 
+ 000dc StoreResult 
+ 000dd PushMe 
+ 000de PushVariable [var_15] 
+ 000df Push1 
+ 000e0 PositionalMessageSend 0 # b'Jimbocho' 
+ 000e3 GetData 
+ 000e4 PopVariableExtended [var_17] 
+ 000e7 StoreResult 
+ 000e8 PushMe 
+ 000e9 PushVariableExtended [var_16]
+
+ 000ec Push1 
+ 000ed PositionalMessageSend 0 # b'Jimbocho' 
+ 000f0 GetData 
+ 000f1 PopVariableExtended [var_18] 
+ 000f4 StoreResult 
+ 000f5 PushVariable [var_2] 
+ 000f6 Push0 
+ 000f7 PositionalMessageSend 52 # b'length' 
+ 000fa PushLiteralExtended 53 # <Value type=object value=<Value type=constant value=0x6c6f6e67>> 
+ 000fd Coerce 
+ 000fe GetData 
+ 000ff PopVariableExtended [var_19] 
+ 00102 StoreResult 
+ 00103 PushVariableExtended [var_19]
+
+ 00106 PushVariable [var_10] 
+ 00107 NotEqual 
+ 00108 TestIf 0x110 
+ 0010b PushFalse <disassembler not implemented> 
+ 0010c Return 
+ 0010d Jump 0x111 
+ 00110 PushUndefined 
+ 00111 StoreResult 
+ 00112 PushVariable [var_2] 
+ 00113 PushVariableExtended [var_17]
+
+ 00116 Push1 
+ 00117 PositionalMessageSend 54 # b'hasPrefix_' 
+ 0011a PushTrue <disassembler not implemented> 
+ 0011b NotEqual 
+ 0011c TestIf 0x124 
+ 0011f PushFalse <disassembler not implemented> 
+ 00120 Return 
+ 00121 Jump 0x125 
+ 00124 PushUndefined 
+ 00125 StoreResult 
+ 00126 PushVariable [var_2] 
+ 00127 PushVariableExtended [var_18]
+
+ 0012a Push1 
+ 0012b PositionalMessageSend 55 # b'hasSuffix_' 
+ 0012e PushTrue <disassembler not implemented> 
+ 0012f NotEqual 
+ 00130 TestIf 0x138 
+ 00133 PushFalse <disassembler not implemented> 
+ 00134 Return 
+ 00135 Jump 0x139 
+ 00138 PushUndefined 
+ 00139 StoreResult 
+ 0013a PushVariable [var_15] 
+ 0013b PushLiteralExtended 56 # <Value type=object value=<Value type=constant value=0x6c656e67>> 
+ 0013e MakeObjectAlias 21 # GetProperty
+
+ 0013f GetData 
+ 00140 PopVariableExtended [var_20] 
+ 00143 StoreResult 
+ 00144 PushVariableExtended [var_16]
+
+ 00147 PushLiteralExtended 56 # <Value type=object value=<Value type=constant value=0x6c656e67>> 
+ 0014a MakeObjectAlias 21 # GetProperty
+
+ 0014b GetData 
+ 0014c PopVariableExtended [var_21] 
+ 0014f StoreResult 
+ 00150 PushLiteralExtended 57 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 00153 PushVariableExtended [var_20]
+
+ 00156 PushVariableExtended [var_19]
+
+ 00159 PushVariableExtended [var_20]
+
+ 0015c Subtract 
+ 0015d PushVariableExtended [var_21]
+
+ 00160 Subtract 
+ 00161 Push2 
+ 00162 PositionalMessageSend 58 # b'NSMakeRange' 
+ 00165 GetData 
+ 00166 PopVariableExtended [var_22] 
+ 00169 StoreResult 
+ 0016a PushVariable [var_2] 
+ 0016b PushVariableExtended [var_22]
+
+ 0016e Push1 
+ 0016f PositionalMessageSend 59 # b'substringWithRange_' 
+ 00172 GetData 
+ 00173 PopVariableExtended [var_23] 
+ 00176 StoreResult 
+ 00177 PushVariableExtended [var_23]
+
+ 0017a PushLiteralExtended 60 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 0017d Coerce 
+ 0017e GetData 
+ 0017f PopVariableExtended [var_24] 
+ 00182 StoreResult 
+ 00183 PushMe 
+ 00184 PushVariableExtended [var_24]
+
+ 00187 Push1 
+ 00188 MakeVector 
+ 00189 PushVariable [var_5] 
+ 0018a PushVariable [var_6] 
+ 0018b PushVariable [var_7] 
+ 0018c PushLiteralExtended 61 # <Value type=fixnum value=0x4> 
+ 0018f PositionalMessageSend 62 # b'Shimbashi' 
+ 00192 GetData 
+ 00193 PopVariableExtended [var_25] 
+ 00196 StoreResult 
+ 00197 PushVariableExtended [var_25]
+
+ 0019a PushVariable [var_11] 
+ 0019b NotEqual 
+ 0019c TestIf 0x1a4 
+ 0019f PushFalse <disassembler not implemented> 
+ 001a0 Return 
+ 001a1 Jump 0x1a5 
+ 001a4 PushUndefined 
+ 001a5 StoreResult 
+ 001a6 PushMe 
+ 001a7 PushVariableExtended [var_24]
+
+ 001aa Push1 
+ 001ab PositionalMessageSend 63 # b'Ginza' 
+ 001ae PushVariable [var_12] 
+ 001af NotEqual 
+ 001b0 TestIf 0x1b8 
+ 001b3 PushFalse <disassembler not implemented> 
+ 001b4 Return 
+ 001b5 Jump 0x1b9 
+ 001b8 PushUndefined 
+ 001b9 StoreResult 
+ 001ba PushMe 
+ 001bb PushVariableExtended [var_23]
+
+ 001be PushVariable [var_8] 
+ 001bf PushVariable [var_9] 
+ 001c0 PushVariable [var_6] 
+ 001c1 PushLiteralExtended 61 # <Value type=fixnum value=0x4> 
+ 001c4 PositionalMessageSend 64 # b'Kanda' 
+ 001c7 GetData 
+ 001c8 PopVariableExtended [var_26] 
+ 001cb StoreResult 
+ 001cc PushVariableExtended [var_26]
+
+ 001cf PushLiteralExtended 65 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 001d2 Push2 
+ 001d3 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 001d4 GetData 
+ 001d5 PopVariableExtended [var_27] 
+ 001d8 StoreResult 
+ 001d9 PushVariableExtended [var_27]
+
+ 001dc PushLiteralExtended 33 # b'U1F41D' 
+ 001df MakeObjectAlias 21 # GetProperty
+
+ 001e0 PushVariable [var_13] 
+ 001e1 PushLiteralExtended 33 # b'U1F41D' 
+ 001e4 MakeObjectAlias 21 # GetProperty
+
+ 001e5 NotEqual 
+ 001e6 TestIf 0x1ee 
+ 001e9 PushFalse <disassembler not implemented> 
+ 001ea Return 
+ 001eb Jump 0x1ef 
+ 001ee PushUndefined 
+ 001ef StoreResult 
+ 001f0 PushVariableExtended [var_27]
+
+ 001f3 PushLiteralExtended 35 # b'U1F99C' 
+ 001f6 MakeObjectAlias 21 # GetProperty
+
+ 001f7 PushVariable [var_13] 
+ 001f8 PushLiteralExtended 35 # b'U1F99C' 
+ 001fb MakeObjectAlias 21 # GetProperty
+
+ 001fc NotEqual 
+ 001fd TestIf 0x205 
+ 00200 PushFalse <disassembler not implemented> 
+ 00201 Return 
+ 00202 Jump 0x206 
+ 00205 PushUndefined 
+ 00206 StoreResult 
+ 00207 PushVariableExtended [var_27]
+
+ 0020a PushLiteralExtended 37 # b'U1F11D' 
+ 0020d MakeObjectAlias 21 # GetProperty
+
+ 0020e PushVariable [var_13] 
+ 0020f PushLiteralExtended 37 # b'U1F11D' 
+ 00212 MakeObjectAlias 21 # GetProperty
+
+ 00213 NotEqual 
+ 00214 TestIf 0x21c 
+ 00217 PushFalse <disassembler not implemented> 
+ 00218 Return 
+ 00219 Jump 0x21d 
+ 0021c PushUndefined 
+ 0021d StoreResult 
+ 0021e PushVariableExtended [var_27]
+
+ 00221 PushLiteralExtended 39 # b'U1F41C' 
+ 00224 MakeObjectAlias 21 # GetProperty
+
+ 00225 PushVariable [var_13] 
+ 00226 PushLiteralExtended 39 # b'U1F41C' 
+ 00229 MakeObjectAlias 21 # GetProperty
+
+ 0022a NotEqual 
+ 0022b TestIf 0x233 
+ 0022e PushFalse <disassembler not implemented> 
+ 0022f Return 
+ 00230 Jump 0x234 
+ 00233 PushUndefined 
+ 00234 StoreResult 
+ 00235 PushVariableExtended [var_27]
+
+ 00238 PushLiteralExtended 41 # b'len' 
+ 0023b MakeObjectAlias 21 # GetProperty
+
+ 0023c PushVariable [var_13] 
+ 0023d PushLiteralExtended 41 # b'len' 
+ 00240 MakeObjectAlias 21 # GetProperty
+
+ 00241 NotEqual 
+ 00242 TestIf 0x24a 
+ 00245 PushFalse <disassembler not implemented> 
+ 00246 Return 
+ 00247 Jump 0x24b 
+ 0024a PushUndefined 
+ 0024b StoreResult 
+ 0024c PushVariableExtended [var_27]
+
+ 0024f PushLiteralExtended 42 # b'U1F41B' 
+ 00252 MakeObjectAlias 21 # GetProperty
+
+ 00253 PushVariable [var_13] 
+ 00254 PushLiteralExtended 42 # b'U1F41B' 
+ 00257 MakeObjectAlias 21 # GetProperty
+
+ 00258 NotEqual 
+ 00259 TestIf 0x261 
+ 0025c PushFalse <disassembler not implemented> 
+ 0025d Return 
+ 0025e Jump 0x262 
+ 00261 PushUndefined 
+ 00262 StoreResult 
+ 00263 PushMe 
+ 00264 PushVariableExtended [var_23]
+
+ 00267 PushVariable [var_8] 
+ 00268 PushVariable [var_9] 
+ 00269 Push3 
+ 0026a PositionalMessageSend 66 # b'Sugamo' 
+ 0026d GetData 
+ 0026e PopVariableExtended [var_28] 
+ 00271 StoreResult 
+ 00272 PushVariableExtended [var_28]
+
+ 00275 PushLiteralExtended 33 # b'U1F41D' 
+ 00278 MakeObjectAlias 21 # GetProperty
+
+ 00279 PushVariable [var_14] 
+ 0027a PushLiteralExtended 33 # b'U1F41D' 
+ 0027d MakeObjectAlias 21 # GetProperty
+
+ 0027e NotEqual 
+ 0027f TestIf 0x287 
+ 00282 PushFalse <disassembler not implemented> 
+ 00283 Return 
+ 00284 Jump 0x288 
+ 00287 PushUndefined 
+ 00288 StoreResult 
+ 00289 PushVariableExtended [var_28]
+
+ 0028c PushLiteralExtended 35 # b'U1F99C' 
+ 0028f MakeObjectAlias 21 # GetProperty
+
+ 00290 PushVariable [var_14] 
+ 00291 PushLiteralExtended 35 # b'U1F99C' 
+ 00294 MakeObjectAlias 21 # GetProperty
+
+ 00295 NotEqual 
+ 00296 TestIf 0x29e 
+ 00299 PushFalse <disassembler not implemented> 
+ 0029a Return 
+ 0029b Jump 0x29f 
+ 0029e PushUndefined 
+ 0029f StoreResult 
+ 002a0 PushVariableExtended [var_28]
+
+ 002a3 PushLiteralExtended 37 # b'U1F11D' 
+ 002a6 MakeObjectAlias 21 # GetProperty
+
+ 002a7 PushVariable [var_14] 
+ 002a8 PushLiteralExtended 37 # b'U1F11D' 
+ 002ab MakeObjectAlias 21 # GetProperty
+
+ 002ac NotEqual 
+ 002ad TestIf 0x2b5 
+ 002b0 PushFalse <disassembler not implemented> 
+ 002b1 Return 
+ 002b2 Jump 0x2b6 
+ 002b5 PushUndefined 
+ 002b6 StoreResult 
+ 002b7 PushVariableExtended [var_28]
+
+ 002ba PushLiteralExtended 41 # b'len' 
+ 002bd MakeObjectAlias 21 # GetProperty
+
+ 002be PushVariable [var_14] 
+ 002bf PushLiteralExtended 41 # b'len' 
+ 002c2 MakeObjectAlias 21 # GetProperty
+
+ 002c3 NotEqual 
+ 002c4 TestIf 0x2cc 
+ 002c7 PushFalse <disassembler not implemented> 
+ 002c8 Return 
+ 002c9 Jump 0x2cd 
+ 002cc PushUndefined 
+ 002cd StoreResult 
+ 002ce PushTrue <disassembler not implemented> 
+ 002cf Return 
+ 002d0 StoreResult 
+ 002d1 GetResult 
+ 002d2 Return 
+=== data offset 16 ===
+Function name : b'Roppongi'
+Function arguments:  [b'newyorkcity']
+ 00000 PushLiteral 0 # [177, <Value type=string value=b''>] 
+ 00001 GetData 
+ 00002 PopVariable [var_1] 
+ 00003 StoreResult 
+ 00004 LinkRepeat 0x24
+
+ 00007 PushVariable [var_0 (b'newyorkcity')] 
+ 00008 Dup 
+ 00009 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x6b6f636c>> 
+ 0000a PushLiteral 2 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0000b Push2 
+ 0000c MessageSend 3 # <Value type=object value=<Value type=event_identifier value=b'core'-b'cnte'-b'****'-b'\x00\x00\x00\x00'-b'****'-b'\x00\x00\x10\x00'>> 
+ 0000f Push1 
+ 00010 PushUndefined 
+ 00011 RepeatInCollection <disassembler not implemented> 
+ 00012 Equal 
+ 00013 GreaterThan 
+ 00014 PushVariable [var_1] 
+ 00015 PushIt 
+ 00016 PushLiteral 4 # <Value type=object value=<Value type=constant value=0x63686120>> 
+ 00017 PushVariable [var_2] 
+ 00018 PushLiteral 5 # <Value type=object value=<Value type=constant value=0x6b66726d49442020>> 
+ 00019 MakeObjectAlias 25 # GetKeyFrom
+
+ 0001a Concatenate 
+ 0001b GetData 
+ 0001c PopVariable [var_1] 
+ 0001d Dup 
+ 0001e StoreResult 
+ 0001f Jump 0x11 
+ 00022 StoreResult 
+ 00023 PushVariable [var_1] 
+ 00024 Return 
+ 00025 Return 
+=== data offset 17 ===
+Function name : b'Otemachi'
+Function arguments:  [b'cid']
+ 00000 PushIt 
+ 00001 PushLiteral 0 # <Value type=object value=<Value type=constant value=0x63686120>> 
+ 00002 PushVariable [var_0 (b'cid')] 
+ 00003 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x6b66726d49442020>> 
+ 00004 MakeObjectAlias 25 # GetKeyFrom
+
+ 00005 GetData 
+ 00006 Return 
+ 00007 Return 
+=== data offset 18 ===
+Function name : b'Kanda'
+Function arguments:  [b'nsPayload', b'NewJersey', b'U1F9E7', b'westchester']
+ 00000 PushVariable [var_0 (b'nsPayload')] 
+ 00001 PushLiteral 0 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 00002 Coerce 
+ 00003 GetData 
+ 00004 PopVariable [var_4] 
+ 00005 StoreResult 
+ 00006 PushVariable [var_0 (b'nsPayload')] 
+ 00007 Push0 
+ 00008 PositionalMessageSend 1 # b'length' 
+ 0000b PushLiteral 2 # <Value type=object value=<Value type=constant value=0x6c6f6e67>> 
+ 0000c Coerce 
+ 0000d GetData 
+ 0000e PopVariable [var_5] 
+ 0000f StoreResult 
+ 00010 PushVariable [var_1 (b'NewJersey')] 
+ 00011 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00012 Push1 
+ 00013 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00014 PushVariable [var_1 (b'NewJersey')] 
+ 00015 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00016 Push2 
+ 00017 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00018 PushVariable [var_1 (b'NewJersey')] 
+ 00019 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0001a Push3 
+ 0001b MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0001c Push3 
+ 0001d MakeVector 
+ 0001e GetData 
+ 0001f PopVariable [var_6] 
+ 00020 StoreResult 
+ 00021 PushLiteral 4 # b'U1F41D' 
+ 00022 Push0 
+ 00023 PushLiteral 5 # b'U1F99C' 
+ 00024 Push0 
+ 00025 PushLiteral 6 # b'U1F11D' 
+ 00026 PushVariable [var_3 (b'westchester')] 
+ 00027 PushLiteral 7 # b'U1F41C' 
+ 00028 Push0 
+ 00029 PushLiteral 8 # b'U1F41B' 
+ 0002a PushVariable [var_3 (b'westchester')] 
+ 0002b PushLiteral 9 # b'len' 
+ 0002c PushVariable [var_5] 
+ 0002d PushLiteral 10 # <Value type=fixnum value=0xc> 
+ 0002e MakeRecord 
+ 0002f GetData 
+ 00030 PopVariable [var_7] 
+ 00031 StoreResult 
+ 00032 Push0 
+ 00033 MakeVector 
+ 00034 GetData 
+ 00035 PopVariable [var_8] 
+ 00036 StoreResult 
+ 00037 LinkRepeat 0x14a
+
+ 0003a Push1 
+ 0003b PushVariable [var_5] 
+ 0003c Push1 
+ 0003d PushUndefined 
+ 0003e RepeatInRange 9 
+ 00041 PushLiteral 11 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 00042 Tell 10 
+     00045 PushVariable [var_4] 
+     00046 PushLiteral 12 # <Value type=object value=<Value type=constant value=0x63686120>> 
+     00047 PushVariable [var_9] 
+     00048 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+     00049 Push0 
+     0004a MessageSend 13 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'cton'-b'shor'-b'\x00\x00\x10\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+     0004d EndTell 
+ 0004e GetData 
+ 0004f PopVariable [var_10] 
+ 00050 StoreResult 
+ 00051 PushVariable [var_10] 
+ 00052 PushLiteral 14 # <Value type=fixnum value=0x80> 
+ 00053 Subtract 
+ 00054 GetData 
+ 00055 PopVariable [var_11] 
+ 00056 StoreResult 
+ 00057 PushVariable [var_9] 
+ 00058 PushVariable [var_2 (b'U1F9E7')] 
+ 00059 Multiply 
+ 0005a PushVariable [var_6] 
+ 0005b PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0005c Push1 
+ 0005d MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0005e Add 
+ 0005f PushLiteral 15 # <Value type=fixnum value=0x101> 
+ 00060 Remainder 
+ 00061 GetData 
+ 00062 PopVariable [var_12] 
+ 00063 StoreResult 
+ 00064 PushVariable [var_11] 
+ 00065 PushVariable [var_12] 
+ 00066 Multiply 
+ 00067 PushVariable [var_6] 
+ 00068 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00069 Push2 
+ 0006a MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0006b Add 
+ 0006c GetData 
+ 0006d PopVariable [var_13] 
+ 0006e StoreResult 
+ 0006f PushVariable [var_6] 
+ 00070 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00071 Push3 
+ 00072 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00073 PushVariable [var_9] 
+ 00074 Subtract 
+ 00075 GetData 
+ 00076 PopVariable [var_14] 
+ 00077 StoreResult 
+ 00078 PushVariable [var_14] 
+ 00079 Push0 
+ 0007a Equal 
+ 0007b TestIf 0x84 
+ 0007e PushMinus1 
+ 0007f GetData 
+ 00080 PopVariable [var_14] 
+ 00081 Jump 0x85 
+ 00084 PushUndefined 
+ 00085 StoreResult 
+ 00086 PushVariable [var_13] 
+ 00087 PushVariable [var_14] 
+ 00088 Quotient 
+ 00089 GetData 
+ 0008a PopVariable [var_15] 
+ 0008b StoreResult 
+ 0008c PushVariable [var_12] 
+ 0008d GetData 
+ 0008e PopVariableExtended [var_16] 
+ 00091 StoreResult 
+ 00092 PushVariableExtended [var_16]
+
+ 00095 Push0 
+ 00096 Equal 
+ 00097 TestIf 0xa2 
+ 0009a Push1 
+ 0009b GetData 
+ 0009c PopVariableExtended [var_16] 
+ 0009f Jump 0xa3 
+ 000a2 PushUndefined 
+ 000a3 StoreResult 
+ 000a4 PushVariable [var_13] 
+ 000a5 PushVariableExtended [var_16]
+
+ 000a8 Remainder 
+ 000a9 GetData 
+ 000aa PopVariableExtended [var_17] 
+ 000ad StoreResult 
+ 000ae PushVariable [var_7] 
+ 000af PushLiteral 5 # b'U1F99C' 
+ 000b0 MakeObjectAlias 21 # GetProperty
+
+ 000b1 PushVariable [var_15] 
+ 000b2 Add 
+ 000b3 PushVariableExtended [var_17]
+
+ 000b6 Add 
+ 000b7 PushLiteralExtended 16 # 65536 
+ 000ba Remainder 
+ 000bb PushVariable [var_7] 
+ 000bc PushLiteral 5 # b'U1F99C' 
+ 000bd MakeObjectAlias 21 # GetProperty
+
+ 000be SetData 
+ 000bf StoreResult 
+ 000c0 PushVariable [var_7] 
+ 000c1 PushLiteral 4 # b'U1F41D' 
+ 000c2 MakeObjectAlias 21 # GetProperty
+
+ 000c3 PushVariable [var_13] 
+ 000c4 Add 
+ 000c5 PushVariable [var_7] 
+ 000c6 PushLiteral 4 # b'U1F41D' 
+ 000c7 MakeObjectAlias 21 # GetProperty
+
+ 000c8 SetData 
+ 000c9 StoreResult 
+ 000ca PushVariable [var_7] 
+ 000cb PushLiteral 6 # b'U1F11D' 
+ 000cc MakeObjectAlias 21 # GetProperty
+
+ 000cd PushVariable [var_15] 
+ 000ce Add 
+ 000cf PushVariableExtended [var_17]
+
+ 000d2 Add 
+ 000d3 PushLiteralExtended 16 # 65536 
+ 000d6 Remainder 
+ 000d7 PushVariable [var_7] 
+ 000d8 PushLiteral 6 # b'U1F11D' 
+ 000d9 MakeObjectAlias 21 # GetProperty
+
+ 000da SetData 
+ 000db StoreResult 
+ 000dc PushVariable [var_7] 
+ 000dd PushLiteral 7 # b'U1F41C' 
+ 000de MakeObjectAlias 21 # GetProperty
+
+ 000df PushVariable [var_6] 
+ 000e0 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000e1 Push1 
+ 000e2 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000e3 Add 
+ 000e4 PushVariable [var_6] 
+ 000e5 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000e6 Push3 
+ 000e7 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000e8 Subtract 
+ 000e9 PushVariable [var_7] 
+ 000ea PushLiteral 7 # b'U1F41C' 
+ 000eb MakeObjectAlias 21 # GetProperty
+
+ 000ec SetData 
+ 000ed StoreResult 
+ 000ee PushVariable [var_6] 
+ 000ef PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000f0 Push1 
+ 000f1 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000f2 PushVariableExtended [var_17]
+
+ 000f5 Add 
+ 000f6 PushVariable [var_6] 
+ 000f7 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000f8 Push1 
+ 000f9 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000fa SetData 
+ 000fb StoreResult 
+ 000fc PushVariable [var_6] 
+ 000fd PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000fe Push2 
+ 000ff MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00100 PushVariable [var_15] 
+ 00101 Subtract 
+ 00102 PushVariable [var_6] 
+ 00103 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00104 Push2 
+ 00105 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00106 SetData 
+ 00107 StoreResult 
+ 00108 PushVariable [var_6] 
+ 00109 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0010a Push3 
+ 0010b MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0010c Negate 
+ 0010d PushVariable [var_10] 
+ 0010e PushLiteralExtended 17 # <Value type=fixnum value=0x5> 
+ 00111 Remainder 
+ 00112 Add 
+ 00113 PushVariable [var_6] 
+ 00114 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00115 Push3 
+ 00116 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00117 SetData 
+ 00118 StoreResult 
+ 00119 PushVariable [var_15] 
+ 0011a PushVariableExtended [var_17]
+
+ 0011d Add 
+ 0011e PushVariable [var_2 (b'U1F9E7')] 
+ 0011f Add 
+ 00120 PushLiteralExtended 16 # 65536 
+ 00123 Remainder 
+ 00124 GetData 
+ 00125 PopVariableExtended [var_18] 
+ 00128 StoreResult 
+ 00129 PushVariable [var_7] 
+ 0012a PushLiteral 8 # b'U1F41B' 
+ 0012b MakeObjectAlias 21 # GetProperty
+
+ 0012c PushVariableExtended [var_18]
+
+ 0012f PushVariable [var_9] 
+ 00130 Push3 
+ 00131 Add 
+ 00132 Multiply 
+ 00133 Add 
+ 00134 PushLiteralExtended 16 # 65536 
+ 00137 Remainder 
+ 00138 PushVariable [var_7] 
+ 00139 PushLiteral 8 # b'U1F41B' 
+ 0013a MakeObjectAlias 21 # GetProperty
+
+ 0013b SetData 
+ 0013c StoreResult 
+ 0013d PushVariableExtended [var_18]
+
+ 00140 PushVariable [var_8] 
+ 00141 MakeObjectAlias 31 # GetPositionEnd
+
+ 00142 SetData 
+ 00143 Dup 
+ 00144 StoreResult 
+ 00145 Jump 0x3e 
+ 00148 StoreResult 
+ 00149 PushLiteral 4 # b'U1F41D' 
+ 0014a PushVariable [var_7] 
+ 0014b PushLiteral 4 # b'U1F41D' 
+ 0014c MakeObjectAlias 21 # GetProperty
+
+ 0014d PushLiteralExtended 16 # 65536 
+ 00150 Remainder 
+ 00151 PushLiteralExtended 16 # 65536 
+ 00154 Add 
+ 00155 PushLiteralExtended 16 # 65536 
+ 00158 Remainder 
+ 00159 PushLiteral 5 # b'U1F99C' 
+ 0015a PushVariable [var_7] 
+ 0015b PushLiteral 5 # b'U1F99C' 
+ 0015c MakeObjectAlias 21 # GetProperty
+
+ 0015d PushLiteralExtended 16 # 65536 
+ 00160 Remainder 
+ 00161 PushLiteralExtended 16 # 65536 
+ 00164 Add 
+ 00165 PushLiteralExtended 16 # 65536 
+ 00168 Remainder 
+ 00169 PushLiteral 6 # b'U1F11D' 
+ 0016a PushVariable [var_7] 
+ 0016b PushLiteral 6 # b'U1F11D' 
+ 0016c MakeObjectAlias 21 # GetProperty
+
+ 0016d PushLiteralExtended 16 # 65536 
+ 00170 Remainder 
+ 00171 PushLiteralExtended 16 # 65536 
+ 00174 Add 
+ 00175 PushLiteralExtended 16 # 65536 
+ 00178 Remainder 
+ 00179 PushLiteral 7 # b'U1F41C' 
+ 0017a PushVariable [var_7] 
+ 0017b PushLiteral 7 # b'U1F41C' 
+ 0017c MakeObjectAlias 21 # GetProperty
+
+ 0017d PushLiteralExtended 16 # 65536 
+ 00180 Remainder 
+ 00181 PushLiteralExtended 16 # 65536 
+ 00184 Add 
+ 00185 PushLiteralExtended 16 # 65536 
+ 00188 Remainder 
+ 00189 PushLiteral 9 # b'len' 
+ 0018a PushVariable [var_5] 
+ 0018b PushLiteralExtended 16 # 65536 
+ 0018e Remainder 
+ 0018f PushLiteral 8 # b'U1F41B' 
+ 00190 PushVariable [var_7] 
+ 00191 PushLiteral 8 # b'U1F41B' 
+ 00192 MakeObjectAlias 21 # GetProperty
+
+ 00193 PushLiteralExtended 16 # 65536 
+ 00196 Remainder 
+ 00197 PushLiteralExtended 16 # 65536 
+ 0019a Add 
+ 0019b PushLiteralExtended 16 # 65536 
+ 0019e Remainder 
+ 0019f PushLiteral 10 # <Value type=fixnum value=0xc> 
+ 001a0 MakeRecord 
+ 001a1 GetData 
+ 001a2 PopVariableExtended [var_19] 
+ 001a5 StoreResult 
+ 001a6 PushVariable [var_8] 
+ 001a7 PushVariableExtended [var_19]
+
+ 001aa Push2 
+ 001ab MakeVector 
+ 001ac Return 
+ 001ad Return 
+=== data offset 19 ===
+Function name : b'Sugamo'
+Function arguments:  [b'nsPayload', b'NewJersey', b'U1F9E7']
+ 00000 PushVariable [var_0 (b'nsPayload')] 
+ 00001 PushLiteral 0 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 00002 Coerce 
+ 00003 GetData 
+ 00004 PopVariable [var_3] 
+ 00005 StoreResult 
+ 00006 PushVariable [var_3] 
+ 00007 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x6c656e67>> 
+ 00008 MakeObjectAlias 21 # GetProperty
+
+ 00009 GetData 
+ 0000a PopVariable [var_4] 
+ 0000b StoreResult 
+ 0000c PushVariable [var_4] 
+ 0000d PushLiteral 2 # <Value type=fixnum value=0x6> 
+ 0000e GreaterThan 
+ 0000f TestIf 0x18 
+ 00012 PushLiteral 2 # <Value type=fixnum value=0x6> 
+ 00013 GetData 
+ 00014 PopVariable [var_4] 
+ 00015 Jump 0x19 
+ 00018 PushUndefined 
+ 00019 StoreResult 
+ 0001a PushVariable [var_1 (b'NewJersey')] 
+ 0001b PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0001c Push1 
+ 0001d MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0001e PushVariable [var_1 (b'NewJersey')] 
+ 0001f PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00020 Push2 
+ 00021 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00022 PushVariable [var_1 (b'NewJersey')] 
+ 00023 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00024 Push3 
+ 00025 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00026 Push3 
+ 00027 MakeVector 
+ 00028 GetData 
+ 00029 PopVariable [var_5] 
+ 0002a StoreResult 
+ 0002b PushLiteral 4 # b'U1F41D' 
+ 0002c Push0 
+ 0002d PushLiteral 5 # b'U1F99C' 
+ 0002e Push0 
+ 0002f PushLiteral 6 # b'U1F11D' 
+ 00030 Push0 
+ 00031 PushLiteral 7 # b'len' 
+ 00032 PushVariable [var_4] 
+ 00033 PushLiteral 8 # <Value type=fixnum value=0x8> 
+ 00034 MakeRecord 
+ 00035 GetData 
+ 00036 PopVariable [var_6] 
+ 00037 StoreResult 
+ 00038 LinkRepeat 0xf3
+
+ 0003b Push1 
+ 0003c PushVariable [var_4] 
+ 0003d Push1 
+ 0003e PushUndefined 
+ 0003f RepeatInRange 7 
+ 00042 PushLiteral 9 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 00043 Tell 10 
+     00046 PushVariable [var_3] 
+     00047 PushLiteral 10 # <Value type=object value=<Value type=constant value=0x63686120>> 
+     00048 PushVariable [var_7] 
+     00049 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+     0004a Push0 
+     0004b MessageSend 11 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'cton'-b'shor'-b'\x00\x00\x10\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+     0004e EndTell 
+ 0004f GetData 
+ 00050 PopVariable [var_8] 
+ 00051 StoreResult 
+ 00052 PushVariable [var_8] 
+ 00053 PushLiteral 12 # <Value type=fixnum value=0x80> 
+ 00054 Subtract 
+ 00055 PushVariable [var_5] 
+ 00056 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00057 Push1 
+ 00058 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00059 Multiply 
+ 0005a PushVariable [var_5] 
+ 0005b PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0005c Push2 
+ 0005d MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0005e Add 
+ 0005f GetData 
+ 00060 PopVariable [var_9] 
+ 00061 StoreResult 
+ 00062 PushVariable [var_5] 
+ 00063 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00064 Push3 
+ 00065 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00066 PushVariable [var_7] 
+ 00067 Subtract 
+ 00068 GetData 
+ 00069 PopVariable [var_10] 
+ 0006a StoreResult 
+ 0006b PushVariable [var_10] 
+ 0006c Push0 
+ 0006d Equal 
+ 0006e TestIf 0x77 
+ 00071 PushMinus1 
+ 00072 GetData 
+ 00073 PopVariable [var_10] 
+ 00074 Jump 0x78 
+ 00077 PushUndefined 
+ 00078 StoreResult 
+ 00079 PushVariable [var_9] 
+ 0007a PushVariable [var_10] 
+ 0007b Quotient 
+ 0007c GetData 
+ 0007d PopVariable [var_11] 
+ 0007e StoreResult 
+ 0007f PushVariable [var_5] 
+ 00080 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00081 Push1 
+ 00082 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00083 PushVariable [var_8] 
+ 00084 PushLiteral 13 # <Value type=fixnum value=0x9> 
+ 00085 Remainder 
+ 00086 Subtract 
+ 00087 GetData 
+ 00088 PopVariable [var_12] 
+ 00089 StoreResult 
+ 0008a PushVariable [var_12] 
+ 0008b Push0 
+ 0008c Equal 
+ 0008d TestIf 0x96 
+ 00090 Push1 
+ 00091 GetData 
+ 00092 PopVariable [var_12] 
+ 00093 Jump 0x97 
+ 00096 PushUndefined 
+ 00097 StoreResult 
+ 00098 PushVariable [var_9] 
+ 00099 PushVariable [var_12] 
+ 0009a Remainder 
+ 0009b GetData 
+ 0009c PopVariable [var_13] 
+ 0009d StoreResult 
+ 0009e PushVariable [var_6] 
+ 0009f PushLiteral 5 # b'U1F99C' 
+ 000a0 MakeObjectAlias 21 # GetProperty
+
+ 000a1 PushVariable [var_11] 
+ 000a2 Add 
+ 000a3 PushVariable [var_13] 
+ 000a4 Add 
+ 000a5 PushLiteral 14 # 65536 
+ 000a6 Remainder 
+ 000a7 PushVariable [var_6] 
+ 000a8 PushLiteral 5 # b'U1F99C' 
+ 000a9 MakeObjectAlias 21 # GetProperty
+
+ 000aa SetData 
+ 000ab StoreResult 
+ 000ac PushVariable [var_6] 
+ 000ad PushLiteral 4 # b'U1F41D' 
+ 000ae MakeObjectAlias 21 # GetProperty
+
+ 000af PushVariable [var_9] 
+ 000b0 Add 
+ 000b1 PushLiteral 14 # 65536 
+ 000b2 Remainder 
+ 000b3 PushVariable [var_6] 
+ 000b4 PushLiteral 4 # b'U1F41D' 
+ 000b5 MakeObjectAlias 21 # GetProperty
+
+ 000b6 SetData 
+ 000b7 StoreResult 
+ 000b8 PushVariable [var_6] 
+ 000b9 PushLiteral 6 # b'U1F11D' 
+ 000ba MakeObjectAlias 21 # GetProperty
+
+ 000bb PushVariable [var_11] 
+ 000bc PushVariable [var_13] 
+ 000bd Multiply 
+ 000be Add 
+ 000bf PushLiteral 14 # 65536 
+ 000c0 Remainder 
+ 000c1 PushVariable [var_6] 
+ 000c2 PushLiteral 6 # b'U1F11D' 
+ 000c3 MakeObjectAlias 21 # GetProperty
+
+ 000c4 SetData 
+ 000c5 StoreResult 
+ 000c6 PushVariable [var_5] 
+ 000c7 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000c8 Push1 
+ 000c9 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000ca PushVariable [var_13] 
+ 000cb Add 
+ 000cc PushVariable [var_5] 
+ 000cd PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000ce Push1 
+ 000cf MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000d0 SetData 
+ 000d1 StoreResult 
+ 000d2 PushVariable [var_5] 
+ 000d3 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000d4 Push2 
+ 000d5 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000d6 PushVariable [var_11] 
+ 000d7 Subtract 
+ 000d8 PushVariable [var_5] 
+ 000d9 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000da Push2 
+ 000db MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000dc SetData 
+ 000dd StoreResult 
+ 000de PushVariable [var_5] 
+ 000df PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000e0 Push3 
+ 000e1 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000e2 Negate 
+ 000e3 PushVariable [var_8] 
+ 000e4 PushLiteral 15 # <Value type=fixnum value=0x7> 
+ 000e5 Remainder 
+ 000e6 Add 
+ 000e7 PushVariable [var_5] 
+ 000e8 PushLiteral 3 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 000e9 Push3 
+ 000ea MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 000eb SetData 
+ 000ec Dup 
+ 000ed StoreResult 
+ 000ee Jump 0x3f 
+ 000f1 StoreResult 
+ 000f2 PushLiteral 4 # b'U1F41D' 
+ 000f3 PushVariable [var_6] 
+ 000f4 PushLiteral 4 # b'U1F41D' 
+ 000f5 MakeObjectAlias 21 # GetProperty
+
+ 000f6 PushLiteral 14 # 65536 
+ 000f7 Remainder 
+ 000f8 PushLiteral 14 # 65536 
+ 000f9 Add 
+ 000fa PushLiteral 14 # 65536 
+ 000fb Remainder 
+ 000fc PushLiteral 5 # b'U1F99C' 
+ 000fd PushVariable [var_6] 
+ 000fe PushLiteral 5 # b'U1F99C' 
+ 000ff MakeObjectAlias 21 # GetProperty
+
+ 00100 PushLiteral 14 # 65536 
+ 00101 Remainder 
+ 00102 PushLiteral 14 # 65536 
+ 00103 Add 
+ 00104 PushLiteral 14 # 65536 
+ 00105 Remainder 
+ 00106 PushLiteral 6 # b'U1F11D' 
+ 00107 PushVariable [var_6] 
+ 00108 PushLiteral 6 # b'U1F11D' 
+ 00109 MakeObjectAlias 21 # GetProperty
+
+ 0010a PushLiteral 14 # 65536 
+ 0010b Remainder 
+ 0010c PushLiteral 14 # 65536 
+ 0010d Add 
+ 0010e PushLiteral 14 # 65536 
+ 0010f Remainder 
+ 00110 PushLiteral 7 # b'len' 
+ 00111 PushVariable [var_4] 
+ 00112 PushLiteral 8 # <Value type=fixnum value=0x8> 
+ 00113 MakeRecord 
+ 00114 GetData 
+ 00115 PopVariable [var_14] 
+ 00116 StoreResult 
+ 00117 PushVariable [var_14] 
+ 00118 Return 
+ 00119 Return 
+=== data offset 20 ===
+Function name : b'Jimbocho'
+Function arguments:  [b't']
+ 00000 PushLiteral 0 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 00001 PushLiteral 1 # b'NSString' 
+ 00002 MakeObjectAlias 21 # GetProperty
+
+ 00003 PushVariable [var_0 (b't')] 
+ 00004 Push1 
+ 00005 PositionalMessageSend 2 # b'stringWithString_' 
+ 00008 Return 
+ 00009 Return 
+=== data offset 21 ===
+Function name : b'trimNSString'
+Function arguments:  [b'ns']
+ 00000 PushLiteral 0 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 00001 PushLiteral 1 # b'NSCharacterSet' 
+ 00002 MakeObjectAlias 21 # GetProperty
+
+ 00003 Push0 
+ 00004 PositionalMessageSend 2 # b'whitespaceAndNewlineCharacterSet' 
+ 00007 GetData 
+ 00008 PopVariable [var_1] 
+ 00009 StoreResult 
+ 0000a PushVariable [var_0 (b'ns')] 
+ 0000b PushVariable [var_1] 
+ 0000c Push1 
+ 0000d PositionalMessageSend 3 # b'stringByTrimmingCharactersInSet_' 
+ 00010 Return 
+ 00011 Return 
+=== data offset 22 ===
+Function name : b'splitNSString'
+Function arguments:  [b'ns', b'delim']
+ 00000 PushVariable [var_1 (b'delim')] 
+ 00001 PushLiteral 0 # [177, <Value type=string value=b''>] 
+ 00002 Equal 
+ 00003 TestIf 0xf 
+ 00006 PushVariable [var_0 (b'ns')] 
+ 00007 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 00008 Coerce 
+ 00009 Push1 
+ 0000a MakeVector 
+ 0000b Return 
+ 0000c Jump 0x10 
+ 0000f PushUndefined 
+ 00010 StoreResult 
+ 00011 PushVariable [var_0 (b'ns')] 
+ 00012 PushVariable [var_1 (b'delim')] 
+ 00013 Push1 
+ 00014 PositionalMessageSend 2 # b'componentsSeparatedByString_' 
+ 00017 GetData 
+ 00018 PopVariable [var_2] 
+ 00019 StoreResult 
+ 0001a PushVariable [var_2] 
+ 0001b PushLiteral 3 # <Value type=object value=<Value type=constant value=0x6c697374>> 
+ 0001c Coerce 
+ 0001d Return 
+ 0001e Return 
+=== data offset 23 ===
+Function name : b'Shimbashi'
+Function arguments:  [b'washingtondc', b'colorado', b'idaho', b'kansas']
+ 00000 Push0 
+ 00001 MakeVector 
+ 00002 GetData 
+ 00003 PopVariable [var_4] 
+ 00004 StoreResult 
+ 00005 PushVariable [var_3 (b'kansas')] 
+ 00006 PushVariable [var_2 (b'idaho')] 
+ 00007 Subtract 
+ 00008 PushLiteral 0 # <Value type=fixnum value=0x100> 
+ 00009 Remainder 
+ 0000a GetData 
+ 0000b PopVariable [var_5] 
+ 0000c StoreResult 
+ 0000d LinkRepeat 0x70
+
+ 00010 PushVariable [var_0 (b'washingtondc')] 
+ 00011 Dup 
+ 00012 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x6b6f636c>> 
+ 00013 PushLiteral 2 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 00014 Push2 
+ 00015 MessageSend 3 # <Value type=object value=<Value type=event_identifier value=b'core'-b'cnte'-b'****'-b'\x00\x00\x00\x00'-b'****'-b'\x00\x00\x10\x00'>> 
+ 00018 Push1 
+ 00019 PushUndefined 
+ 0001a RepeatInCollection <disassembler not implemented> 
+ 0001b Equal 
+ 0001c StartsWith 
+ 0001d Push0 
+ 0001e GetData 
+ 0001f PopVariable [var_7] 
+ 00020 StoreResult 
+ 00021 Push0 
+ 00022 MakeVector 
+ 00023 GetData 
+ 00024 PopVariable [var_8] 
+ 00025 StoreResult 
+ 00026 LinkRepeat 0x66
+
+ 00029 PushVariable [var_6] 
+ 0002a PushLiteral 4 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 0002b Coerce 
+ 0002c Dup 
+ 0002d PushLiteral 1 # <Value type=object value=<Value type=constant value=0x6b6f636c>> 
+ 0002e PushLiteral 2 # <Value type=object value=<Value type=constant value=0x636f626a>> 
+ 0002f Push2 
+ 00030 MessageSend 3 # <Value type=object value=<Value type=event_identifier value=b'core'-b'cnte'-b'****'-b'\x00\x00\x00\x00'-b'****'-b'\x00\x00\x10\x00'>> 
+ 00033 Push1 
+ 00034 PushUndefined 
+ 00035 RepeatInCollection <disassembler not implemented> 
+ 00036 Equal 
+ 00037 And -0x585d 
+ 0003a Add 
+ 0003b GetData 
+ 0003c PopVariable [var_7] 
+ 0003d StoreResult 
+ 0003e PushLiteral 5 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 0003f Tell 7 
+     00042 PushVariable [var_9] 
+     00043 Push0 
+     00044 MessageSend 6 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'cton'-b'shor'-b'\x00\x00\x10\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+     00047 EndTell 
+ 00048 GetData 
+ 00049 PopVariable [var_10] 
+ 0004a StoreResult 
+ 0004b PushVariable [var_5] 
+ 0004c PushVariable [var_7] 
+ 0004d Push3 
+ 0004e Remainder 
+ 0004f Push1 
+ 00050 Add 
+ 00051 Multiply 
+ 00052 PushLiteral 7 # <Value type=fixnum value=0xb> 
+ 00053 Remainder 
+ 00054 GetData 
+ 00055 PopVariable [var_11] 
+ 00056 StoreResult 
+ 00057 PushVariable [var_10] 
+ 00058 PushVariable [var_1 (b'colorado')] 
+ 00059 Add 
+ 0005a PushVariable [var_11] 
+ 0005b Add 
+ 0005c PushVariable [var_8] 
+ 0005d MakeObjectAlias 31 # GetPositionEnd
+
+ 0005e SetData 
+ 0005f Dup 
+ 00060 StoreResult 
+ 00061 Jump 0x35 
+ 00064 StoreResult 
+ 00065 PushVariable [var_8] 
+ 00066 PushVariable [var_4] 
+ 00067 MakeObjectAlias 31 # GetPositionEnd
+
+ 00068 SetData 
+ 00069 Dup 
+ 0006a StoreResult 
+ 0006b Jump 0x1a 
+ 0006e StoreResult 
+ 0006f PushVariable [var_4] 
+ 00070 Return 
+ 00071 Return 
+=== data offset 24 ===
+Function name : b'Ginza'
+Function arguments:  [b't']
+ 00000 Push0 
+ 00001 GetData 
+ 00002 PopVariable [var_1] 
+ 00003 StoreResult 
+ 00004 LinkRepeat 0x29
+
+ 00007 Push1 
+ 00008 PushVariable [var_0 (b't')] 
+ 00009 PushLiteral 0 # <Value type=object value=<Value type=constant value=0x6c656e67>> 
+ 0000a MakeObjectAlias 21 # GetProperty
+
+ 0000b GetData 
+ 0000c Push1 
+ 0000d PushUndefined 
+ 0000e RepeatInRange 2 
+ 00011 PushVariable [var_1] 
+ 00012 PushLiteral 1 # <Value type=object value=<Value type=constant value=0x6d69736363757261>> 
+ 00013 Tell 10 
+     00016 PushVariable [var_0 (b't')] 
+     00017 PushLiteral 2 # <Value type=object value=<Value type=constant value=0x63686120>> 
+     00018 PushVariable [var_2] 
+     00019 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+     0001a Push0 
+     0001b MessageSend 3 # <Value type=object value=<Value type=event_identifier value=b'syso'-b'cton'-b'shor'-b'\x00\x00\x10\x00'-b'TEXT'-b'\x00\x00\x00\x00'>> 
+     0001e EndTell 
+ 0001f Add 
+ 00020 GetData 
+ 00021 PopVariable [var_1] 
+ 00022 Dup 
+ 00023 StoreResult 
+ 00024 Jump 0xe 
+ 00027 StoreResult 
+ 00028 PushVariable [var_1] 
+ 00029 PushLiteral 4 # <Value type=fixnum value=0x100> 
+ 0002a Remainder 
+ 0002b Return 
+ 0002c Return 
+=== data offset 25 ===
+Function name : b'stripWhitespace'
+Function arguments:  [b't']
+ 00000 PushVariable [var_0 (b't')] 
+ 00001 PushLiteral 0 # [177, <Value type=string value=b''>] 
+ 00002 Equal 
+ 00003 TestIf 0xb 
+ 00006 PushLiteral 1 # [177, <Value type=string value=b''>] 
+ 00007 Return 
+ 00008 Jump 0xc 
+ 0000b PushUndefined 
+ 0000c StoreResult 
+ 0000d PushVariable [var_0 (b't')] 
+ 0000e GetData 
+ 0000f PopVariable [var_1] 
+ 00010 StoreResult 
+ 00011 PushGlobal <Value type=object value=<Value type=constant value=0x73706163>> 
+ 00012 PushGlobal <Value type=object value=<Value type=constant value=0x74616220>> 
+ 00013 PushGlobal <Value type=object value=<Value type=constant value=0x72657420>> 
+ 00014 PushGlobal <Value type=object value=<Value type=constant value=0x6c6e6664>> 
+ 00015 PushLiteral 6 # <Value type=fixnum value=0x4> 
+ 00016 MakeVector 
+ 00017 GetData 
+ 00018 PopVariable [var_2] 
+ 00019 StoreResult 
+ 0001a LinkRepeat 0x41
+
+ 0001d PushUndefined 
+ 0001e PushVariable [var_1] 
+ 0001f PushLiteral 7 # [177, <Value type=string value=b''>] 
+ 00020 NotEqual 
+ 00021 And 0x2c 
+ 00024 PushVariable [var_2] 
+ 00025 PushVariable [var_1] 
+ 00026 PushLiteral 8 # <Value type=object value=<Value type=constant value=0x63686120>> 
+ 00027 Push1 
+ 00028 MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 00029 Contains 
+ 0002a PushLiteral 9 # <Value type=object value=<Value type=constant value=0x626f6f6c>> 
+ 0002b Coerce 
+ 0002c RepeatWhile 
+ 0002d PushVariable [var_1] 
+ 0002e Dup 
+ 0002f PushLiteral 10 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 00030 GCSwap <disassembler not implemented> 
+ 00031 Dup 
+ 00032 Pop 
+ 00033 Push2 
+ 00034 GCSwap <disassembler not implemented> 
+ 00035 Pop 
+ 00036 PushMinus1 
+ 00037 MakeObjectAlias 27 # GetRange
+
+ 00038 GetData 
+ 00039 PopVariable [var_1] 
+ 0003a Dup 
+ 0003b StoreResult 
+ 0003c Jump 0x1e 
+ 0003f StoreResult 
+ 00040 LinkRepeat 0x67
+
+ 00043 PushUndefined 
+ 00044 PushVariable [var_1] 
+ 00045 PushLiteral 11 # [177, <Value type=string value=b''>] 
+ 00046 NotEqual 
+ 00047 And 0x52 
+ 0004a PushVariable [var_2] 
+ 0004b PushVariable [var_1] 
+ 0004c PushLiteral 8 # <Value type=object value=<Value type=constant value=0x63686120>> 
+ 0004d PushMinus1 
+ 0004e MakeObjectAlias 24 # GetIndexed (item A of B)
+
+ 0004f Contains 
+ 00050 PushLiteral 9 # <Value type=object value=<Value type=constant value=0x626f6f6c>> 
+ 00051 Coerce 
+ 00052 RepeatWhile 
+ 00053 PushVariable [var_1] 
+ 00054 Dup 
+ 00055 PushLiteral 10 # <Value type=object value=<Value type=constant value=0x63747874>> 
+ 00056 GCSwap <disassembler not implemented> 
+ 00057 Dup 
+ 00058 Pop 
+ 00059 Push1 
+ 0005a GCSwap <disassembler not implemented> 
+ 0005b Pop 
+ 0005c PushLiteral 12 # <Value type=fixnum value=0xfffe> 
+ 0005d MakeObjectAlias 27 # GetRange
+
+ 0005e GetData 
+ 0005f PopVariable [var_1] 
+ 00060 Dup 
+ 00061 StoreResult 
+ 00062 Jump 0x44 
+ 00065 StoreResult 
+ 00066 PushVariable [var_1] 
+ 00067 Return 
+ 00068 Return 
+=== data offset 26 ===
+Function name : b'split'
+Function arguments:  [b't', b'delim']
+ 00000 PushVariable [var_1 (b'delim')] 
+ 00001 PushLiteral 0 # [177, <Value type=string value=b''>] 
+ 00002 Equal 
+ 00003 TestIf 0xd 
+ 00006 PushVariable [var_0 (b't')] 
+ 00007 Push1 
+ 00008 MakeVector 
+ 00009 Return 
+ 0000a Jump 0xe 
+ 0000d PushUndefined 
+ 0000e StoreResult 
+ 0000f PushGlobal <Value type=object value=<Value type=constant value=0x61736372>> 
+ 00010 PushLiteral 2 # <Value type=object value=<Value type=constant value=0x7478646c>> 
+ 00011 MakeObjectAlias 21 # GetProperty
+
+ 00012 GetData 
+ 00013 PopVariable [var_2] 
+ 00014 StoreResult 
+ 00015 PushVariable [var_1 (b'delim')] 
+ 00016 PushGlobal <Value type=object value=<Value type=constant value=0x61736372>> 
+ 00017 PushLiteral 2 # <Value type=object value=<Value type=constant value=0x7478646c>> 
+ 00018 MakeObjectAlias 21 # GetProperty
+
+ 00019 SetData 
+ 0001a StoreResult 
+ 0001b PushVariable [var_0 (b't')] 
+ 0001c PushLiteral 3 # <Value type=object value=<Value type=constant value=0x6369746d>> 
+ 0001d MakeObjectAlias 22 # GetEvery
+
+ 0001e GetData 
+ 0001f PopVariable [var_3] 
+ 00020 StoreResult 
+ 00021 PushVariable [var_2] 
+ 00022 PushGlobal <Value type=object value=<Value type=constant value=0x61736372>> 
+ 00023 PushLiteral 2 # <Value type=object value=<Value type=constant value=0x7478646c>> 
+ 00024 MakeObjectAlias 21 # GetProperty
+
+ 00025 SetData 
+ 00026 StoreResult 
+ 00027 PushVariable [var_3] 
+ 00028 Return 
+ 00029 Return 

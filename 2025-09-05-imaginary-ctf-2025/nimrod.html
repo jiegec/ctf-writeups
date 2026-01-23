@@ -1,0 +1,319 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-05-imaginary-ctf-2025/nimrod.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>nimrod - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#nimrod" class="nav-link">nimrod</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="nimrod">nimrod</h1>
+<pre class="highlight"><code>by Eth007
+Description
+
+And Cush begat Nimrod: he began to be a mighty one in the earth.
+Attachments
+
+nimrod</code></pre>
+<p>In attachment a Nim compiled program is provided. Decompile it in <a href="https://binary.ninja/">Binary Ninja</a>:</p>
+<pre class="highlight"><code class="language-c">004116c0  TM__lV8EigCDqwNSDSAg6zOZ9cw_9:
+004116c0  08 00 00 00 00 00 00 00 08 00 00 00 00 00 00 40  ...............@
+004116d0  43 6f 72 72 65 63 74 21 00 00 00 00 00 00 00 00  Correct!........
+004116e0  TM__lV8EigCDqwNSDSAg6zOZ9cw_7:
+004116e0  22 00 00 00 00 00 00 00 22 00 00 00 00 00 00 40  "......."......@
+004116f0  28 f8 3e e6 3e 2f 43 0c b9 96 d1 5c d6 bf 36 d8  (.&gt;.&gt;/C....\..6.
+00411700  20 79 0e 8e 52 21 b2 50 e3 98 b5 c9 b8 a0 88 30   y..R!.P.......0
+00411710  d9 0a 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+
+00415060  void* encryptedFlag__nimrod_10 = TM__lV8EigCDqwNSDSAg6zOZ9cw_7
+
+00410020    int64_t NimMainInner()
+00410020    {
+00410020        echoBinSafe(&amp;TM__lV8EigCDqwNSDSAg6zOZ9cw_2, 1);
+00410020        
+00410081        if (eqeq___nimrod_69(
+00410081                xorEncrypt__nimrod_46(
+00410081                    nsuStrip(readLine__systemZio_271(stdin), 1, 1, 
+00410081                        &amp;TM__lV8EigCDqwNSDSAg6zOZ9cw_4), 
+00410081                    0x13371337), 
+00410081                encryptedFlag__nimrod_10))
+004100a3            /* tailcall */
+004100a3            return echoBinSafe(&amp;TM__lV8EigCDqwNSDSAg6zOZ9cw_8, 1);
+004100a3        
+0041008e        /* tailcall */
+0041008e        return echoBinSafe(&amp;TM__lV8EigCDqwNSDSAg6zOZ9cw_10, 1);
+00410020    }
+
+0040fdc0    uint128_t* xorEncrypt__nimrod_46(int64_t* arg1, int32_t arg2)
+0040fdc0    {
+0040fdc0        if (!arg1)
+0040fdd4        {
+0040ffd2            keystream__nimrod_20(arg2, 0);
+0040ffe1            /* tailcall */
+0040ffe1            return newSeq__nimrod_29(0);
+0040fdd4        }
+0040fdd4        
+0040fdde        uint128_t* rax = keystream__nimrod_20(arg2, *(uint64_t*)arg1);
+0040fde3        uint64_t rdi_1 = *(uint64_t*)arg1;
+0040fde3        
+0040fded        if (rdi_1 &lt; 0)
+0040fded        {
+0040fffc            raiseRangeErrorI(rdi_1, 0, 0x7fffffffffffffff);
+0040fffc            /* no return */
+0040fded        }
+
+omitted.. simple xor encryption
+
+uint128_t* keystream__nimrod_20(int32_t arg1, uint64_t arg2)
+0040fce0    {
+0040fce0        if (arg2 &lt; 0)
+0040fcf4        {
+0040fd9f            raiseRangeErrorI(arg2, 0, 0x7fffffffffffffff);
+0040fd9f            /* no return */
+0040fcf4        }
+0040fcf4        
+0040fcfa        int32_t rbx = arg1;
+0040fcff        uint128_t* result;
+0040fcff        int32_t rcx;
+0040fcff        int64_t rdx;
+0040fcff        result = newSeq__nimrod_29(arg2);
+0040fcff        
+0040fd0a        if (arg2)
+0040fd0a        {
+0040fd0c            uint64_t rbp_1 = 0;
+0040fd0c            
+0040fd11            if (!result)
+0040fd11            {
+0040fd74                raiseIndexError2(0, -1, rdx, rcx);
+0040fd74                /* no return */
+0040fd11            }
+0040fd11            
+0040fd4a            do
+0040fd4a            {
+0040fd1e                int64_t rsi = *(uint64_t*)result;
+0040fd22                rbx = rbx * 0x19660d + 0x3c6ef35f;
+0040fd22                
+0040fd2b                if (rsi &lt;= rbp_1)
+0040fd2b                {
+0040fd34                    raiseIndexError2(rbp_1, rsi - 1, rdx, rcx);
+0040fd34                    /* no return */
+0040fd2b                }
+0040fd2b                
+0040fd3e                *(uint8_t*)((char*)result + rbp_1 + 0x10) = (char)(rbx &gt;&gt; 0x10);
+0040fd43                rbp_1 += 1;
+0040fd4a            } while (arg2 &gt; rbp_1);
+0040fd0a        }
+0040fd0a        
+0040fd59        return result;
+0040fce0    }
+</code></pre>
+<p>So essentiall the program does:</p>
+<ol>
+<li>read from inputt</li>
+<li>generate a keystream using 0x13371337</li>
+<li>xor input and keystrem</li>
+<li>compare it with the encrypted flag</li>
+</ol>
+<p>From the code, we can see that the Nim arrays has it sized stored at offset 0x00, and its data begins from 0x10. So we just compute the keystream and xor it with the encrypted flag in python:</p>
+<pre class="highlight"><code class="language-python">key = 0x13371337
+encrypted = "2200000000000000220000000000004028f83ee63e2f430cb996d15cd6bf36d820790e8e5221b250e398b5c9b8a08830d90a0000000000000000000000000000"
+for ch in bytes.fromhex(encrypted)[0x10:]:
+    key = key * 0x19660d + 0x3c6ef35f
+    key %= 2 ** 32
+    print(chr(ch ^ ((key &gt;&gt; 0x10) &amp; 0xFF)), end="")</code></pre>
+<p>Get flag: <code>ictf{a_mighty_hunter_bfc16cce9dc8}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

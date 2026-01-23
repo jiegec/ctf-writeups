@@ -1,0 +1,352 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-10-18-qiangwangbei-quals-2025/dieyingchongchong.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>谍影重重 6.0 - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#60" class="nav-link">谍影重重 6.0</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="60">谍影重重 6.0</h1>
+<p>合作者：@Yasar @NanoApe</p>
+<p>附件内是一个 pcap 文件，里面有很多个 UDP，Payload 格式经过分析，大致如下：</p>
+<ol>
+<li>0-4 字节：每次加一，packet number</li>
+<li>4-8 字节：每次加 160，已发送的字节数，sequence number</li>
+<li>8-12 字节：未知，同 UDP 端口下不变</li>
+<li>12-172 字节：Payload</li>
+</ol>
+<p>@Yasar 发现 Payload 是音频数据的浮点数格式，把每个 UDP 的 payload 提取出来，转成 wav 文件：</p>
+<pre class="highlight"><code class="language-python">import numpy as np
+import wave
+
+# get data from pcap omitted
+
+arr_u8 = np.frombuffer(data, dtype=np.uint8)
+
+MU_LAW_BIAS = 0x84
+def mulaw_decode_byte(mu):
+    mu = ~mu &amp; 0xFF
+    sign = mu &amp; 0x80
+    exponent = (mu &gt;&gt; 4) &amp; 0x07
+    mantissa = mu &amp; 0x0F
+    magnitude = ((mantissa &lt;&lt; 1) + 1) &lt;&lt; (exponent + 2)
+    magnitude = magnitude - MU_LAW_BIAS
+    sample = -magnitude if sign else magnitude
+    return np.int16(max(-32768, min(32767, sample &lt;&lt; 2)))
+
+arr_mulaw_decoded = np.array([mulaw_decode_byte(int(b)) for b in arr_u8], dtype=np.int16)
+with wave.open('ulaw_decoded_8k_s16.wav', 'wb') as wf:
+    wf.setnchannels(1)
+    wf.setsampwidth(2)
+    wf.setframerate(8000)
+    wf.writeframes(arr_mulaw_decoded.tobytes())</code></pre>
+<p>如此可以得到 1000+ 个 wav 文件。由于内容太多，所以丢给 ASR 进行语音识别：</p>
+<pre class="highlight"><code class="language-python"># based on https://github.com/jiegec/video2srt
+import argparse
+import os
+import base64
+from re import S
+from time import sleep
+
+from tencentcloud.common import credential
+from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException
+from tencentcloud.asr.v20190614 import asr_client, models
+
+parser = argparse.ArgumentParser(
+    description='Recognize audio')
+parser.add_argument('audios', metavar='AUDIO', type=str, nargs='+',
+                    help='path to audio files')
+parser.add_argument('--secret-id', type=str,
+                    help='secret id')
+parser.add_argument('--secret-key', type=str,
+                    help='secret key')
+
+args = parser.parse_args()
+for audio in args.audios:
+    print('Processing {}'.format(audio))
+    base, ext = os.path.splitext(audio)
+    srt = '{}.srt'.format(base)
+    json = '{}.json'.format(base)
+
+    # Step 1: upload to tencent cloud
+    print('Upload to tencent cloud')
+    cred = credential.Credential(args.secret_id, args.secret_key)
+    client = asr_client.AsrClient(cred, "ap-shanghai")
+
+    data = open(audio, 'rb').read()
+
+    req = models.CreateRecTaskRequest()
+    req.EngineModelType = "16k_zh"
+    req.ChannelNum = 1
+    req.ResTextFormat = 2
+    req.SourceType = 1
+    req.ConvertNumMode = 3
+    req.FilterModal = 1
+    req.Data = base64.b64encode(data).decode('utf-8')
+    resp = client.CreateRecTask(req)
+
+    task_id = resp.Data.TaskId
+
+    # Step 2: retrieve result
+    while True:
+        print('Wait for result')
+        req = models.DescribeTaskStatusRequest()
+        req.TaskId = task_id
+        resp = client.DescribeTaskStatus(req)
+        if resp.Data.StatusStr == "success":
+            print(f'Save json result to {json}')
+            open(json, 'w').write(resp.to_json_string())
+            break
+        sleep(5)
+
+    # Step 3: save to srt
+    print(f'Save subtitle to {srt}')
+    result = resp.Data.Result
+    counter = 1
+    with open(srt, 'w') as f:
+        for line in result.split('\n'):
+            if len(line) == 0:
+                break
+            parts = line.split(']')
+            times = parts[0].split(',')
+            time_from = times[0][1:]
+            time_to = times[1][:-1]
+
+            print(counter, file=f)
+            print('0:{} --&gt; 0:{}'.format(time_from, time_to), file=f)
+            print(']'.join(parts[1:]).strip(), file=f)
+            print('', file=f)
+
+            counter += 1</code></pre>
+<p>在结果里，找到一段强网杯 2025 相关的字符串：</p>
+<pre class="highlight"><code class="language-srt">==&gt; ulaw_decoded_8k_s16_40259.srt &lt;==
+1
+0:0:0.000 --&gt; 0:0:5.14
+第9届全网杯2025震撼来袭，你准备好了吗？
+
+2
+0:0:19.800 --&gt; 0:0:44.70
+四六我不您解后一条命令，6514663451427161661421466040145664160141451426071146466014214371606514214470。
+啥玩意儿</code></pre>
+<p>@NanoApe 指出，这是一系列的 ascii 码，转成 8 进制后拼接的结果：</p>
+<ol>
+<li><code>5</code> -&gt; 53 (dec) -&gt; 65 (oct)</li>
+<li><code>f</code> -&gt; 102 (dec) -&gt; 146 (oct)</li>
+</ol>
+<p>因此对应的字符串是 5f3eb916bf08e610aeb09f60bc955bd8。可以得到一段 mp3，经过语音识别：</p>
+<pre class="highlight"><code>表兄近日可好，上回托您带的甘四担秋茶，家母嘱咐务必在辰时正过三刻前送到，切记用金丝锦盒装妥，此处潮气重，莫让干货瘦了霉，若赶得及时可赶得菊花开前便可让铺子开张，
+
+一切安好，我会按照要求准备好抽查我该送到何地，
+
+送至双鲤湖西岸，南山茶铺放右边第二个橱柜莫放错，
+
+我已知悉你在那边可还安好，
+
+一切安好，希望你我二人早日相见，
+
+指日可待。茶叶送到了，但是晚了时日，茶铺看来只能另寻良辰吉日了，你在那边千莫保重</code></pre>
+<p>@NanoApe 根据 <code>双鲤湖西岸南山茶铺</code>，查到 1949 年 10 月金门战役的历史事件，结合已有信息：</p>
+<ol>
+<li>年份：1949，金门战役</li>
+<li>月份：10，金门战役</li>
+<li>日期：24，廿四</li>
+<li>小时：8，辰时</li>
+<li>分钟：45，三刻</li>
+</ol>
+<p>最终得到：<code>1949年10月24日8时45分于双鲤湖西岸南山茶铺</code>。</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

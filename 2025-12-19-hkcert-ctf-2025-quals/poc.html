@@ -1,0 +1,485 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-19-hkcert-ctf-2025-quals/poc.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>POC - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#poc" class="nav-link">POC</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="poc">POC</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import os
+
+
+class PaddingOracleClass:
+    def __init__(self):
+        self.key = os.urandom(16)
+        self.auth = os.urandom(16)
+        self.nonces = set()
+
+        self.update(nonce=os.urandom(12))
+
+    def update(self, nonce: bytes):
+        assert nonce not in self.nonces, "Nonce Reuse Detected"
+
+        self.nonces.add(nonce)
+        self.nonce = nonce
+        self.cnt = 2
+
+    def register(self, username: bytes) -&gt; tuple[bytes, bytes]:
+        assert self.cnt, "Out of Services"
+        self.cnt -= 1
+
+        aes = AES.new(self.key, AES.MODE_GCM, nonce=self.nonce)
+        aes.update(self.auth)
+        tok, en = aes.encrypt_and_digest(pad(username, 16))
+        return tok+en
+
+    def login(self, token: bytes) -&gt; bytes:
+        assert self.cnt, "Out of Services"
+        self.cnt -= 1
+
+        aes = AES.new(self.key, AES.MODE_GCM, nonce=self.nonce)
+        aes.update(self.auth)
+        tok, en = token[:-16], token[-16:]
+        username = unpad(aes.decrypt_and_verify(tok, en), 16)
+        return username
+
+
+MENU = '''
+========== MENU ==========
+cnt = {}
+nonce = {}
+
+= [U]pdate
+= [R]egister
+= [L]ogin
+= [Q]uit
+==========================
+'''
+
+poc = PaddingOracleClass()
+while True:
+    print(MENU.format(poc.cnt, poc.nonce.hex()))
+    try:
+        inp = input('&gt;').upper()
+        if inp == "Q":
+            raise Exception
+
+        elif inp == "U":
+            poc.update(
+                nonce=bytes.fromhex(input("nonce(hex)&gt;"))
+            )
+
+        elif inp == "R":
+            username = os.urandom(8)
+            token = poc.register(username=username)
+            print(f"Register!\n{token.hex()}")
+            print(username.hex())
+
+        elif inp == "L":
+            token = bytes.fromhex(input("token(hex)&gt;"))
+            username = poc.login(token=token)
+            print(f"Login!")
+            if username == b"admin":
+                with open("flag", "r") as f:
+                    print(f.read())
+                raise Exception
+            else:
+                print(f"Hello, what can I help you? {username.hex()}")
+    except:
+        print("Bye")
+        break</code></pre>
+<p>AES-GCM nonce reuse attack:</p>
+<ol>
+<li>Register twice with same nonce (nonce reuse)</li>
+<li>Recover authentication key H using polynomial solving</li>
+<li>Register with new nonce</li>
+<li>Compute admin ciphertext using keystream</li>
+<li>Compute admin tag using H</li>
+<li>Login with forged token</li>
+</ol>
+<p>Vulnerability: register() can be called multiple times with same nonce.</p>
+<p>For how AES-GCM nonce reuse attack works, see <a href="../2025-12-02-blackhat-mea-ctf-final-2025/tampering-detection-system.html">Tampering Detection System</a>.</p>
+<p>Attack script written by AI:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env sage -python
+"""
+Simple Sage + pwntools exploit for AES-GCM nonce reuse
+Run with: sage --python simple_sage_exploit_final.py
+"""
+
+import sys
+import os
+from Crypto.Util.Padding import pad
+from Crypto.Util.number import bytes_to_long, long_to_bytes
+
+from sage.all import GF, PolynomialRing
+from pwn import *
+
+# Create GF(2^128) field with GCM polynomial
+R = PolynomialRing(GF(2), 'x')
+x = R.gen()
+poly = x**128 + x**7 + x**2 + x + 1
+F = GF(2**128, name='a', modulus=poly)
+
+def int_to_gf128_gcm(x_int):
+    """Convert integer to GF(2^128) element with GCM bit ordering"""
+    coeffs = [0]*128
+    for i in range(128):
+        if (x_int &gt;&gt; i) &amp; 1:
+            coeffs[127 - i] = 1
+    return F(R(coeffs))
+
+def gf128_to_int_gcm(elem):
+    """Convert GF(2^128) element to integer with GCM bit ordering"""
+    poly = elem.polynomial()
+    coeffs = poly.list()
+    if len(coeffs) &lt; 128:
+        coeffs += [0] * (128 - len(coeffs))
+    val = 0
+    for i in range(128):
+        if coeffs[127 - i] == 1:
+            val |= (1 &lt;&lt; i)
+    return val
+
+def gf128_mul_gcm(a_int, b_int):
+    """GF(2^128) multiplication"""
+    a = int_to_gf128_gcm(a_int)
+    b = int_to_gf128_gcm(b_int)
+    return gf128_to_int_gcm(a * b)
+
+def gf128_inv_gcm(a_int):
+    """GF(2^128) inverse"""
+    a = int_to_gf128_gcm(a_int)
+    return gf128_to_int_gcm(a ** -1)
+
+def gf128_sqrt_gcm(a_int):
+    """Square root in GF(2^128): a^(2^127)"""
+    a = int_to_gf128_gcm(a_int)
+    return gf128_to_int_gcm(a ** (2**127))
+
+def recover_H(plain1, tag1, plain2, tag2):
+    """Recover H from two encryptions with same nonce"""
+    p1_int = bytes_to_long(plain1)
+    p2_int = bytes_to_long(plain2)
+    t1_int = bytes_to_long(tag1)
+    t2_int = bytes_to_long(tag2)
+
+    Δ_int = p1_int ^ p2_int
+    T_diff_int = t1_int ^ t2_int
+
+    # H^2 = T_diff * Δ^{-1}
+    Δ_inv = gf128_inv_gcm(Δ_int)
+    H_sq = gf128_mul_gcm(T_diff_int, Δ_inv)
+
+    # H = sqrt(H_sq)
+    return gf128_sqrt_gcm(H_sq)
+
+def main():
+    print("=== AES-GCM Nonce Reuse Exploit ===")
+
+    # Create test flag if needed
+    if not os.path.exists('flag'):
+        with open('flag', 'w') as f:
+            f.write('flag{test_flag_sage_pwntools}')
+
+    p = process(['python3', 'main.py'])
+
+    try:
+        # Step 1: Update with nonce 00*12
+        p.recvuntil(b'&gt;')
+        p.sendline(b'U')
+        p.recvuntil(b'nonce(hex)&gt;')
+        p.sendline(b'00' * 12)
+
+        # Step 2: Register twice (same nonce)
+        p.recvuntil(b'&gt;')
+        p.sendline(b'R')
+        resp1 = p.recvuntil(b'&gt;').decode()
+        token1_hex = resp1.split('\n')[1].strip()
+        username1_hex = resp1.split('\n')[2].strip()
+
+        p.sendline(b'R')
+        resp2 = p.recvuntil(b'&gt;').decode()
+        token2_hex = resp2.split('\n')[1].strip()
+        username2_hex = resp2.split('\n')[2].strip()
+
+        # Parse data
+        token1 = bytes.fromhex(token1_hex)
+        token2 = bytes.fromhex(token2_hex)
+        ciphertext1, tag1 = token1[:16], token1[16:]
+        ciphertext2, tag2 = token2[:16], token2[16:]
+
+        plaintext1 = pad(bytes.fromhex(username1_hex), 16)
+        plaintext2 = pad(bytes.fromhex(username2_hex), 16)
+
+        # Verify nonce reuse
+        if bytes(a ^ b for a, b in zip(ciphertext1, ciphertext2)) != bytes(a ^ b for a, b in zip(plaintext1, plaintext2)):
+            print("ERROR: No nonce reuse")
+            return False
+
+        print("✓ Nonce reuse confirmed")
+
+        # Step 3: Recover H
+        H = recover_H(plaintext1, tag1, plaintext2, tag2)
+        print(f"H: {hex(H)}")
+
+        # Step 4: Update with new nonce 01*12
+        p.sendline(b'U')
+        p.recvuntil(b'nonce(hex)&gt;')
+        p.sendline(b'01' * 12)
+
+        # Step 5: Register once more
+        p.recvuntil(b'&gt;')
+        p.sendline(b'R')
+        resp3 = p.recvuntil(b'&gt;').decode()
+        token3_hex = resp3.split('\n')[1].strip()
+        username3_hex = resp3.split('\n')[2].strip()
+
+        token3 = bytes.fromhex(token3_hex)
+        ciphertext3, tag3 = token3[:16], token3[16:]
+        plaintext3 = pad(bytes.fromhex(username3_hex), 16)
+
+        # Step 6: Compute admin ciphertext
+        keystream = bytes(a ^ b for a, b in zip(ciphertext3, plaintext3))
+        admin_plain = pad(b"admin", 16)
+        admin_cipher = bytes(a ^ b for a, b in zip(admin_plain, keystream))
+
+        # Step 7: Compute admin tag
+        Δ = bytes(a ^ b for a, b in zip(ciphertext3, admin_cipher))
+        Δ_int = bytes_to_long(Δ)
+
+        H_sq = gf128_mul_gcm(H, H)
+        gh_diff = gf128_mul_gcm(Δ_int, H_sq)
+        gh_diff_bytes = long_to_bytes(gh_diff, 16)
+
+        admin_tag = bytes(a ^ b for a, b in zip(tag3, gh_diff_bytes))
+
+        # Step 8: Login as admin
+        p.sendline(b'L')
+        p.recvuntil(b'token(hex)&gt;')
+
+        admin_token = admin_cipher + admin_tag
+        p.sendline(admin_token.hex().encode())
+
+        # Get flag
+        resp = p.recvall(timeout=2).decode()
+
+        if 'flag' in resp.lower():
+            import re
+            flag_match = re.search(r'flag\{[^}]+\}', resp)
+            if flag_match:
+                flag = flag_match.group(0)
+                print(f"\n*** FLAG: {flag} ***")
+
+                return True
+
+        print("Login failed")
+        return False
+
+    finally:
+        p.close()
+
+if __name__ == "__main__":
+    if main():
+        print("\n✓ Exploit succeeded!")
+    else:
+        print("\n✗ Exploit failed")</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

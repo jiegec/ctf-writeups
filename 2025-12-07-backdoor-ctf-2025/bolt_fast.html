@@ -1,0 +1,337 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-07-backdoor-ctf-2025/bolt_fast.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>bolt_fast - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#bolt_fast" class="nav-link">bolt_fast</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="bolt_fast">bolt_fast</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code>Everyone keeps telling me to worry about Wiener's attack, but they just don't understand optimization. Don't bother checking my key size; it's huge. You'll never catch me! Hahahaha!</code></pre>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import getPrime, inverse, bytes_to_long
+def flash_key():
+    while True:
+        p = getPrime(1024)
+        q = getPrime(1024)
+        N = p * q
+        #you can't even use weiner's attack now hahaha
+        dp_smart= getPrime(16)
+        try:
+            e = inverse(dp_smart, p-1)
+            return N, e, dp_smart
+        except ValueError:
+            continue
+
+N, e, _= flash_key()
+
+flag = b"flag{REDACTED}"
+m = bytes_to_long(flag)
+c = pow(m, e, N)
+print("Need for Speed")
+print("Since Wiener said calculating d_p and d_q is fast, I decided to make it even faster 'cause I am smarter.")
+print(f"N = {N}")
+print(f"e = {e}")
+print(f"c = {c}")</code></pre>
+<pre class="highlight"><code>Need for Speed
+Since Wiener said calculating d_p and d_q is fast, I decided to make it even faster 'cause I am smarter.
+N = 22061149554706951873851465765917042279909309233484615798640186468876401527123242297915465375459511054772541825273007749026648641620485458471351811298443479262277231839408201654282927999029324652496830649919637863202844794784443579336735415046336390091671003022244732389217910334465895328371360158510046347031294125509649474722535171601096998732929497780870057433634214228116293166963101489644680801538837005001377764416442380530464289453201654394144682138927826247301956954884930328147978637795259346321547054237005318172528896865428457293207571804464061990459958593520373578234234490804585522859401957032395007142007
+e = 9648003423571638489624579625383119603270189664714210175737275695548206153582516635644990660189908448510652756058045483763071850222529184219333877863638216254054444012130393864033392161426815671725858723096432660521038315432183692553568344247916320931122090436770154203149432285380142051084178668290839858171
+c = 18817014323644102879407569381912044887671193778381872592373573382139976320220125847317309926920208859012582031032930373240219755720268543444729983316326640661427616841700761054678137741340093140586895094016730198447552611014038632666821117758006775144046000049080406858764900680265384743839472653817299383323869146152251839342236631780818396088131196202767951301023089053662813175083035336272981588533957561537975684034210166185396046071368061264321959248372783262788158418696375783427276741258526067168910326630496339287237940444426277757582174810909733937257258767407189452212391936958267819666424558678534741723930</code></pre>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import sys
+import math
+from sympy import primerange
+import gmpy2
+from gmpy2 import mpz, powmod, gcd
+
+# Load N, e, c from output.txt
+with open('output.txt', 'r') as f:
+    lines = f.readlines()
+    N = int(lines[2].split(' = ')[1].strip())
+    e = int(lines[3].split(' = ')[1].strip())
+    c = int(lines[4].split(' = ')[1].strip())
+
+print(f'N = {N}')
+print(f'e = {e}')
+print(f'c = {c}')
+
+# convert to mpz for faster operations
+N = mpz(N)
+e = mpz(e)
+c = mpz(c)
+
+# iterate over 16-bit primes (2^15 to 2^16)
+lower = 2**15
+upper = 2**16
+print(f'Brute forcing dp from {lower} to {upper}')
+
+# Precompute primes using sympy's primerange
+primes = list(primerange(lower, upper))
+print(f'Number of primes to test: {len(primes)}')
+
+# Use a random base a = 2
+a = mpz(2)
+for dp in primes:
+    dp = mpz(dp)
+    # compute a^(dp) mod N
+    x = powmod(a, dp, N)
+    # compute x^e mod N
+    y = powmod(x, e, N)
+    # compute gcd(y - a, N)
+    g = gcd(y - a, N)
+    if g != 1 and g != N:
+        print(f'Found factor! dp = {dp}')
+        p = g
+        q = N // p
+        print(f'p = {p}')
+        print(f'q = {q}')
+        # compute phi = (p-1)*(q-1)
+        phi = (p-1)*(q-1)
+        d = powmod(e, -1, phi)
+        m = powmod(c, d, N)
+        flag = int(m)
+        # convert to bytes
+        flag_bytes = flag.to_bytes((flag.bit_length() + 7) // 8, 'big')
+        print(f'Flag: {flag_bytes}')
+        with open('.flag', 'wb') as flag_file:
+            flag_file.write(flag_bytes)
+        with open('.solved', 'w') as solved_file:
+            solved_file.write('')
+        sys.exit(0)
+
+print('Failed to factor N')</code></pre>
+<p>Generated by DeepSeek + Qwen Code:</p>
+<pre class="highlight"><code>{'role': 'user', 'parts': [{'text': 'Solve the CTF challenge in this folder. If you have a working exp locally, create an empty file named .solved in this folder. If flag is found, save it to .flag file in this folder. You can use sage without installing. If required, you can use pip or create venv to install extra python packages.'}]}
+{'role': 'model', 'parts': [{'text': "I need to solve the CTF challenge. First, I should examine the files in the folder: chall.py and output.txt. Let's read them to understand the challenge.", 'thought': True}, {'functionCall': {'id': 'call_00_UMKsRAYWAXS5xsh4hBqxcnLD', 'name': 'read_file', 'args': {'absolute_path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/chall.py'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_UMKsRAYWAXS5xsh4hBqxcnLD', 'name': 'read_file', 'response': {'output': 'from Crypto.Util.number import getPrime, inverse, bytes_to_long\ndef flash_key():\n    while True:\n        p = getPrime(1024)\n        q = getPrime(1024)\n        N = p * q\n        #you can\'t even use weiner\'s attack now hahaha\n        dp_smart= getPrime(16)\n        try:\n            e = inverse(dp_smart, p-1)\n            return N, e, dp_smart\n        except ValueError:\n            continue\n\nN, e, _= flash_key()\n\nflag = b"flag{REDACTED}"\nm = bytes_to_long(flag)\nc = pow(m, e, N)\nprint("Need for Speed")\nprint("Since Wiener said calculating d_p and d_q is fast, I decided to make it even faster \'cause I am smarter.")\nprint(f"N = {N}")\nprint(f"e = {e}")\nprint(f"c = {c}")'}}}]}
+{'role': 'model', 'parts': [{'text': 'Now read output.txt:', 'thought': True}, {'functionCall': {'id': 'call_00_fZLpnSkI4gDHEWsp1T1jSs6x', 'name': 'read_file', 'args': {'absolute_path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/output.txt'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_fZLpnSkI4gDHEWsp1T1jSs6x', 'name': 'read_file', 'response': {'output': "Need for Speed\nSince Wiener said calculating d_p and d_q is fast, I decided to make it even faster 'cause I am smarter.\nN = 22061149554706951873851465765917042279909309233484615798640186468876401527123242297915465375459511054772541825273007749026648641620485458471351811298443479262277231839408201654282927999029324652496830649919637863202844794784443579336735415046336390091671003022244732389217910334465895328371360158510046347031294125509649474722535171601096998732929497780870057433634214228116293166963101489644680801538837005001377764416442380530464289453201654394144682138927826247301956954884930328147978637795259346321547054237005318172528896865428457293207571804464061990459958593520373578234234490804585522859401957032395007142007\ne = 9648003423571638489624579625383119603270189664714210175737275695548206153582516635644990660189908448510652756058045483763071850222529184219333877863638216254054444012130393864033392161426815671725858723096432660521038315432183692553568344247916320931122090436770154203149432285380142051084178668290839858171\nc = 18817014323644102879407569381912044887671193778381872592373573382139976320220125847317309926920208859012582031032930373240219755720268543444729983316326640661427616841700761054678137741340093140586895094016730198447552611014038632666821117758006775144046000049080406858764900680265384743839472653817299383323869146152251839342236631780818396088131196202767951301023089053662813175083035336272981588533957561537975684034210166185396046071368061264321959248372783262788158418696375783427276741258526067168910326630496339287237940444426277757582174810909733937257258767407189452212391936958267819666424558678534741723930"}}}]}
+{'role': 'model', 'parts': [{'text': "We have an RSA challenge with N, e, c. The key generation is unusual: they generate random 1024-bit primes p and q, then pick dp_smart as a 16-bit prime (so up to 65535). Then compute e = inverse(dp_smart, p-1). So e is the modular inverse of dp_smart modulo p-1. That means e*dp_smart ≡ 1 (mod p-1). This is reminiscent of using a small dp (the exponent used in Chinese Remainder Theorem). Actually dp = d mod (p-1). Here they set dp_smart as a small prime, and compute e as its inverse mod p-1. So e is large (size of p). Then they encrypt with e, N. The private exponent d is unknown but we have relation: e*d ≡ 1 (mod phi). However we have dp_smart small (16-bit prime). We know dp_smart is prime and small (maybe we can brute force?). Since dp_smart is 16-bit prime, there are about 6540 primes (actually pi(2^16) ~ 6542). We can iterate over all 16-bit primes and check if e*dp_sall ≡ 1 (mod p-1)? But we don't know p. However we have N, e, c. We need to recover p or factor N.\n\nGiven e = inverse(dp_smart, p-1). So e*dp_smart ≡ 1 (mod p-1). That means there exists integer k such that e*dp_smart = 1 + k*(p-1). Rearranged: p = (e*dp_smart - 1)/k + 1. Since dp_smart is small (max 65535), we can brute force dp_smart and k. Because e is known, compute numerator = e*dp_smart - 1. This numerator is huge (approx 2048 bits). p is about 1024 bits, so k is about 1024 bits as well. Actually k = (e*dp_smart - 1)/(p-1). Since p-1 is 1024 bits, k is roughly same size as e (1024 bits). So brute forcing k is impossible.\n\nBut maybe we can use the fact that dp_smart is small to factor N. There is known attack: if dp = d mod (p-1) is small, we can recover p via solving equation: e*dp ≡ 1 (mod p-1). That's exactly our situation but dp is small (16-bit). However we don't have dp, we have dp_smart which is exactly dp? Wait dp_smart is defined as getPrime(16). Then e = inverse(dp_smart, p-1). So dp_smart is the modular inverse of e modulo p-1. That's exactly dp (the private exponent modulo p-1). So dp_smart = dp (since dp = d mod (p-1)). Actually d is the modular inverse of e modulo phi = (p-1)*(q-1). However dp = d mod (p-1). Since e*d ≡ 1 mod phi, also e*d ≡ 1 mod (p-1). So d mod (p-1) is the inverse of e mod (p-1). That's exactly dp_smart. So dp_smart = dp.\n\nThus we have small dp (16-bit prime). There is known attack: if dp &lt; N^(1/4), we can recover p. Typically dp is small but not necessarily prime. Here dp is prime and small. The attack: For each possible dp candidate (up to 2^16), we can compute p = gcd( (e*dp - 1) , N)? Let's derive.\n\nWe have e*dp ≡ 1 (mod p-1). So e*dp - 1 = k*(p-1) for some integer k. Since dp is small, k ≈ e*dp/(p-1) ≈ e (since dp ~ 2^16, p ~ 2^1024, e ~ 2^1024). So k is about 1024 bits. But we can compute e*dp - 1 which is divisible by (p-1). Since p divides N, we can compute gcd( e*dp - 1, N )? Not necessarily, because (p-1) is not a factor of N. However (p-1) shares no factor with N except maybe 2? Actually gcd(p-1, N) = gcd(p-1, p*q) = 1 (since p and q are primes, p-1 is coprime to p, and likely coprime to q). So gcd(e*dp - 1, N) likely 1.\n\nBut we can compute p = gcd( pow(2, e*dp - 1, N) - 2? Wait we can use the property: For any a, a^(e*dp) ≡ a (mod p) because e*dp ≡ 1 (mod p-1) by Fermat's little theorem? Actually a^(p-1) ≡ 1 (mod p) if gcd(a,p)=1. So a^(e*dp) ≡ a^(1 + k*(p-1)) ≡ a (mod p). Similarly modulo q? Not necessarily. So we have a^(e*dp) ≡ a (mod p). Thus p divides (a^(e*dp) - a). Compute a^(e*dp) mod N and subtract a, then compute gcd with N to recover p. Since dp is small, we can compute a^(e*dp) mod N efficiently? e is huge, dp is small, but exponent is e*dp which is huge (approx 2048 bits). However we can compute a^(e*dp) mod N as (a^dp)^e mod N? Actually exponentiation by dp then by e. Since dp is small (max 65535), we can compute a_dp = pow(a, dp, N). Then compute pow(a_dp, e, N). That's still expensive because e is huge but modular exponentiation is O(log e) which is fine. For each candidate dp (max 6542), we can do two exponentiations: pow(a, dp, N) then pow(..., e, N). That's feasible.\n\nLet's test with a = 2. Compute x = pow(2, dp, N). Then y = pow(x, e, N). Then compute gcd(y - 2, N). If dp is correct, then y ≡ 2 (mod p) so gcd may be p. However there is chance that y ≡ 2 (mod q) as well? Not necessarily. But we can test.\n\nAlternatively, we can directly compute p = gcd( pow(2, e*dp - 1, N) - 1, N )? Actually e*dp - 1 = k*(p-1). So 2^(e*dp - 1) ≡ 2^(k*(p-1)) ≡ (2^(p-1))^k ≡ 1^k ≡ 1 (mod p) if gcd(2,p)=1. So 2^(e*dp - 1) - 1 is divisible by p. Compute gcd( 2^(e*dp - 1) - 1, N ). That may be p. However exponent e*dp - 1 is huge (2048 bits). We can compute using modular exponentiation: compute t = pow(2, dp, N) then t2 = pow(t, e, N) then t3 = t2 * inverse(2, N) mod N? Wait 2^(e*dp) ≡ 2 (mod p). So 2^(e*dp) - 2 ≡ 0 mod p. So compute pow(2, dp, N) then pow that to e, subtract 2, gcd with N.\n\nWe'll brute force dp candidates (16-bit primes). Let's first list 16-bit primes. We'll need to write a Python script. Let's create a todo list and start implementing.", 'thought': True}, {'functionCall': {'id': 'call_00_WcBebNfN2fegoyCOWbU7S3Jq', 'name': 'todo_write', 'args': {'todos': [{'id': '1', 'content': 'Examine challenge files and understand the cryptosystem', 'status': 'completed'}, {'id': '2', 'content': 'Write brute force script to iterate over 16-bit primes and test gcd attack', 'status': 'in_progress'}, {'id': '3', 'content': 'Run script to recover p and factor N', 'status': 'pending'}, {'id': '4', 'content': 'Compute private exponent and decrypt ciphertext to get flag', 'status': 'pending'}, {'id': '5', 'content': 'Save flag to .flag file and create .solved file', 'status': 'pending'}]}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_WcBebNfN2fegoyCOWbU7S3Jq', 'name': 'todo_write', 'response': {'output': 'Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable\n\n&lt;system-reminder&gt;\nYour todo list has changed. DO NOT mention this explicitly to the user. Here are the latest contents of your todo list: \n\n[{"id":"1","content":"Examine challenge files and understand the cryptosystem","status":"completed"},{"id":"2","content":"Write brute force script to iterate over 16-bit primes and test gcd attack","status":"in_progress"},{"id":"3","content":"Run script to recover p and factor N","status":"pending"},{"id":"4","content":"Compute private exponent and decrypt ciphertext to get flag","status":"pending"},{"id":"5","content":"Save flag to .flag file and create .solved file","status":"pending"}]. Continue on with the tasks at hand if applicable.\n&lt;/system-reminder&gt;'}}}]}
+{'role': 'model', 'parts': [{'text': "Now I need to write a script. Let's first check if Python is available and if we can install sympy or prime generation. We'll need to generate 16-bit primes. We can precompute list or generate using sympy's primerange. Might be easier to use Crypto.Util.number's getPrime but we can just iterate over odd numbers and test primality with simple Miller-Rabin. However we can use sympy if installed. Let's see what's in the environment. Use run_shell_command to check Python version and installed packages.", 'thought': True}, {'functionCall': {'id': 'call_00_S9OUPdnI5iUa1nScH7iDagVX', 'name': 'run_shell_command', 'args': {'command': 'python3 --version', 'is_background': False, 'description': 'Check Python version'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_S9OUPdnI5iUa1nScH7iDagVX', 'name': 'run_shell_command', 'response': {'output': 'Command: python3 --version\nDirectory: (root)\nOutput: Python 3.13.5\nError: (none)\nExit Code: 0\nSignal: (none)\nBackground PIDs: 2097038\nProcess Group PGID: (none)'}}}]}
+{'role': 'model', 'parts': [{'text': 'Good. Now check if sympy is installed:', 'thought': True}, {'functionCall': {'id': 'call_00_U6NSwWbAlb1Y6ljvEIDchQM8', 'name': 'run_shell_command', 'args': {'command': 'python3 -c "import sympy; print(sympy.__version__)"', 'is_background': False, 'description': 'Check if sympy is available'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_U6NSwWbAlb1Y6ljvEIDchQM8', 'name': 'run_shell_command', 'response': {'output': 'Command: python3 -c "import sympy; print(sympy.__version__)"\nDirectory: (root)\nOutput: Traceback (most recent call last):\n  File "&lt;string&gt;", line 1, in &lt;module&gt;\n    import sympy; print(sympy.__version__)\n    ^^^^^^^^^^^^\nModuleNotFoundError: No module named \'sympy\'\nError: (none)\nExit Code: 1\nSignal: (none)\nBackground PIDs: 2097060\nProcess Group PGID: (none)'}}}]}
+{'role': 'model', 'parts': [{'text': "Not installed. We can install sympy or use built-in primality test. Let's install sympy using pip. Use venv or just install globally. We'll install in user space. Use pip install sympy. Let's do that.", 'thought': True}, {'functionCall': {'id': 'call_00_Yv74MBwOSUXmn87Ku3iZieec', 'name': 'run_shell_command', 'args': {'command': 'pip install sympy', 'is_background': False, 'description': 'Install sympy for prime generation'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_Yv74MBwOSUXmn87Ku3iZieec', 'name': 'run_shell_command', 'response': {'output': 'Command: pip install sympy\nDirectory: (root)\nOutput: Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple\nCollecting sympy\n  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl (6.3 MB)\nCollecting mpmath&lt;1.4,&gt;=1.1.0 (from sympy)\n  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl (536 kB)\nInstalling collected packages: mpmath, sympy\n\nSuccessfully installed mpmath-1.3.0 sympy-1.14.0\nError: (none)\nExit Code: 0\nSignal: (none)\nBackground PIDs: 2097092\nProcess Group PGID: (none)'}}}]}
+{'role': 'model', 'parts': [{'text': "Great. Now write script. We'll need to load N, e, c from output.txt. Let's create a Python script in the same directory. First, let's parse output.txt. We can read lines and extract numbers. We'll create solve.py. Let's write it.", 'thought': True}, {'functionCall': {'id': 'call_00_IAr4vn0DLTXAVfe12f6QqDbQ', 'name': 'write_file', 'args': {'file_path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/solve.py', 'content': "#!/usr/bin/env python3\nimport sys\nimport math\nfrom sympy import primerange\nimport gmpy2\nfrom gmpy2 import mpz, powmod, gcd\n\n# Load N, e, c from output.txt\nwith open('output.txt', 'r') as f:\n    lines = f.readlines()\n    N = int(lines[3].split(' = ')[1].strip())\n    e = int(lines[4].split(' = ')[1].strip())\n    c = int(lines[5].split(' = ')[1].strip())\n\nprint(f'N = {N}')\nprint(f'e = {e}')\nprint(f'c = {c}')\n\n# convert to mpz for faster operations\nN = mpz(N)\ne = mpz(e)\nc = mpz(c)\n\n# iterate over 16-bit primes (2^15 to 2^16)\nlower = 2**15\nupper = 2**16\nprint(f'Brute forcing dp from {lower} to {upper}')\n\n# Precompute primes using sympy's primerange\nprimes = list(primerange(lower, upper))\nprint(f'Number of primes to test: {len(primes)}')\n\n# Use a random base a = 2\na = mpz(2)\nfor dp in primes:\n    dp = mpz(dp)\n    # compute a^(dp) mod N\n    x = powmod(a, dp, N)\n    # compute x^e mod N\n    y = powmod(x, e, N)\n    # compute gcd(y - a, N)\n    g = gcd(y - a, N)\n    if g != 1 and g != N:\n        print(f'Found factor! dp = {dp}')\n        p = g\n        q = N // p\n        print(f'p = {p}')\n        print(f'q = {q}')\n        # compute phi = (p-1)*(q-1)\n        phi = (p-1)*(q-1)\n        d = powmod(e, -1, phi)\n        m = powmod(c, d, N)\n        flag = int(m)\n        # convert to bytes\n        flag_bytes = flag.to_bytes((flag.bit_length() + 7) // 8, 'big')\n        print(f'Flag: {flag_bytes}')\n        with open('.flag', 'wb') as flag_file:\n            flag_file.write(flag_bytes)\n        with open('.solved', 'w') as solved_file:\n            solved_file.write('')\n        sys.exit(0)\n\nprint('Failed to factor N')"}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_IAr4vn0DLTXAVfe12f6QqDbQ', 'name': 'write_file', 'response': {'output': 'Successfully created and wrote to new file: /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/solve.py.'}}}]}
+{'role': 'model', 'parts': [{'text': "We need to install gmpy2 maybe for faster powmod. But we can use Python's built-in pow with three arguments which is fine. However powmod from gmpy2 may be faster. Let's check if gmpy2 installed. Might not be. We'll install it. Use pip install gmpy2. Let's do that.", 'thought': True}, {'functionCall': {'id': 'call_00_uDufi40700tPRLuIfRzY7bjT', 'name': 'run_shell_command', 'args': {'command': 'pip install gmpy2', 'is_background': False, 'description': 'Install gmpy2 for fast modular exponentiation'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_uDufi40700tPRLuIfRzY7bjT', 'name': 'run_shell_command', 'response': {'output': 'Command: pip install gmpy2\nDirectory: (root)\nOutput: Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple\nCollecting gmpy2\n  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/c8/7e/a3153d6d398cc0a3e37a3c5f07751a423eced1cf9fcde405b26f80eaa82d/gmpy2-2.2.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.7 MB)\n     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 98.2 MB/s eta 0:00:00\nInstalling collected packages: gmpy2\nSuccessfully installed gmpy2-2.2.2\nError: (none)\nExit Code: 0\nSignal: (none)\nBackground PIDs: 2097385\nProcess Group PGID: (none)'}}}]}
+{'role': 'model', 'parts': [{'text': "Now we need to adjust script to use gmpy2.powmod. Also note that gmpy2.gcd is fine. Let's update script. We'll also add progress indicator. Let's edit solve.py. First read current content to ensure we can edit. Use edit tool. Let's read it first:", 'thought': True}, {'functionCall': {'id': 'call_00_4FwHN7HwCmwObCUV732AOs63', 'name': 'read_file', 'args': {'absolute_path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/solve.py'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_4FwHN7HwCmwObCUV732AOs63', 'name': 'read_file', 'response': {'output': "#!/usr/bin/env python3\nimport sys\nimport math\nfrom sympy import primerange\nimport gmpy2\nfrom gmpy2 import mpz, powmod, gcd\n\n# Load N, e, c from output.txt\nwith open('output.txt', 'r') as f:\n    lines = f.readlines()\n    N = int(lines[3].split(' = ')[1].strip())\n    e = int(lines[4].split(' = ')[1].strip())\n    c = int(lines[5].split(' = ')[1].strip())\n\nprint(f'N = {N}')\nprint(f'e = {e}')\nprint(f'c = {c}')\n\n# convert to mpz for faster operations\nN = mpz(N)\ne = mpz(e)\nc = mpz(c)\n\n# iterate over 16-bit primes (2^15 to 2^16)\nlower = 2**15\nupper = 2**16\nprint(f'Brute forcing dp from {lower} to {upper}')\n\n# Precompute primes using sympy's primerange\nprimes = list(primerange(lower, upper))\nprint(f'Number of primes to test: {len(primes)}')\n\n# Use a random base a = 2\na = mpz(2)\nfor dp in primes:\n    dp = mpz(dp)\n    # compute a^(dp) mod N\n    x = powmod(a, dp, N)\n    # compute x^e mod N\n    y = powmod(x, e, N)\n    # compute gcd(y - a, N)\n    g = gcd(y - a, N)\n    if g != 1 and g != N:\n        print(f'Found factor! dp = {dp}')\n        p = g\n        q = N // p\n        print(f'p = {p}')\n        print(f'q = {q}')\n        # compute phi = (p-1)*(q-1)\n        phi = (p-1)*(q-1)\n        d = powmod(e, -1, phi)\n        m = powmod(c, d, N)\n        flag = int(m)\n        # convert to bytes\n        flag_bytes = flag.to_bytes((flag.bit_length() + 7) // 8, 'big')\n        print(f'Flag: {flag_bytes}')\n        with open('.flag', 'wb') as flag_file:\n            flag_file.write(flag_bytes)\n        with open('.solved', 'w') as solved_file:\n            solved_file.write('')\n        sys.exit(0)\n\nprint('Failed to factor N')"}}}]}
+{'role': 'model', 'parts': [{'text': 'Looks fine. However we need to ensure that the indexing of lines is correct. Let\'s double-check output.txt lines. Let\'s count lines: we can read again with line numbers. Let\'s use quick python one-liner to see lines. But we can manually: first line "Need for Speed", second line "Since Wiener...", third line "N = ...", fourth line "e = ...", fifth line "c = ...". Wait there are 5 lines total? Let\'s check. Use run_shell_command to cat with line numbers.', 'thought': True}, {'functionCall': {'id': 'call_00_bJqOVMEJnPLxQwyFEE5LiyMw', 'name': 'run_shell_command', 'args': {'command': 'cat -n /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/output.txt', 'is_background': False, 'description': 'Show line numbers of output.txt'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_bJqOVMEJnPLxQwyFEE5LiyMw', 'name': 'run_shell_command', 'response': {'output': "Command: cat -n /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/output.txt\nDirectory: (root)\nOutput: 1\tNeed for Speed\r\n     2\tSince Wiener said calculating d_p and d_q is fast, I decided to make it even faster 'cause I am smarter.\r\n     3\tN = 22061149554706951873851465765917042279909309233484615798640186468876401527123242297915465375459511054772541825273007749026648641620485458471351811298443479262277231839408201654282927999029324652496830649919637863202844794784443579336735415046336390091671003022244732389217910334465895328371360158510046347031294125509649474722535171601096998732929497780870057433634214228116293166963101489644680801538837005001377764416442380530464289453201654394144682138927826247301956954884930328147978637795259346321547054237005318172528896865428457293207571804464061990459958593520373578234234490804585522859401957032395007142007\r\n     4\te = 9648003423571638489624579625383119603270189664714210175737275695548206153582516635644990660189908448510652756058045483763071850222529184219333877863638216254054444012130393864033392161426815671725858723096432660521038315432183692553568344247916320931122090436770154203149432285380142051084178668290839858171\r\n     5\tc = 18817014323644102879407569381912044887671193778381872592373573382139976320220125847317309926920208859012582031032930373240219755720268543444729983316326640661427616841700761054678137741340093140586895094016730198447552611014038632666821117758006775144046000049080406858764900680265384743839472653817299383323869146152251839342236631780818396088131196202767951301023089053662813175083035336272981588533957561537975684034210166185396046071368061264321959248372783262788158418696375783427276741258526067168910326630496339287237940444426277757582174810909733937257258767407189452212391936958267819666424558678534741723930\nError: (none)\nExit Code: 0\nSignal: (none)\nBackground PIDs: 2097495\nProcess Group PGID: (none)"}}}]}
+{'role': 'model', 'parts': [{'text': "Great, lines 3,4,5 correspond to N, e, c. So indexing correct.\n\nNow we need to test the script. However we must consider that dp_smart is a 16-bit prime, but could be less than 2^15? getPrime(16) returns a prime between 2^15 and 2^16? Actually getPrime(16) returns a random 16-bit prime, i.e., between 2^15 and 2^16-1 (since 2^15 = 32768). Indeed 16-bit primes are between 32768 and 65535. So our range is correct.\n\nNow we should also consider that dp_smart might be 2^15-1? Actually getPrime(16) returns a prime with exactly 16 bits, meaning the most significant bit is 1, so range [2^15, 2^16-1]. Good.\n\nNow we need to run the script. Let's mark todo 2 as completed and move to todo 3. But first we need to ensure we have all dependencies. Let's run the script and see if it factors N. Use run_shell_command.", 'thought': True}, {'functionCall': {'id': 'call_00_HKcQ5AwRBtaUAZZJs4vA6YNJ', 'name': 'todo_write', 'args': {'todos': [{'id': '1', 'content': 'Examine challenge files and understand the cryptosystem', 'status': 'completed'}, {'id': '2', 'content': 'Write brute force script to iterate over 16-bit primes and test gcd attack', 'status': 'completed'}, {'id': '3', 'content': 'Run script to recover p and factor N', 'status': 'in_progress'}, {'id': '4', 'content': 'Compute private exponent and decrypt ciphertext to get flag', 'status': 'pending'}, {'id': '5', 'content': 'Save flag to .flag file and create .solved file', 'status': 'pending'}]}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_HKcQ5AwRBtaUAZZJs4vA6YNJ', 'name': 'todo_write', 'response': {'output': 'Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable\n\n&lt;system-reminder&gt;\nYour todo list has changed. DO NOT mention this explicitly to the user. Here are the latest contents of your todo list: \n\n[{"id":"1","content":"Examine challenge files and understand the cryptosystem","status":"completed"},{"id":"2","content":"Write brute force script to iterate over 16-bit primes and test gcd attack","status":"completed"},{"id":"3","content":"Run script to recover p and factor N","status":"in_progress"},{"id":"4","content":"Compute private exponent and decrypt ciphertext to get flag","status":"pending"},{"id":"5","content":"Save flag to .flag file and create .solved file","status":"pending"}]. Continue on with the tasks at hand if applicable.\n&lt;/system-reminder&gt;'}}}]}
+{'role': 'model', 'parts': [{'text': 'Now run the script:', 'thought': True}, {'functionCall': {'id': 'call_00_7znpkx5xDN71r5kf70iyJtK4', 'name': 'run_shell_command', 'args': {'command': 'cd /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast &amp;&amp; python3 solve.py 2&gt;&amp;1', 'is_background': False, 'description': 'Run brute force attack script'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_7znpkx5xDN71r5kf70iyJtK4', 'name': 'run_shell_command', 'response': {'output': 'Command: cd /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast &amp;&amp; python3 solve.py 2&gt;&amp;1\nDirectory: (root)\nOutput: Traceback (most recent call last):\n  File "/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/solve.py", line 13, in &lt;module&gt;\n    c = int(lines[5].split(\' = \')[1].strip())\n            ~~~~~^^^\nIndexError: list index out of range\nError: (none)\nExit Code: 1\nSignal: (none)\nBackground PIDs: 2097576\nProcess Group PGID: (none)'}}}]}
+{'role': 'model', 'parts': [{'text': 'Oops, lines indexing error: there are only 5 lines total, index 5 is out of range (0-index). lines[5] is line 6. Should be lines[4] for c. Let\'s correct. Actually lines list length is 5 (0-4). Let\'s compute: lines[0] = line1, lines[1]=line2, lines[2]=line3 N, lines[3]=line4 e, lines[4]=line5 c. So indices are 2,3,4. We\'ll adjust script. Let\'s edit. Use edit tool. First find the lines we need to replace. Let\'s replace the parsing section. Use edit with old_string containing the lines. Let\'s read lines 1-10: already have them. We\'ll replace from "with open(\'output.txt\', \'r\') as f:" to "c = int(...)". Let\'s do edit.', 'thought': True}, {'functionCall': {'id': 'call_00_LE9tR0JJvnQYtITjPmqFpMjL', 'name': 'edit', 'args': {'file_path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/solve.py', 'old_string': "# Load N, e, c from output.txt\nwith open('output.txt', 'r') as f:\n    lines = f.readlines()\n    N = int(lines[3].split(' = ')[1].strip())\n    e = int(lines[4].split(' = ')[1].strip())\n    c = int(lines[5].split(' = ')[1].strip())", 'new_string': "# Load N, e, c from output.txt\nwith open('output.txt', 'r') as f:\n    lines = f.readlines()\n    N = int(lines[2].split(' = ')[1].strip())\n    e = int(lines[3].split(' = ')[1].strip())\n    c = int(lines[4].split(' = ')[1].strip())"}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_LE9tR0JJvnQYtITjPmqFpMjL', 'name': 'edit', 'response': {'output': "The file: /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/solve.py has been updated. Showing lines 7-17 of 63 from the edited file:\n\n---\n\n\n# Load N, e, c from output.txt\nwith open('output.txt', 'r') as f:\n    lines = f.readlines()\n    N = int(lines[2].split(' = ')[1].strip())\n    e = int(lines[3].split(' = ')[1].strip())\n    c = int(lines[4].split(' = ')[1].strip())\n\nprint(f'N = {N}')\nprint(f'e = {e}')\nprint(f'c = {c}')"}}}]}
+{'role': 'model', 'parts': [{'text': 'Now run again.', 'thought': True}, {'functionCall': {'id': 'call_00_Ug71fhDvmLWe4kLljlmX0TMA', 'name': 'run_shell_command', 'args': {'command': 'cd /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast &amp;&amp; python3 solve.py 2&gt;&amp;1', 'is_background': False, 'description': 'Run brute force attack script again'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_Ug71fhDvmLWe4kLljlmX0TMA', 'name': 'run_shell_command', 'response': {'output': "Command: cd /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast &amp;&amp; python3 solve.py 2&gt;&amp;1\nDirectory: (root)\nOutput: N = 22061149554706951873851465765917042279909309233484615798640186468876401527123242297915465375459511054772541825273007749026648641620485458471351811298443479262277231839408201654282927999029324652496830649919637863202844794784443579336735415046336390091671003022244732389217910334465895328371360158510046347031294125509649474722535171601096998732929497780870057433634214228116293166963101489644680801538837005001377764416442380530464289453201654394144682138927826247301956954884930328147978637795259346321547054237005318172528896865428457293207571804464061990459958593520373578234234490804585522859401957032395007142007\ne = 9648003423571638489624579625383119603270189664714210175737275695548206153582516635644990660189908448510652756058045483763071850222529184219333877863638216254054444012130393864033392161426815671725858723096432660521038315432183692553568344247916320931122090436770154203149432285380142051084178668290839858171\nc = 18817014323644102879407569381912044887671193778381872592373573382139976320220125847317309926920208859012582031032930373240219755720268543444729983316326640661427616841700761054678137741340093140586895094016730198447552611014038632666821117758006775144046000049080406858764900680265384743839472653817299383323869146152251839342236631780818396088131196202767951301023089053662813175083035336272981588533957561537975684034210166185396046071368061264321959248372783262788158418696375783427276741258526067168910326630496339287237940444426277757582174810909733937257258767407189452212391936958267819666424558678534741723930\nBrute forcing dp from 32768 to 65536\nNumber of primes to test: 3030\nFound factor! dp = 34171\np = 136344882128563465189810384772111902383517638971443042148518795613142163967770130668579394478639107358998145296633363203336612156308537946219544226831423278584489001794254627265461142906582182927437683385826385625584946350964908584883368027831078826524968135779517344613655604062748070317451393413633700907181\nq = 161804016478630029059173692720912558497073083724967157787183886368124724454482974316771740677319413909720326716719346480823592231935615812351230226279078457243848259532248506462108632831220104503693674262850384230741225746733591802860883866762967897443969024765604662483992858625279868135684131261639933994547\nFlag: b'flag{w31n3r_d1dn7_73ll_y0u_70_b3_6r33dy}'\nError: (none)\nExit Code: 0\nSignal: (none)\nBackground PIDs: 2097687\nProcess Group PGID: (none)"}}}]}
+{'role': 'model', 'parts': [{'text': "Excellent! The script found dp = 34171, factored N, and decrypted the flag: `flag{w31n3r_d1dn7_73ll_y0u_70_b3_6r33dy}`. It also wrote .flag and .solved files. Let's verify those files exist. Let's list directory.", 'thought': True}, {'functionCall': {'id': 'call_00_UHOGucIYq8TKsqjZNPiOhJhu', 'name': 'list_directory', 'args': {'path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_UHOGucIYq8TKsqjZNPiOhJhu', 'name': 'list_directory', 'response': {'output': 'Directory listing for /home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast:\n.flag\n.solved\nchall.py\noutput.txt\nsolve.py'}}}]}
+{'role': 'model', 'parts': [{'text': "Great. Now we need to check .flag content matches. Let's read it.", 'thought': True}, {'functionCall': {'id': 'call_00_czZyR7MHF0R5xgOA9dupvvuR', 'name': 'read_file', 'args': {'absolute_path': '/home/jiegec/autoctf/workspace/backdoorctf2025/challenges/bolt_fast/.flag'}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_czZyR7MHF0R5xgOA9dupvvuR', 'name': 'read_file', 'response': {'output': 'flag{w31n3r_d1dn7_73ll_y0u_70_b3_6r33dy}'}}}]}
+{'role': 'model', 'parts': [{'text': "Perfect. Now we can mark todos as completed. Let's update todo list.", 'thought': True}, {'functionCall': {'id': 'call_00_ziEwKIunyNzRQ3TFpSPGonXy', 'name': 'todo_write', 'args': {'todos': [{'id': '1', 'content': 'Examine challenge files and understand the cryptosystem', 'status': 'completed'}, {'id': '2', 'content': 'Write brute force script to iterate over 16-bit primes and test gcd attack', 'status': 'completed'}, {'id': '3', 'content': 'Run script to recover p and factor N', 'status': 'completed'}, {'id': '4', 'content': 'Compute private exponent and decrypt ciphertext to get flag', 'status': 'completed'}, {'id': '5', 'content': 'Save flag to .flag file and create .solved file', 'status': 'completed'}]}}}]}
+{'role': 'user', 'parts': [{'functionResponse': {'id': 'call_00_ziEwKIunyNzRQ3TFpSPGonXy', 'name': 'todo_write', 'response': {'output': 'Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable\n\n&lt;system-reminder&gt;\nYour todo list has changed. DO NOT mention this explicitly to the user. Here are the latest contents of your todo list: \n\n[{"id":"1","content":"Examine challenge files and understand the cryptosystem","status":"completed"},{"id":"2","content":"Write brute force script to iterate over 16-bit primes and test gcd attack","status":"completed"},{"id":"3","content":"Run script to recover p and factor N","status":"completed"},{"id":"4","content":"Compute private exponent and decrypt ciphertext to get flag","status":"completed"},{"id":"5","content":"Save flag to .flag file and create .solved file","status":"completed"}]. Continue on with the tasks at hand if applicable.\n&lt;/system-reminder&gt;'}}}]}
+{'role': 'model', 'parts': [{'text': 'All tasks completed. The CTF challenge is solved. We can provide a brief summary to user. No further action needed.', 'thought': True}, {'text': 'Challenge solved successfully!\n\n**Flag:** `flag{w31n3r_d1dn7_73ll_y0u_70_b3_6r33dy}`\n\nThe attack exploited the small 16‑bit prime `dp` (34171) used in the key generation. By brute‑forcing all 16‑bit primes and checking `gcd(2^(e·dp) − 2, N)`, the factor `p` was recovered, allowing decryption of the RSA ciphertext.\n\nFiles created:\n- `.flag` – contains the flag\n- `.solved` – empty marker file\n- `solve.py` – the attack script (optional to keep)'}]}</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

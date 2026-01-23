@@ -1,0 +1,729 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-blackhat-mea-ctf-final-2025/tampering-detection-system.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Tampering Detection System - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#tampering-detection-system" class="nav-link">Tampering Detection System</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#alternative-solution" class="nav-link">Alternative solution</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="tampering-detection-system">Tampering Detection System</h1>
+<p>Co-authors: @JOHNKRAM @Rosayxy</p>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">#!/usr/local/bin/python
+import base64
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.strxor import strxor
+
+try:
+    with open("/flag.txt", "rb") as f:
+        FLAG = f.read()
+except FileNotFoundError:
+    FLAG = b"FLAG{******** REDACTED ********}"
+
+def encrypt(plaintext: bytes, key: bytes, nonce: bytes, associated_data: bytes = b""):
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    cipher.update(associated_data)
+    ciphertext, tag = cipher.encrypt_and_digest(plaintext)
+    return ciphertext, tag
+
+def decrypt(ciphertext: bytes, key: bytes, nonce: bytes, tag: bytes, associated_data: bytes = b""):
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    cipher.update(associated_data)
+    plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+    return plaintext
+
+def query(ciphertext: bytes, aad: bytes, key: bytes, tag: bytes, nonce: bytes):
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    try: 
+        cipher.update(aad)
+        cipher.decrypt_and_verify(ciphertext, tag)
+        return True
+    except:
+        return False
+
+nonce = get_random_bytes(12)
+key = get_random_bytes(32)
+
+flag_ciphertext, flag_tag = encrypt(FLAG, key, nonce, b"")
+print("flag ciphertext: ", base64.b64encode(flag_ciphertext).decode())
+print("flag tag: ", base64.b64encode(flag_tag).decode())
+
+user_plaintext = input("your_text1:")
+ciphertext, tag = encrypt(user_plaintext.encode(), key, nonce, b"")
+print("tag1: ", base64.b64encode(tag).decode())
+
+user_plaintext = input("your_text2:")
+ciphertext, tag = encrypt(user_plaintext.encode(), key, nonce, b"")
+print("tag2: ", base64.b64encode(tag).decode())
+
+while True:
+    length = int(input("length:"))
+    aad = base64.b64decode(input("aad: "))
+    print(query(ciphertext[:length], aad, key, tag, nonce))</code></pre>
+<p>The server reuses nonce for AES-GCM mode, which is vulnerable. We deployed the attack according to <a href="https://frereit.de/aes_gcm/">AES-GCM and breaking it on nonce reuse</a>:</p>
+<ol>
+<li>We obtain two pairs of (plain, tag): (plain1, tag1) and (plain2, tag2), and because they are encrypted using the same key and nonce, so the cipher texts satisfy: <code>cipher1 xor cipher2 == plain1 xor plain2</code> when they have the same length (pointed out by @JOHNKRAM).</li>
+<li>Given the two known pairs, we can create a polynomial of H by xor-ing the computation of tag1 and tag2. We can find its roots using SageMath. See the article above for a detailed description.</li>
+<li>After solving H, we conduct an attack similar to CBC Padding Oracle Attack, but from the front: from length of one to flag full length, enumerate each byte and compute the authentication data that computes to the same tag. If it replys with True, we found the correct byte.</li>
+</ol>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.number import long_to_bytes, bytes_to_long
+from Crypto.Util.strxor import strxor
+from Crypto.Util.Padding import pad
+from Crypto.Util.strxor import strxor
+import base64
+import galois
+
+GF = galois.GF(2**128, irreducible_poly="x^128 + x^7 + x^2 + x + 1")
+
+
+def to_gf(num):
+    # from LSB to MSB
+    ret = GF(0)
+    assert num &lt;= 2**128
+    for i in range(128):
+        if num &amp; (1 &lt;&lt; i) != 0:
+            ret += GF(2 ** (127 - i))
+    return ret
+
+
+def from_gf(gf):
+    # from LSB to MSB
+    num = int(gf)
+    ret = 0
+    for i in range(128):
+        if num &amp; (1 &lt;&lt; i) != 0:
+            ret += 2 ** (127 - i)
+    return ret
+
+
+# context(log_level="DEBUG")
+
+
+def gcm_nonce_reuse(cipher1: bytes, tag1: bytes, cipher2: bytes, tag2: bytes) -&gt; bytes:
+    """
+    AES GCM Nonce Reuse attack, learned from https://frereit.de/aes_gcm/,
+    given two pairs of known (cipher, tag) encrypted using the same key and associated data,
+    recover H = AES-ECB-Encrypt(key, b"\x00" * 16),
+    because cipher1 xor cipher2 == plain1 xor plain2, plaintext can be used instead
+
+    Args:
+        cipher1 (bytes): the first ciphertext
+        tag1 (bytes): the first tag
+        cipher2 (bytes): the second ciphertext
+        tag2 (bytes): the second tag
+
+    Returns:
+        H: the array of recovered H
+    """
+
+    from sage.all import GF, PolynomialRing
+
+    # use sage to solve polynomials on GF(2^128)
+    F = GF(2)["a"]
+    (a,) = F._first_ngens(1)
+    F = GF(2**128, modulus=a**128 + a**7 + a**2 + a + 1, names=("x",))
+    (x,) = F._first_ngens(1)
+    R = PolynomialRing(F, names=("H",))
+    (H,) = R._first_ngens(1)
+
+    # construct polynomial based on two tuples
+    polys = []
+    for cipher, tag in [(cipher1, tag1), (cipher2, tag2)]:
+        poly = 0
+
+        blocks = []
+        # plaintext part
+        for i in range((len(cipher) + 15) // 16):
+            part = cipher[i * 16 : (i + 1) * 16]
+            if len(part) &lt; 16:
+                part += b"\x00" * (16 - len(part))
+            blocks.append(part)
+        # len(plain) part
+        blocks.append(long_to_bytes(len(cipher) * 8, 16))
+
+        # compute poly for blocks
+        for block in blocks:
+            temp = 0
+            for i in range(128):
+                if bytes_to_long(block) &amp; (1 &lt;&lt; i) != 0:
+                    temp += x ** (127 - i)
+
+            poly = poly * H + temp
+
+        # compute poly for tag part
+        temp = 0
+        for i in range(128):
+            if bytes_to_long(tag) &amp; (1 &lt;&lt; i) != 0:
+                temp += x ** (127 - i)
+        poly = poly * H + temp
+        polys.append(poly)
+
+    roots = (polys[0] + polys[1]).roots()
+    res = []
+    for root in roots:
+        coefs = root[0].list()
+        H = 0
+        for i in range(128):
+            if coefs[i] != 0:
+                H += 2 ** (127 - i)
+        res.append(long_to_bytes(H))
+    return res
+
+p = process(["python3", "./server.py"])
+# step 1: recover H
+p.recvuntil(b"flag ciphertext: ")
+flag_cipher = base64.b64decode(p.recvline().decode())
+p.recvuntil(b"flag tag: ")
+flag_tag = base64.b64decode(p.recvline().decode())
+
+plain_len = 128
+plain1 = b"A" * plain_len
+p.recvuntil(b"your_text1:")
+p.sendline(plain1)
+p.recvuntil(b"tag1: ")
+tag1 = base64.b64decode(p.recvline().decode())
+
+plain2 = b"B" * plain_len
+p.recvuntil(b"your_text2:")
+p.sendline(plain2)
+p.recvuntil(b"tag2: ")
+tag2 = base64.b64decode(p.recvline().decode())
+
+# plain1 xor plain2 == cipher1 xor cipher2
+res = gcm_nonce_reuse(plain1, tag1, plain2, tag2)
+
+for H in res:
+    H_gf = to_gf(bytes_to_long(H))
+    H_gf_inverse = H_gf**-1
+
+    # compute J0_enc
+    T = 0
+    for i in range((len(flag_cipher) + 15) // 16):
+        part = flag_cipher[i * 16 : (i + 1) * 16]
+
+        # update
+        T = T * H_gf + to_gf(bytes_to_long(part) * (256 ** (16 - len(part))))
+
+    L = len(flag_cipher) * 8
+    T = T * H_gf + to_gf(L)
+    T = T * H_gf + to_gf(bytes_to_long(flag_tag))
+    J0_enc = T
+
+    # enumerate cipher2
+    cipher2 = bytearray([0] * plain_len)
+    for length in range(1, 64):
+        for b in range(256):
+            cipher2[length-1] = b
+            cur_cipher2 = cipher2[:length]
+
+            T = 0
+            blocks = (len(cur_cipher2) + 15) // 16
+            for i in range(blocks):
+                part = cur_cipher2[i * 16 : (i + 1) * 16]
+
+                # update
+                T = T * H_gf + to_gf(bytes_to_long(part) * (256 ** (16 - len(part))))
+
+            L = len(cur_cipher2) * 8 + 16 * 8 * (2 ** 64)
+            T = T * H_gf + to_gf(L)
+            T = T * H_gf + J0_enc + to_gf(bytes_to_long(tag2))
+            # found required aad to match tag
+            aad = T * H_gf_inverse ** (2+blocks)
+            # correct guess?
+            p.recvuntil(b"length:")
+            p.sendline(str(length).encode())
+            p.recvuntil(b"aad: ")
+            aad_data = long_to_bytes(from_gf(aad), 16)
+            p.sendline(base64.b64encode(aad_data))
+            resp = p.recvline()
+            if resp == b"True\n":
+                print("Found", b)
+                # recover plain using the current cipher
+                l = min(len(flag_cipher), len(plain2))
+                temp = strxor(bytes(cipher2[:l]), flag_cipher[:l])
+                temp = strxor(temp, plain2[:l])
+                print("flag", temp)
+                break
+            elif resp != b"False\n":
+                assert False, resp</code></pre>
+<h2 id="alternative-solution">Alternative solution</h2>
+<p>An alternative solution attacks from the back to the front, which is more complex but does not require <code>flag_tag</code>:</p>
+<ol>
+<li>After solving H, we conduct an attack similar to CBC Padding Oracle Attack from the back: shorten the length one by one, enumerate the truncated byte, and compute the authentication data that computes to the same tag. By changing the length of the plaintext, we can recover different parts of the flag (pointed out by @JOHNKRAM).</li>
+<li>We can recover most of the flag now (except byte at 0, 16, 32). The rest can be simply bruteforced, due to the small space. Given the flag, we can recover <code>AES-ECB-Encrypt(key, nonce || 1)</code> and verify if tag1 can be computed correctly.</li>
+</ol>
+<p>Attack script (modified to match server's flag length of 42 bytes):</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.number import long_to_bytes, bytes_to_long
+from Crypto.Util.strxor import strxor
+from Crypto.Util.Padding import pad
+from Crypto.Util.strxor import strxor
+import base64
+import galois
+
+GF = galois.GF(2**128, irreducible_poly="x^128 + x^7 + x^2 + x + 1")
+
+
+def to_gf(num):
+    # from LSB to MSB
+    ret = GF(0)
+    assert num &lt;= 2**128
+    for i in range(128):
+        if num &amp; (1 &lt;&lt; i) != 0:
+            ret += GF(2 ** (127 - i))
+    return ret
+
+
+def from_gf(gf):
+    # from LSB to MSB
+    num = int(gf)
+    ret = 0
+    for i in range(128):
+        if num &amp; (1 &lt;&lt; i) != 0:
+            ret += 2 ** (127 - i)
+    return ret
+
+
+# context(log_level="DEBUG")
+
+
+def gcm_nonce_reuse(cipher1: bytes, tag1: bytes, cipher2: bytes, tag2: bytes) -&gt; bytes:
+    """
+    AES GCM Nonce Reuse attack, learned from https://frereit.de/aes_gcm/,
+    given two pairs of known (cipher, tag) encrypted using the same key and associated data,
+    recover H = AES-ECB-Encrypt(key, b"\x00" * 16),
+    because cipher1 xor cipher2 == plain1 xor plain2, plaintext can be used instead
+
+    Args:
+        cipher1 (bytes): the first ciphertext
+        tag1 (bytes): the first tag
+        cipher2 (bytes): the second ciphertext
+        tag2 (bytes): the second tag
+
+    Returns:
+        H: the array of recovered H
+    """
+
+    from sage.all import GF, PolynomialRing
+
+    # use sage to solve polynomials on GF(2^128)
+    F = GF(2)["a"]
+    (a,) = F._first_ngens(1)
+    F = GF(2**128, modulus=a**128 + a**7 + a**2 + a + 1, names=("x",))
+    (x,) = F._first_ngens(1)
+    R = PolynomialRing(F, names=("H",))
+    (H,) = R._first_ngens(1)
+
+    # construct polynomial based on two tuples
+    polys = []
+    for cipher, tag in [(cipher1, tag1), (cipher2, tag2)]:
+        poly = 0
+
+        blocks = []
+        # plaintext part
+        for i in range((len(cipher) + 15) // 16):
+            part = cipher[i * 16 : (i + 1) * 16]
+            if len(part) &lt; 16:
+                part += b"\x00" * (16 - len(part))
+            blocks.append(part)
+        # len(plain) part
+        blocks.append(long_to_bytes(len(cipher) * 8, 16))
+
+        # compute poly for blocks
+        for block in blocks:
+            temp = 0
+            for i in range(128):
+                if bytes_to_long(block) &amp; (1 &lt;&lt; i) != 0:
+                    temp += x ** (127 - i)
+
+            poly = poly * H + temp
+
+        # compute poly for tag part
+        temp = 0
+        for i in range(128):
+            if bytes_to_long(tag) &amp; (1 &lt;&lt; i) != 0:
+                temp += x ** (127 - i)
+        poly = poly * H + temp
+        polys.append(poly)
+
+    roots = (polys[0] + polys[1]).roots()
+    res = []
+    for root in roots:
+        coefs = root[0].list()
+        H = 0
+        for i in range(128):
+            if coefs[i] != 0:
+                H += 2 ** (127 - i)
+        res.append(long_to_bytes(H))
+    return res
+
+
+flag_parts = []
+for plain_len in [16, 32, 48]:
+    p = process(["python3", "./server.py"])
+    # step 1: recover H
+    p.recvuntil(b"flag ciphertext: ")
+    flag_cipher = base64.b64decode(p.recvline().decode())
+    p.recvuntil(b"flag tag: ")
+    flag_tag = base64.b64decode(p.recvline().decode())
+
+    plain1 = b"A" * plain_len
+    p.recvuntil(b"your_text1:")
+    p.sendline(plain1)
+    p.recvuntil(b"tag1: ")
+    tag1 = base64.b64decode(p.recvline().decode())
+
+    plain2 = b"B" * plain_len
+    p.recvuntil(b"your_text2:")
+    p.sendline(plain2)
+    p.recvuntil(b"tag2: ")
+    tag2 = base64.b64decode(p.recvline().decode())
+
+    # plain1 xor plain2 == cipher1 xor cipher2
+    res = gcm_nonce_reuse(plain1, tag1, plain2, tag2)
+    print("Got", len(res), "H")
+    for H in res:
+        print(H)
+        H_gf = to_gf(bytes_to_long(H))
+        H_gf_inverse = H_gf**-1
+
+        # for all possible ciphertext, compute corresponding AAD
+        cipher = [0] * len(plain2)
+        # from right
+        for i in range(16):
+            # enumerate the next byte
+            good = False
+            for b in range(256):
+                length = len(plain2) - i - 1
+                cipher[length] = b
+                # compute contribution of the truncated bytes
+                part = cipher[length - 1 :]
+                contribution_b = to_gf(bytes_to_long(bytes(part))) * H_gf**2
+                # compute contribution of len(CT)
+                contribution_len_ct = (
+                    to_gf(len(plain2) * 8) + to_gf(length * 8)
+                ) * H_gf
+                # compute contribution of len(AAD)
+                contribution_len_aad = to_gf(128 * (2**64)) * H_gf
+                blocks = len(plain2) // 16
+                aad = (
+                    contribution_b + contribution_len_ct + contribution_len_aad
+                ) * H_gf_inverse ** (2 + blocks)
+
+                # cancel out
+                contribution = (
+                    contribution_b
+                    + contribution_len_ct
+                    + contribution_len_aad
+                    + aad * (H_gf) ** (2 + blocks)
+                )
+                assert contribution == 0
+
+                # correct guess?
+                p.recvuntil(b"length:")
+                p.sendline(str(length).encode())
+                p.recvuntil(b"aad: ")
+                aad_data = long_to_bytes(from_gf(aad), 16)
+                p.sendline(base64.b64encode(aad_data))
+                resp = p.recvline()
+                if resp == b"True\n":
+                    print("Found", b)
+                    good = True
+                    break
+                elif resp != b"False\n":
+                    assert False, resp
+            if not good:
+                print("Bad H")
+                break
+            cipher[length] = b
+            print("cipher", bytes(cipher))
+
+            # recover plain using the current cipher
+            l = min(len(flag_cipher), len(plain2))
+            temp = strxor(bytes(cipher[:l]), flag_cipher[:l])
+            temp = strxor(temp, plain2[:l])
+            print("flag", temp)
+
+        if i &gt;= 15:
+            flag_parts.append(temp)
+            print("Done", i)
+            break
+
+flag = flag_parts[0] + flag_parts[1][16:] + flag_parts[2][32:]
+print(flag)
+
+# find flag[0, 16, 32]
+
+p = process(["python3", "./server.py"])
+# step 1: recover H
+p.recvuntil(b"flag ciphertext: ")
+flag_cipher = base64.b64decode(p.recvline().decode())
+p.recvuntil(b"flag tag: ")
+flag_tag = base64.b64decode(p.recvline().decode())
+
+plain_len = len(flag)
+plain1 = b"A" * plain_len
+p.recvuntil(b"your_text1:")
+p.sendline(plain1)
+p.recvuntil(b"tag1: ")
+tag1 = base64.b64decode(p.recvline().decode())
+
+plain2 = b"B" * plain_len
+p.recvuntil(b"your_text2:")
+p.sendline(plain2)
+p.recvuntil(b"tag2: ")
+tag2 = base64.b64decode(p.recvline().decode())
+
+# plain1 xor plain2 == cipher1 xor cipher2
+res = gcm_nonce_reuse(plain1, tag1, plain2, tag2)
+
+for H in res:
+    H_gf = to_gf(bytes_to_long(H))
+
+    # compute J0_enc
+    T = 0
+    for i in range((len(flag) + 15) // 16):
+        part = flag_cipher[i * 16 : (i + 1) * 16]
+
+        # update
+        T = T * H_gf + to_gf(bytes_to_long(part) * (256 ** (16 - len(part))))
+
+    L = len(flag) * 8
+    T = T * H_gf + to_gf(L)
+    T = T * H_gf + to_gf(bytes_to_long(flag_tag))
+    J0_enc = T
+
+    for ch1 in string.printable:
+        for ch2 in string.printable:
+            # guess flag
+            cur_flag = bytearray(flag)
+            cur_flag[0] = ord("F")  # assume flag starting with F
+            cur_flag[16] = ord(ch1)
+            cur_flag[32] = ord(ch2)
+
+            # compute cipher2
+            temp = strxor(flag_cipher, cur_flag)
+            cipher2 = strxor(temp, plain2)
+
+            # verify tag2
+            T = 0
+            for i in range((len(plain2) + 15) // 16):
+                part = cipher2[i * 16 : (i + 1) * 16]
+
+                # update
+                T = T * H_gf + to_gf(bytes_to_long(part) * (256 ** (16 - len(part))))
+
+            L = len(plain2) * 8
+            T = T * H_gf + to_gf(L)
+            T = T * H_gf + J0_enc
+            if T == from_gf(bytes_to_long(tag2)):
+                print("Found flag", bytes(cur_flag))
+                exit(0)</code></pre>
+<p>Good to read: <a href="https://blog.malosdaf.me/posts/aes-gcm-and-aes-gcm-siv-mode/">AES GCM and AES GCM-SIV mode</a>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

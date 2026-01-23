@@ -1,0 +1,607 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-04-nullcon-berlin-hackim-2025-ctf/hidden-strings.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>hidden_strings - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#hidden_strings" class="nav-link">hidden_strings</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="hidden_strings">hidden_strings</h1>
+<pre class="highlight"><code>This binary seems to be giving me some prompts but where are these strings coming from??
+
+note: for the flag use the part of it that looks like it might sense. There is a slight bug in the challenge :)</code></pre>
+<p>Decompile the attachment in Ghidra:</p>
+<pre class="highlight"><code class="language-c">
+undefined8 main(void)
+
+{
+  long lVar1;
+  undefined **ppuVar2;
+  char *pcVar3;
+  size_t sVar4;
+  byte *input_buffer;
+  ulong uVar5;
+  ulong uVar6;
+  byte *pbVar7;
+  uint uVar8;
+  byte bVar9;
+  byte bVar10;
+  ulong uVar11;
+  byte *pbVar12;
+  undefined8 uVar13;
+  long in_FS_OFFSET;
+  uint64_t local_188 [2];
+  uint64_t local_178 [4];
+  uint64_t local_158 [6];
+  int local_128;
+  byte local_124 [13];
+  byte local_117 [247];
+  long local_20;
+
+  local_20 = *(long *)(in_FS_OFFSET + 0x28);
+  input_buffer = (byte *)&amp;local_128;
+  local_178[0] = 0;
+  local_178[1] = 1;
+  local_178[2] = 2;
+  local_178[3] = 3;
+  decode_and_print(local_178,4,1);
+  local_188[0] = 4;
+  local_188[1] = 5;
+  decode_and_print(local_188,2,0);
+  fputc(0x20,stdout);
+  pcVar3 = fgets((char *)input_buffer,0x100,stdin);
+  if (pcVar3 == (char *)0x0) {
+    uVar13 = 1;
+  }
+  else {
+    uVar13 = 0;
+    sVar4 = strcspn((char *)input_buffer,"\r\n");
+    local_124[sVar4 - 4] = 0;
+    if (local_128 == 0x7b4f4e45) {
+      sVar4 = strlen((char *)input_buffer);
+      if (local_124[(long)((int)sVar4 + -1) + -4] == 0x7d) {
+        if (sVar4 != 0) {
+          pbVar12 = input_buffer + sVar4;
+          do {
+            bVar9 = *input_buffer;
+            uVar8 = (int)input_buffer + 0x61U &amp; 3;
+            bVar10 = bVar9 ^ 0x61;
+            if ((uVar8 != 1) &amp;&amp; (uVar8 == 3)) {
+              bVar10 = (bVar9 | 0x61) &amp; ~(bVar9 &amp; 0x61);
+            }
+            *input_buffer = bVar10;
+            input_buffer = input_buffer + 1;
+          } while (input_buffer != pbVar12);
+          if (5 &lt; sVar4) {
+            input_buffer = local_124;
+            pbVar12 = &amp;DAT_00102021;
+            do {
+              uVar11 = (ulong)pbVar12[-1];
+              bVar9 = 0;
+              if (uVar11 &lt; 0x30) {
+                uVar6 = (ulong)*pbVar12;
+                lVar1 = uVar11 * 0x18;
+                ppuVar2 = &amp;PTR_DAT_00104160 + uVar11 * 3;
+                if (uVar6 &lt; *(long *)(&amp;DAT_00104168 + lVar1) - 1U) {
+                  if (*(long *)(&amp;DAT_00104168 + lVar1) == 0) {
+                    bVar9 = (*ppuVar2)[uVar6] ^ 0x61;
+                  }
+                  else {
+                    uVar5 = 0;
+                    do {
+                      pbVar7 = *ppuVar2 + uVar5;
+                      uVar5 = uVar5 + 1;
+                      *pbVar7 = *pbVar7 ^ (&amp;DAT_00104170)[lVar1];
+                    } while (uVar5 &lt; *(ulong *)(&amp;DAT_00104168 + lVar1));
+                    bVar9 = (*ppuVar2)[uVar6] ^ 0x61;
+                    if (*(ulong *)(&amp;DAT_00104168 + lVar1) != 0) {
+                      uVar6 = 0;
+                      do {
+                        pbVar7 = (&amp;PTR_DAT_00104160)[uVar11 * 3] + uVar6;
+                        uVar6 = uVar6 + 1;
+                        *pbVar7 = *pbVar7 ^ (&amp;DAT_00104170)[uVar11 * 0x18];
+                      } while (uVar6 &lt; *(ulong *)(&amp;DAT_00104168 + uVar11 * 0x18));
+                    }
+                  }
+                }
+              }
+              if (*input_buffer != bVar9) goto LAB_00101388;
+              input_buffer = input_buffer + 1;
+              pbVar12 = pbVar12 + 2;
+            } while (local_117 != input_buffer);
+            local_158[0] = 7;
+            local_158[1] = 5;
+            decode_and_print(local_158,2,1);
+            goto LAB_0010120e;
+          }
+        }
+LAB_00101388:
+        local_158[0] = 6;
+        local_158[1] = 5;
+        uVar13 = 2;
+        local_158[2] = 0x26;
+        local_158[3] = 0x27;
+        local_158[4] = 0x28;
+        decode_and_print(local_158,5,1);
+      }
+    }
+  }
+LAB_0010120e:
+  if (local_20 == *(long *)(in_FS_OFFSET + 0x28)) {
+    return uVar13;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}</code></pre>
+<p>There is a <code>decode_and_print</code> function that xors data from <code>.data</code> section and print it out:</p>
+<pre class="highlight"><code class="language-c">void decode_and_print(uint64_t *array,long length,int eol)
+
+{
+  ulong *puVar1;
+
+  puVar1 = array + length;
+  while( true ) {
+    if (*array &lt; 0x30) {
+      FUN_00101550(*array);
+    }
+    array = array + 1;
+    if (array == puVar1) break;
+    fputc(0x20,stdout);
+  }
+  if (eol == 0) {
+    return;
+  }
+  fputc(10,stdout);
+  return;
+}
+
+
+void FUN_00101550(uint64_t param_1)
+
+{
+  long lVar1;
+  ulong uVar2;
+  byte *pbVar3;
+  size_t __n;
+
+  lVar1 = param_1 * 0x18;
+  if (*(long *)(&amp;DAT_00104168 + lVar1) == 0) {
+    __n = 0xffffffffffffffff;
+  }
+  else {
+    uVar2 = 0;
+    do {
+      pbVar3 = (&amp;PTR_DAT_00104160)[param_1 * 3] + uVar2;
+      uVar2 = uVar2 + 1;
+      *pbVar3 = *pbVar3 ^ (&amp;DAT_00104170)[lVar1];
+    } while (uVar2 &lt; *(ulong *)(&amp;DAT_00104168 + lVar1));
+    __n = *(ulong *)(&amp;DAT_00104168 + lVar1) - 1;
+  }
+  lVar1 = param_1 * 0x18;
+  fwrite((&amp;PTR_DAT_00104160)[param_1 * 3],1,__n,stdout);
+  uVar2 = 0;
+  if (*(long *)(&amp;DAT_00104168 + lVar1) != 0) {
+    do {
+      pbVar3 = (&amp;PTR_DAT_00104160)[param_1 * 3] + uVar2;
+      uVar2 = uVar2 + 1;
+      *pbVar3 = *pbVar3 ^ (&amp;DAT_00104170)[lVar1];
+    } while (uVar2 &lt; *(ulong *)(&amp;DAT_00104168 + lVar1));
+  }
+  return;
+}</code></pre>
+<p>So we write a python script to dump all these xor-ed strings from <code>.data</code> section:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+e = ELF("./challenge")
+
+base = 0x4160
+s = dict()
+for i in range(0x30):
+    addr = u64(e.read(base + i * 24, 8))
+    length = u64(e.read(base + i * 24 + 8, 8))
+    xor = u64(e.read(base + i * 24 + 16, 8))
+    print(hex(i) + ": ", end="")
+    temp = ""
+    for j in range(length - 1):
+        ch = chr(e.read(addr + j, 1)[0] ^ xor)
+        print(ch, end="")
+        temp += ch
+    s[i] = temp
+    print()</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code>0x0: welcome
+0x1: to
+0x2: ENO
+0x3: challenge
+0x4: enter
+0x5: flag
+0x6: wrong
+0x7: correct
+0x8: debug
+0x9: reached
+0xa: step
+0xb: length
+0xc: ok
+0xd: checking
+0xe: piece
+0xf: stack
+0x10: strings
+0x11: are
+0x12: fun
+0x13: xor
+0x14: obfuscation
+0x15: is
+0x16: sneaky
+0x17: players
+0x18: love
+0x19: puzzles
+0x1a: only
+0x1b: decode
+0x1c: when
+0x1d: needed
+0x1e: now
+0x1f: you
+0x20: see
+0x21: me
+0x22: dont
+0x23: random
+0x24: filler
+0x25: text
+0x26: please
+0x27: try
+0x28: again
+0x29: with
+0x2a: check
+0x2b: user
+0x2c: input
+0x2d: pre
+0x2e: post
+0x2f: bytes</code></pre>
+<p>The strings that we see from the output of the binary comes from these strings, e.g.:</p>
+<pre class="highlight"><code class="language-c">// prints the 0, 1, 2, 3-rd strings from the table: welcome to ENO challenge
+local_178[0] = 0;
+local_178[1] = 1;
+local_178[2] = 2;
+local_178[3] = 3;
+decode_and_print(local_178,4,1)
+// prints the 4, 5-th strings from the table: enter flag
+local_188[0] = 4;
+local_188[1] = 5;
+decode_and_print(local_188,2,0);
+// prints the 7, 5-th strings from the table: correct flag
+local_158[0] = 7;
+local_158[1] = 5;
+decode_and_print(local_158,2,1);
+// prints the 6, 5, 0x26, 0x27, 0x28-th strings from the table: wrong flag please try again
+local_158[0] = 6;
+local_158[1] = 5;
+uVar13 = 2;
+local_158[2] = 0x26;
+local_158[3] = 0x27;
+local_158[4] = 0x28;
+decode_and_print(local_158,5,1);</code></pre>
+<p>Now, we need to find the correct flag. Validations include:</p>
+<pre class="highlight"><code class="language-c">if (local_128 == 0x7b4f4e45) {
+    if (local_124[(long)((int)sVar4 + -1) + -4] == 0x7d) {
+        // ...
+    }
+}</code></pre>
+<p>The flag should start with <code>ENO{</code> and end with <code>}</code>.</p>
+<p>Afterwards, the program reads one byte from one string, which is later checked against the flag input:</p>
+<pre class="highlight"><code class="language-c">uVar11 = (ulong)pbVar12[-1];
+bVar9 = 0;
+if (uVar11 &lt; 0x30) {
+  uVar6 = (ulong)*pbVar12;
+  lVar1 = uVar11 * 0x18;
+  ppuVar2 = &amp;PTR_DAT_00104160 + uVar11 * 3;
+  if (uVar6 &lt; *(long *)(&amp;DAT_00104168 + lVar1) - 1U) {
+    if (*(long *)(&amp;DAT_00104168 + lVar1) == 0) {
+      bVar9 = (*ppuVar2)[uVar6] ^ 0x61;
+    }
+    else {
+      uVar5 = 0;
+      do {
+        pbVar7 = *ppuVar2 + uVar5;
+        uVar5 = uVar5 + 1;
+        *pbVar7 = *pbVar7 ^ (&amp;DAT_00104170)[lVar1];
+      } while (uVar5 &lt; *(ulong *)(&amp;DAT_00104168 + lVar1));
+      bVar9 = (*ppuVar2)[uVar6] ^ 0x61;
+      if (*(ulong *)(&amp;DAT_00104168 + lVar1) != 0) {
+        uVar6 = 0;
+        do {
+          pbVar7 = (&amp;PTR_DAT_00104160)[uVar11 * 3] + uVar6;
+          uVar6 = uVar6 + 1;
+          *pbVar7 = *pbVar7 ^ (&amp;DAT_00104170)[uVar11 * 0x18];
+        } while (uVar6 &lt; *(ulong *)(&amp;DAT_00104168 + uVar11 * 0x18));
+      }
+    }
+  }
+}</code></pre>
+<p>The string number and the character index is saved in an array starting from 0x102020:</p>
+<pre class="highlight"><code>                             DAT_00102020                                    XREF[1]:     main:001012c0(R)  
+        00102020 0a              undefined1 0Ah
+                             DAT_00102021                                    XREF[2]:     main:001012ac(*), 
+                                                                                          main:001012d1(R)  
+        00102021 00              undefined1 00h
+                             DAT_00102022                                    XREF[1]:     main:001012c0(R)  
+        00102022 01              undefined1 01h
+                             DAT_00102023                                    XREF[1]:     main:001012d1(R)  
+        00102023 00              undefined1 00h
+        00102024 03              ??         03h
+        00102025 02              ??         02h
+        00102026 00              ??         00h
+        00102027 03              ??         03h
+        00102028 0c              ??         0Ch
+        00102029 01              ??         01h
+        0010202a 13              ??         13h
+        0010202b 00              ??         00h
+        0010202c 00              ??         00h
+        0010202d 04              ??         04h
+        0010202e 04              ??         04h
+        0010202f 04              ??         04h
+        00102030 06              ??         06h
+        00102031 01              ??         01h
+        00102032 01              ??         01h
+        00102033 01              ??         01h
+        00102034 03              ??         03h
+        00102035 00              ??         00h
+        00102036 0d              ??         0Dh
+        00102037 04              ??         04h
+        00102038 0f              ??         0Fh
+        00102039 00              ??         00h</code></pre>
+<p>So we just print them out:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+e = ELF("./challenge")
+
+base = 0x4160
+s = dict()
+for i in range(0x30):
+    addr = u64(e.read(base + i * 24, 8))
+    length = u64(e.read(base + i * 24 + 8, 8))
+    xor = u64(e.read(base + i * 24 + 16, 8))
+    print(hex(i) + ": ", end="")
+    temp = ""
+    for j in range(length - 1):
+        ch = chr(e.read(addr + j, 1)[0] ^ xor)
+        print(ch, end="")
+        temp += ch
+    s[i] = temp
+    print()
+
+
+data = [
+    0x0A,
+    0x00,
+    0x01,
+    0x00,
+    0x03,
+    0x02,
+    0x00,
+    0x03,
+    0x0C,
+    0x01,
+    0x13,
+    0x00,
+    0x00,
+    0x04,
+    0x04,
+    0x04,
+    0x06,
+    0x01,
+    0x01,
+    0x01,
+    0x03,
+    0x00,
+    0x0D,
+    0x04,
+    0x0F,
+    0x00
+]
+
+for i in range(0, len(data), 2):
+    if data[i+1] &lt; len(s[data[i]]):
+        print(s[data[i]][data[i+1]], end="")</code></pre>
+<p>Output:</p>
+<pre class="highlight"><code>stackxorrocks</code></pre>
+<p>So the flag is <code>ENO{stackxorrocks}</code>:</p>
+<pre class="highlight"><code class="language-shell">$ ./challenge
+welcome to ENO challenge
+enter flag ENO{stackxorrocks}
+correct flag</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

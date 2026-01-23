@@ -1,0 +1,447 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-blackhat-mea-ctf-final-2025/que.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>que - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#que" class="nav-link">que</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="que">que</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+#
+# BlackHat MEA 2025 Finals :: Que?
+#
+#
+
+#------------------------------------------------------------------------------------------------------------------------------#
+#   IMPORTS                                                                                                                    #
+#------------------------------------------------------------------------------------------------------------------------------#
+# Documentation imports
+from __future__ import annotations
+from typing import Tuple, List, Dict, NewType, Union
+
+# Native imports
+import os
+import json
+from hashlib import sha256
+from secrets import randbelow
+
+# External dependencies
+# pip install pycryptodome
+from Crypto.Cipher import AES  
+from Crypto.Util.Padding import pad
+from Crypto.Util.number import getPrime, isPrime, inverse
+
+# Flag import
+FLAG = os.environ.get('DYN_FLAG', 'BHFlagY{D3BUGG1NG_1S_FUN}')
+if isinstance(FLAG, str):
+    FLAG = FLAG.encode()
+
+#------------------------------------------------------------------------------------------------------------------------------#
+#   UTILITY FUNCTIONS                                                                                                          #
+#------------------------------------------------------------------------------------------------------------------------------#
+def GenerateSafePrime(nbit: int, kbit: int = 1) -&gt; int:
+    """ Generates a safe prime p such that p = 2*q + 1 for some prime q. """
+    while True:
+        p = getPrime(nbit)
+        for k in range(1, 2 ** kbit):
+            q = (p - 1) // (2 * k)
+            if isPrime(q):
+                return p
+
+def IntegerHash(x: int) -&gt; int:
+    """ Returns an integer hash of given integer input. """
+    return int.from_bytes(sha256(x.to_bytes(-(-x.bit_length() // 8), 'big')).digest(), 'big')
+
+def RandomInteger(a: int, b: int = None) -&gt; int:
+    """ Returns a random integer between two given bounds. """
+    if b is None:
+        b = a
+        a = 0
+    assert a &lt; b
+    return a + randbelow(b - a)
+
+def FlagCryptor(flag: bytes, secret: bytes) -&gt; bytes:
+    """ Encrypts a flag using a given secret. """
+    return AES.new(sha256(secret).digest(), AES.MODE_ECB).encrypt(pad(flag, 16))
+
+#------------------------------------------------------------------------------------------------------------------------------#
+#   CHALLENGE CLASS                                                                                                            #
+#------------------------------------------------------------------------------------------------------------------------------#
+class Que:
+    """ Que protocol. """
+    def __init__(self, secbit: int, maskbit: int) -&gt; None:
+        self.sizes = {}
+        self.sizes['m'] = maskbit
+        self.sizes['k'] = secbit - self.sizes['m']
+        self.sizes['r'] = self.sizes['k']
+        self.sizes['e'] = secbit
+        self.sizes['a'] = [self.sizes['e'], None]
+        self.sizes['a'][1] = self.sizes['a'][0] + 1
+        self.sizes['b'] = [self.sizes['k'] + self.sizes['m'] + self.sizes['a'][1], None]
+        self.sizes['b'][1] = self.sizes['b'][0] + 1
+        self.sizes['p'] = self.sizes['b'][1] + self.sizes['r'] + self.sizes['m'] + 1
+        self.buffer = None
+
+    def Initiate(self) -&gt; dict:
+        """ Initiates the Cue exchange."""
+        assert self.buffer is None
+        p = GenerateSafePrime(self.sizes['p'])
+        mask = RandomInteger(2 ** self.sizes['m'])
+        k = mask * RandomInteger(2 ** self.sizes['k'])
+        r = mask * RandomInteger(2 ** self.sizes['r'])
+        C1 = (k * inverse(r, p)) % p
+        self.buffer = {
+            'p' : p,
+            'k' : k,
+            'r' : r
+        }
+        return {
+            'p' : p,
+            'C1' : C1
+        }
+
+    def Receive(self, packet: dict) -&gt; dict:
+        """ Parses a Cue exchange initiation packet. """
+        assert self.buffer is None
+        assert {'p', 'C1'}.issubset(set(packet))
+        assert packet['p'].bit_length() == self.sizes['p']
+        assert 0 &lt; packet['C1'] &lt; packet['p']
+        a = RandomInteger(2 ** self.sizes['a'][0], 2 ** self.sizes['a'][1])
+        b = RandomInteger(2 ** self.sizes['b'][0], 2 ** self.sizes['b'][1])
+        C2 = (packet['C1'] * a + b) % packet['p']
+        self.buffer = {
+            'p' : packet['p'],
+            'a' : a,
+            'b' : b
+        }
+        return {
+            'C2': C2
+        }
+
+    def Continue(self, packet: dict) -&gt; dict:
+        """ Continues the Cue exchange with received packet. """
+        assert self.buffer
+        if ({'C2'}.issubset(set(packet))) and (set(self.buffer) == {'p', 'k', 'r'}):
+            assert 0 &lt; packet['C2'] &lt; self.buffer['p']
+            e = RandomInteger(2 ** self.sizes['e'])
+            C3 = (packet['C2'] * self.buffer['r'] + e) % self.buffer['p']
+            C1A = IntegerHash(e * self.buffer['k']) % self.buffer['p']
+            self.buffer['e'] = e
+            return {
+                'C3' : C3,
+                'C1A' : C1A
+            }
+        elif ({'C3', 'C1A'}.issubset(set(packet))) and (set(self.buffer) == {'p', 'a', 'b'}):
+            assert 0 &lt; packet['C3'] &lt; self.buffer['p']
+            assert 0 &lt; packet['C1A'] &lt; self.buffer['p']
+            e = (packet['C3'] % self.buffer['b']) % self.buffer['a']
+            k = (((packet['C3'] - e) % self.buffer['b']) * inverse(self.buffer['a'], self.buffer['p'])) % self.buffer['p']
+            r = inverse(packet['C3'] // self.buffer['b'], self.buffer['p'])
+            C1B = IntegerHash(e * k) % self.buffer['p']
+            C2B = IntegerHash(e * r) % self.buffer['p']
+            if packet['C1A'] == C1B:
+                self.buffer = {
+                    'key' : k
+                }
+                return {
+                    'C2B' : C2B
+                }
+        elif ({'C2B'}.issubset(set(packet))) and (set(self.buffer) == {'p', 'k', 'r', 'e'}):
+            assert 0 &lt; packet['C2B'] &lt; self.buffer['p']
+            C2A = IntegerHash(self.buffer['e'] * inverse(self.buffer['r'], self.buffer['p'])) % self.buffer['p']
+            if packet['C2B'] == C2A:
+                self.buffer = {
+                    'key' : k
+                }
+                return {}
+        raise ValueError('Exchange desynchronisation detected.')
+
+#------------------------------------------------------------------------------------------------------------------------------#
+#   MAIN LOOP                                                                                                                  #
+#------------------------------------------------------------------------------------------------------------------------------#
+if __name__ == "__main__":
+
+    # Challenge parameters
+    bitSec = 128
+    bitMsk = 24
+
+    # Challenge setup
+    HDR = """|
+|    ________       _______  _____  
+|   (  ____  \     /  ____ \/ ___ \ 
+|   | (    \  )   (  (    \  /   ) )
+|   | |     | |   |  (__   \/   / / 
+|   | |     | |   |   __)      / /  
+|   | |   __| |   |  (        (_(  
+|   | (__(    (___)  (____/\     
+|   (______________________/  (_)  
+|
+|"""
+    print(HDR)
+
+    print('|  [#] Generating transcript...')
+    Aaron = Que(128, 24)
+    Bobby = Que(128, 24)
+
+    packetOne = Aaron.Initiate()
+    packetOne['flag'] = FlagCryptor(FLAG, Aaron.buffer['k'].to_bytes(bitSec // 8, 'big')).hex()
+    print('|\n|  Aaron -&gt; Bobby: {}'.format(json.dumps(packetOne)))
+
+    packetTwo = Bobby.Receive(packetOne)
+    print('|\n|  Bobby -&gt; Aaron: {}'.format(json.dumps(packetTwo)))
+
+    print('|\n|  [~] Aaron then aborted the exchange... Did somebody cue them in on the problem with their Q-problem?\n|')</code></pre>
+<p>The flag is encrypted using <code>k</code>:</p>
+<pre class="highlight"><code class="language-python">packetOne['flag'] = FlagCryptor(FLAG, Aaron.buffer['k'].to_bytes(bitSec // 8, 'big')).hex()</code></pre>
+<p><code>k</code> is computed from:</p>
+<pre class="highlight"><code class="language-python">p = GenerateSafePrime(self.sizes['p'])
+mask = RandomInteger(2 ** self.sizes['m'])
+k = mask * RandomInteger(2 ** self.sizes['k'])
+r = mask * RandomInteger(2 ** self.sizes['r'])
+C1 = (k * inverse(r, p)) % p</code></pre>
+<p><code>p</code> and <code>C1</code> are known. <code>m</code> is less than <code>2**24</code> which we can bruteforce. <code>k</code> and <code>r</code> are less than <code>2**104</code>, so we can use cuso to solve.</p>
+<p>Attack:</p>
+<pre class="highlight"><code class="language-python">import cuso
+from sage.all import var
+import json
+from pwn import *
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+from hashlib import sha256
+import tqdm
+
+context(log_level="debug")
+
+io = process(["python3", "que.py"])
+io.recvuntil(b"Bobby: ")
+data = json.loads(io.recvline())
+p = data["p"]
+C1 = data["C1"]
+flag = bytes.fromhex(data["flag"])
+
+bounds = {}
+relations = []
+
+k_rng = var("k_rng")
+bounds[k_rng] = (0, 2**104)
+r_rng = var("r_rng")
+bounds[r_rng] = (0, 2**104)
+relations.append(C1 * r_rng == k_rng)
+
+roots = cuso.find_small_roots(
+    relations=relations,
+    bounds=bounds,
+    modulus=p,
+)
+print(roots)
+
+for root in roots:
+    temp = root[k_rng]
+    for m in tqdm.trange(2**24):
+        k = temp * m
+        secret = k.to_bytes(128 // 8, "big")
+        dec = AES.new(sha256(secret).digest(), AES.MODE_ECB).decrypt(flag)
+        try:
+            res = unpad(dec, 16)
+            if b"Flag" in res:
+                print(res)
+        except:
+            pass</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,292 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-26-iran-tech-olympics-ctf-2025/reminder.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Reminder - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#reminder" class="nav-link">Reminder</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="reminder">Reminder</h1>
+<pre class="highlight"><code>Discovering shared patterns through the remainder concept is simple!</code></pre>
+<p>Decompile the binary in IDA, the binary does:</p>
+<ol>
+<li>ask 16 questions, save the answers into a vector</li>
+<li>read from <code>data.bin</code></li>
+<li>do AES CBC encryption with iv <code>\xa0\xa1\xa2...\xaf</code></li>
+<li>write to <code>out.bin</code></li>
+</ol>
+<p>Initialize strings:</p>
+<pre class="highlight"><code class="language-c">init_string(v110, "\nQuestion 1:\nx ? 4 mod 13\nx ? 4 mod 7\nx ? 0 mod 19\nx = ?\n", 0x39u);</code></pre>
+<p>Print question, read answer and push_back:</p>
+<pre class="highlight"><code class="language-c">sub_1400052D0(std::cout, v4, v111);
+std::istream::operator&gt;&gt;(std::cin, &amp;read_int);
+LOBYTE(v60) = read_int;
+v5 = (char *)v63[1];
+cap = v64;
+if ( v63[1] == v64 )
+{
+sub_140004FE0((const void **)v63, (_BYTE *)v63[1], &amp;v60);
+cap = v64;
+v7 = v63[1];
+}
+else
+{
+*(_BYTE *)v63[1] = read_int;
+v7 = v5 + 1;
+v63[1] = v7;
+}</code></pre>
+<p>Read data, do AES encryption, write data:</p>
+<pre class="highlight"><code class="language-c">v116[0] = 0;
+v117 = 0;
+v118 = 15;
+init_string(v116, "data.bin", 8u);
+v113[0] = 0;
+v114 = 0;
+v115 = 15;
+init_string(v113, "out.bin", 7u);
+memset(v120, 0, sizeof(v120));
+read_file((__int64)v120, v116);
+memset(Block, 0, sizeof(Block));
+v37 = (char *)v63[0];
+((void (__fastcall *)(void **, void **, void *, _DWORD *, int))aes)(Block, v120, v63[0], v61, v60);
+((void (__fastcall *)(void *))write_file)(v113);
+getchar();</code></pre>
+<p>IV:</p>
+<pre class="highlight"><code class="language-c">v61[0] = 0xA3A2A1A0;
+v61[1] = 0xA7A6A5A4;
+v61[2] = 0xABAAA9A8;
+v61[3] = 0xAFAEADAC;</code></pre>
+<p>How to identify AES? The s-box is well-known:</p>
+<pre class="highlight"><code class="language-c">.rdata:00000001400079C0 ; _BYTE byte_1400079C0[257]
+.rdata:00000001400079C0 byte_1400079C0  db 63h, 7Ch, 77h, 7Bh, 0F2h, 6Bh, 6Fh, 0C5h, 30h, 1, 67h
+.rdata:00000001400079C0                                         ; DATA XREF: sub_1400016A0+C8↑o
+.rdata:00000001400079C0                                         ; aes+5B↑o
+.rdata:00000001400079CB                 db 2Bh, 0FEh, 0D7h, 0ABh, 76h, 0CAh, 82h, 0C9h, 7Dh, 0FAh
+.rdata:00000001400079D5                 db 59h, 47h, 0F0h, 0ADh, 0D4h, 0A2h, 0AFh, 9Ch, 0A4h, 72h
+.rdata:00000001400079DF                 db 0C0h, 0B7h, 0FDh, 93h, 26h, 36h, 3Fh, 0F7h, 0CCh, 34h
+.rdata:00000001400079E9                 db 0A5h, 0E5h, 0F1h, 71h, 0D8h, 31h, 15h, 4, 0C7h, 23h
+.rdata:00000001400079F3                 db 0C3h, 18h, 96h, 5, 9Ah, 7, 12h, 80h, 0E2h, 0EBh, 27h
+.rdata:00000001400079FE                 db 0B2h, 75h, 9, 83h, 2Ch, 1Ah, 1Bh, 6Eh, 5Ah, 0A0h, 52h
+.rdata:0000000140007A09                 db 3Bh, 0D6h, 0B3h, 29h, 0E3h, 2Fh, 84h, 53h, 0D1h, 0
+.rdata:0000000140007A13                 db 0EDh, 20h, 0FCh, 0B1h, 5Bh, 6Ah, 0CBh, 0BEh, 39h, 4Ah
+.rdata:0000000140007A1D                 db 4Ch, 58h, 0CFh, 0D0h, 0EFh, 0AAh, 0FBh, 43h, 4Dh, 33h</code></pre>
+<p>Solve:</p>
+<pre class="highlight"><code class="language-python">from sympy.ntheory.modular import crt
+from Cryptodome.Cipher import AES
+
+lines = open("output", encoding="utf-8").readlines()
+key = bytearray()
+for i in range(len(lines)):
+    if lines[i].startswith("Question"):
+        _, _, x1, _, y1 = lines[i + 1].strip().split()
+        _, _, x2, _, y2 = lines[i + 2].strip().split()
+        _, _, x3, _, y3 = lines[i + 3].strip().split()
+        result = crt([int(y1), int(y2), int(y3)], [int(x1), int(x2), int(x3)])
+        print(result[0])
+        key.append(result[0])
+
+print(key)
+
+cipher = AES.new(
+    key,
+    AES.MODE_CBC,
+    b"\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf",
+)
+print(cipher.decrypt(open("out.bin", "rb").read()))</code></pre>
+<p>Flag: <code>ASIS{Remainder_of_Allah_is_better_for_you}</code>.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

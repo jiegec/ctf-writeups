@@ -1,0 +1,319 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-09-26-iran-tech-olympics-ctf-2025/verrou.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Verrou - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#verrou" class="nav-link">Verrou</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="verrou">Verrou</h1>
+<pre class="highlight"><code>Try to analyze the Verrou binary to bypass its encryption and recover the secure message from given image!</code></pre>
+<p>Decompile in IDA:</p>
+<pre class="highlight"><code class="language-c">__int64 __fastcall sub_2A12(__int64 a1, __int64 a2, int width, int height, int const_1, __int64 in_img)
+{
+  unsigned __int64 v6; // rax
+  void *v7; // rsp
+  __int64 v8; // rax
+  _BYTE v10[8]; // [rsp+8h] [rbp-130h] BYREF
+  __int64 v11; // [rsp+10h] [rbp-128h]
+  int v12; // [rsp+1Ch] [rbp-11Ch]
+  int height_1; // [rsp+20h] [rbp-118h]
+  int width_1; // [rsp+24h] [rbp-114h]
+  __int64 v15; // [rsp+28h] [rbp-110h]
+  __int64 v16; // [rsp+30h] [rbp-108h]
+  int v17; // [rsp+38h] [rbp-100h]
+  int i; // [rsp+3Ch] [rbp-FCh]
+  int j; // [rsp+40h] [rbp-F8h]
+  int v20; // [rsp+44h] [rbp-F4h]
+  int k; // [rsp+48h] [rbp-F0h]
+  int m; // [rsp+4Ch] [rbp-ECh]
+  int n; // [rsp+50h] [rbp-E8h]
+  int ii; // [rsp+54h] [rbp-E4h]
+  int v25; // [rsp+58h] [rbp-E0h]
+  int v26; // [rsp+5Ch] [rbp-DCh]
+  int v27; // [rsp+60h] [rbp-D8h]
+  int v28; // [rsp+64h] [rbp-D4h]
+  __int64 v29; // [rsp+68h] [rbp-D0h]
+  _BYTE *v30; // [rsp+70h] [rbp-C8h]
+  double v31[4]; // [rsp+78h] [rbp-C0h] BYREF
+  _BYTE v32[104]; // [rsp+98h] [rbp-A0h] BYREF
+  unsigned __int64 v33; // [rsp+100h] [rbp-38h]
+
+  v16 = a1;
+  v15 = a2;
+  width_1 = width;
+  height_1 = height;
+  v12 = const_1;
+  v11 = in_img;
+  v33 = __readfsqword(0x28u);
+  sub_361E(v31, 0.0, 0.0, 0.0, 0.0);
+  cv::Mat::Mat(v32, (unsigned int)height_1, (unsigned int)width_1, 16, v31);
+  v25 = width_1 / v12 * (height_1 / v12);
+  v29 = 8 * v25 - 1LL;
+  v6 = 16 * ((8 * v25 + 15LL) / 0x10uLL);
+  while ( v10 != &amp;v10[-(v6 &amp; 0xFFFFFFFFFFFFF000LL)] )
+    ;
+  v7 = alloca(v6 &amp; 0xFFF);
+  if ( (v6 &amp; 0xFFF) != 0 )
+    *(_QWORD *)&amp;v10[(v6 &amp; 0xFFF) - 8] = *(_QWORD *)&amp;v10[(v6 &amp; 0xFFF) - 8];
+  v30 = v10;
+  v17 = 0;
+  for ( i = 0; i &lt; v25; ++i )
+  {
+    for ( j = 0; j &lt;= 7; ++j )
+      v30[v17++] = (*(char *)(i + v11) &gt;&gt; j) &amp; 1;
+  }
+  v20 = 0;
+  for ( k = 0; k &lt; height_1 / v12; ++k )
+  {
+    for ( m = 0; m &lt; width_1 / v12; ++m )
+    {
+      for ( n = 0; n &lt; v12; ++n )
+      {
+        for ( ii = 0; ii &lt; v12; ++ii )
+        {
+          v26 = v12 * k + n;
+          v27 = v12 * m + ii;
+          v28 = 255 * (char)v30[v20];
+          pixel((__int64)v31, v28, v28, v28);
+          v8 = addr((__int64)v32, v26, v27);
+          *(_WORD *)v8 = LOWORD(v31[0]);
+          *(_BYTE *)(v8 + 2) = BYTE2(v31[0]);
+        }
+      }
+      ++v20;
+    }
+  }
+  cv::Mat::Mat(v16, v32);
+  cv::Mat::~Mat((cv::Mat *)v32);
+  return v16;
+}</code></pre>
+<p>It breaks the input data into bits, and each bit is mapped to a pixel. So we just read the pixels out and reconstruct the input.</p>
+<p>Solve:</p>
+<pre class="highlight"><code class="language-python">import numpy as np
+from PIL import Image
+
+img = Image.open("flag.jpg")
+data = np.array(img)
+bits = ""
+for i in range(40):
+    for j in range(313):
+        if data[i][j][0] &lt; 128:
+            bits += "0"
+        else:
+            bits += "1"
+
+assert len(bits) == 40 * 313
+res = bytearray()
+for i in range(5):
+    for j in range(313):
+        index = (i * 313 + j) * 8
+        # from LSB to MSB
+        part = bits[index:index+8][::-1]
+        value = int(part, 2)
+        res.append(value)
+print(res[:res.index(b"\x00")].decode())</code></pre>
+<p>Output is an ASCII art:</p>
+<pre class="highlight"><code>    _    ____ ___ ____    ___  _          ___ _____ _     _____ ____      _____ _ _ _____   _____ ___     _           _  _         _____     _____             ___      _ ___       ___  ___   
+   / \  / ___|_ _/ ___|  / / || |  _ __  / _ \_   _| |__ |___ /|  _ \    |  ___| | |___ /  |___  / _ \   / |_ __ ___ | || |   __ _| ____|   | ____|_ __   ___ / _ \  __| |_ _|_ __ / _ \| \ \  
+  / _ \ \___ \| |\___ \ | || || |_| '_ \| | | || | | '_ \  |_ \| |_) |   | |_  | | | |_ \     / / | | |  | | '_ ` _ \| || |_ / _` |  _|     |  _| | '_ \ / __| | | |/ _` || || '_ \ (_) | || | 
+ / ___ \ ___) | | ___) &lt; &lt; |__   _| | | | |_| || | | | | |___) |  _ &lt;    |  _| |_| |___) |   / /| |_| |  | | | | | | |__   _| (_| | |___    | |___| | | | (__| |_| | (_| || || | | \__, |_| &gt; &gt;
+/_/   \_\____/___|____/ | |   |_| |_| |_|\___/ |_| |_| |_|____/|_| \_\___|_|   (_)_|____/___/_/  \___/___|_|_| |_| |_|  |_|  \__, |_____|___|_____|_| |_|\___|\___/ \__,_|___|_| |_| /_/(_)| | 
+                         \_\                                        |_____|            |_____|      |_____|                  |___/     |_____|                                            /_/  </code></pre>
+<p>Flag: <code>ASIS{4n0Th3R_F!l3_7O_1m4gE_Enc0dIn9!}</code>. Actually, the <code>0</code> and <code>O</code> are indisguishable, so I had to open a ticket for clarification.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
