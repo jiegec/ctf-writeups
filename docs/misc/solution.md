@@ -193,6 +193,8 @@ This document organizes CTF writeups by solution type and technique rather than 
     - [BPF assembly reverse engineering](../2025-12-01-advent-of-pwn-2025/day-04.md)
 - Side channel:
     - [Use loop count as side channel to recover flag](../2025-10-25-qiangwang-nitai-quals-2025/hyperjump.md)
+- VM:
+    - [Convert VM bytecode to RISC-V assembly to reuse decompiler](../2025-12-02-advent-of-ctf-2025/day-10.md)
 
 ## Web
 
