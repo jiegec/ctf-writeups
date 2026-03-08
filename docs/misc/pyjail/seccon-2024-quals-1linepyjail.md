@@ -1,4 +1,4 @@
-## SECCON 2024 Quals 1linepyjail
+## SECCON 2024 Quals (SECCON 13 Online CTF) 1linepyjail
 
 Official archive: <https://github.com/SECCON/SECCON13_online_CTF/blob/main/jail/1linepyjail/README.md>
 
