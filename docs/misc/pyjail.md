@@ -77,6 +77,7 @@ except Exception as e:
 - `pdb.set_trace()`
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
+- `object.__subclasses__()[popen_index](['sh'])` (via `<class 'subprocess.Popen'>`)
 
 # SECCON CTF 14 Final increasing
 
