@@ -57,11 +57,8 @@ except Exception as e:
 
 ### Numbers and Booleans Without Digits
 
-- **`True`:** Available directly
-- **`True` alternative:** `[[]]>[]`
-- **`True` alternative:** `not[]is[]`
-- **`False`:** `[]>[]`
-- **`False` alternative:** `[]is[]`
+- **`True`:** `[[]]>[]`, `not[]is[]`, `[]==[]`
+- **`False`:** `[]>[]`, `[]is[]`
 - **Increment:** `-~x` equals `x + 1`
 
 ### Obtaining Shell Access
