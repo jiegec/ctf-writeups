@@ -78,6 +78,15 @@ except Exception as e:
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 
+# SECCON CTF 14 Final increasing
+
+Requirements:
+
+1. No builtins: use `().__setattr__.__objclass__.__subclasses__()`
+2. Increasing length: use hex literal e.g. `0x00000000123` and string literal plus slicing e.g. `"sh000000000"[:2]` (where `2` can be computed via `(([]==[])+([]==[]))`) to handle the increasing requirement
+
+Details [here](./pyjail/secconctf-14-final-increasing.md).
+
 ## hxp 39C3 CTF sponsored
 
 Requirements:
