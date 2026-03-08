@@ -1,0 +1,363 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-19-hkcert-ctf-2025-quals/comcomplexx.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>comcomplexx - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#comcomplexx" class="nav-link">comcomplexx</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#attack-script" class="nav-link">Attack script</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="comcomplexx">comcomplexx</h1>
+<p>Co-authors: @JOHNKRAM.</p>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import *
+import random
+from secret import flag, key
+
+p, q, e, d = key
+n = p * q
+
+assert isPrime(p) and isPrime(q) and p.bit_length() == 512 and q.bit_length() == 512
+print('d_len:', d.bit_length())
+# d_len: 500
+
+class QN:
+    def __init__(self, a, b, c, d, n):
+        self.a = a % n
+        self.b = b % n
+        self.c = c % n
+        self.d = d % n
+        self.n = n
+    def __mul__(self, other):
+        if isinstance(other, QN) and self.n == other.n:
+            n = self.n
+            a1, b1, c1, d1 = self.a, self.b, self.c, self.d
+            a2, b2, c2, d2 = other.a, other.b, other.c, other.d
+            a = (a1*a2 - b1*b2 - c1*c2 - d1*d2) % n
+            b = (a1*b2 + b1*a2 + c1*d2 - d1*c2) % n
+            c = (a1*c2 - b1*d2 + c1*a2 + d1*b2) % n
+            d = (a1*d2 + b1*c2 - c1*b2 + d1*a2) % n
+            return QN(a, b, c, d, n)
+        return NotImplemented
+    def __pow__(self, exp):
+        if exp &lt;= 0:
+            return QN(1, 0, 0, 0, self.n)
+        result = QN(1, 0, 0, 0, self.n)
+        base = self
+        while exp &gt; 0:
+            if exp &amp; 1:
+                result = result * base
+            base = base * base
+            exp &gt;&gt;= 1
+        return result
+    def __repr__(self):
+        return f"({self.a}, {self.b}, {self.c}, {self.d})"
+    def __eq__(self, other):
+        return (self.a == other.a and self.b == other.b and 
+                self.c == other.c and self.d == other.d and self.n == other.n)
+
+if __name__ == "__main__":
+    m = QN(bytes_to_long(flag), random.randint(1,n-1), random.randint(1,n-1), random.randint(1,n-1), n)
+    c = pow(m, e)
+    assert pow(c,d) == m
+
+    print(f"n = {n}")
+    print(f"e = {e}")
+    print(f"c = {c}")
+
+'''
+n = 85481717157593593434025329804251284752138281740610011731799389557859119300838454555657179864017815910265870318909961454026714464920305413622061116245330661303912116693461205161551044610609272231860357133575507519403908786715597649351821576114881230052647979679534076432015415470679178775688932706964062378627
+e = 622349328830189017262721806176220642327451718814004869262654184548169579851269489422592218838968239824917128227573062775020729663341881800222644869706115998147909113383905386637703321110321003518025501597602036772247509043126119242571435842445265921450671551669304835480011469949693693324643919337459251944818821206437044742271947245399811180478630764346756372873090874700249814285609571282905316777766489385036566372369518133091334281269104669836052038324087775082397535339943512028851288569342237442241378961242047171826362264504999955091800815867645003788806864324904993634075730184915611726197403247247938385732000097424282851846018331719216174462481994636142469669316961566262677169345291992925101965060785779535371861314213957527417556275049382603735394888681049143483994633920712406197215676594926797093225468201559158552767178665382859062516627874818691572997614241454801824762125841557409876879638813879540588189811
+c = (36509962693210047517809190780500733945629638467721636016118307831299153205787169088399018032858962653944360359037757238416729623515314461908869670066385367461579954207170900898502608201371741903312247217007567631584237670049543882850246347784852813361080564895289678219739976819925055830837232548960336550804, 14959247128290207711158598578966149380261887381574636597156641284189267790471920774170808806288580563577492441070024491886953389517733477847472737986545246252874395600374486543947605977380365673302757291495953658030048738906460472042379676160137626447499571382731894905380992263233204548600668812780247601325, 36653805985529315558503796353782648503316310086826701482263862429608379730584363732938416744191295088641419179725673205148217999183797829423539295825286947419128575063946728227807922575922697370871241826105471260524875137135999213015948866472957081351066130709476717779611974377854714476824268335455979590736, 44619982799889884704010277482810139576960205880619960462167175653326841572868809642692412859814472796539211092403704130039198480671655784971458045667408446084843398171460450068014922244839889367385992492875980531522963147513445040259751323986442839404788429909271285196520486381047903450020895598546088952188)
+'''</code></pre>
+<p>The problem: Given <code>e</code>, <code>n</code> and <code>c=pow(m, e, n)</code>, solve quaternion <code>m</code>. @JOHNKRAM pointed out that: <code>d&lt;n</code>, so <code>d=pow(e,-1,n)</code> (why?).</p>
+<h2 id="attack-script">Attack script</h2>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+from Crypto.Util.number import *
+
+# Given values
+n = 85481717157593593434025329804251284752138281740610011731799389557859119300838454555657179864017815910265870318909961454026714464920305413622061116245330661303912116693461205161551044610609272231860357133575507519403908786715597649351821576114881230052647979679534076432015415470679178775688932706964062378627
+e = 622349328830189017262721806176220642327451718814004869262654184548169579851269489422592218838968239824917128227573062775020729663341881800222644869706115998147909113383905386637703321110321003518025501597602036772247509043126119242571435842445265921450671551669304835480011469949693693324643919337459251944818821206437044742271947245399811180478630764346756372873090874700249814285609571282905316777766489385036566372369518133091334281269104669836052038324087775082397535339943512028851288569342237442241378961242047171826362264504999955091800815867645003788806864324904993634075730184915611726197403247247938385732000097424282851846018331719216174462481994636142469669316961566262677169345291992925101965060785779535371861314213957527417556275049382603735394888681049143483994633920712406197215676594926797093225468201559158552767178665382859062516627874818691572997614241454801824762125841557409876879638813879540588189811
+
+c = (
+    36509962693210047517809190780500733945629638467721636016118307831299153205787169088399018032858962653944360359037757238416729623515314461908869670066385367461579954207170900898502608201371741903312247217007567631584237670049543882850246347784852813361080564895289678219739976819925055830837232548960336550804,
+    14959247128290207711158598578966149380261887381574636597156641284189267790471920774170808806288580563577492441070024491886953389517733477847472737986545246252874395600374486543947605977380365673302757291495953658030048738906460472042379676160137626447499571382731894905380992263233204548600668812780247601325,
+    36653805985529315558503796353782648503316310086826701482263862429608379730584363732938416744191295088641419179725673205148217999183797829423539295825286947419128575063946728227807922575922697370871241826105471260524875137135999213015948866472957081351066130709476717779611974377854714476824268335455979590736,
+    44619982799889884704010277482810139576960205880619960462167175653326841572868809642692412859814472796539211092403704130039198480671655784971458045667408446084843398171460450068014922244839889367385992492875980531522963147513445040259751323986442839404788429909271285196520486381047903450020895598546088952188,
+)
+
+
+class QN:
+    def __init__(self, a, b, c, d, n):
+        self.a = a % n
+        self.b = b % n
+        self.c = c % n
+        self.d = d % n
+        self.n = n
+
+    def __mul__(self, other):
+        if isinstance(other, QN) and self.n == other.n:
+            n = self.n
+            a1, b1, c1, d1 = self.a, self.b, self.c, self.d
+            a2, b2, c2, d2 = other.a, other.b, other.c, other.d
+            a = (a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2) % n
+            b = (a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2) % n
+            c = (a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2) % n
+            d = (a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2) % n
+            return QN(a, b, c, d, n)
+        return NotImplemented
+
+    def __pow__(self, exp):
+        if exp &lt;= 0:
+            return QN(1, 0, 0, 0, self.n)
+        result = QN(1, 0, 0, 0, self.n)
+        base = self
+        while exp &gt; 0:
+            if exp &amp; 1:
+                result = result * base
+            base = base * base
+            exp &gt;&gt;= 1
+        return result
+
+    def __repr__(self):
+        return f"({self.a}, {self.b}, {self.c}, {self.d})"
+
+
+# Compute d = e^{-1} mod n
+print("Computing d = e^{-1} mod n...")
+try:
+    d = pow(e, -1, n)
+    print(f"d = {d}")
+    print(f"d bit length: {d.bit_length()}")
+
+    # Check if d &lt; n (should be true since it's mod n)
+    print(f"d &lt; n? {d &lt; n}")
+
+    # Now decrypt c
+    c_qn = QN(c[0], c[1], c[2], c[3], n)
+    print("\nDecrypting c with d...")
+    m = c_qn**d
+
+    print(f"Decrypted quaternion m = {m}")
+
+    # The flag is in the 'a' component
+    flag_int = m.a
+    flag_bytes = long_to_bytes(flag_int)
+    print(f"\nFlag (as integer): {flag_int}")
+    print(f"Flag (as bytes): {flag_bytes}")
+
+    # Try to decode as string
+    try:
+        flag_str = flag_bytes.decode("utf-8")
+        print(f"Flag (as string): {flag_str}")
+    except:
+        print("Flag bytes not valid UTF-8")
+
+    # Check if it looks like a flag
+    if b"hkcert" in flag_bytes or b"flag" in flag_bytes or b"{" in flag_bytes:
+        print("\n✓ Found flag!")
+
+except Exception as ex:
+    print(f"Error: {ex}")
+    import traceback
+
+    traceback.print_exc()</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,309 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-11-26-qiangwang-nitai-final-2025/sss.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>SSS - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#sss" class="nav-link">SSS</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="sss">SSS</h1>
+<p>附件：</p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import *
+from Crypto.Cipher import AES
+from random import randint
+from hashlib import md5
+from secret import flag
+
+def keygen(n, d):
+    assert n &gt;= d
+    PR.&lt;x&gt; = PolynomialRing(QQ)
+    f = PR.random_element(degree=d)
+    share = [(i, f(i)) for i in range(1, n+1)]
+    return share, f.list()
+
+def encrypt(msg, n, d):
+    share, sk = keygen(n, d)
+    enc = AES.new(key=md5(str(sk).encode()).digest(), nonce=b"SSS", mode=AES.MODE_CTR).encrypt(msg)
+    _ = [share[i] if randint(1, 1377) &gt; 1337 else (0, 0) for i in range(n)]
+    return enc, _
+
+enc, broken_share = encrypt(flag, 317, 137)
+print("enc =", enc)
+print("broken_share =", broken_share)</code></pre>
+<pre class="highlight"><code>enc = b'\x86\xaeT\xc4\xe4P$?\x0fFf\xed_\xf7\xbf\xd4!}\x86\x96\xa5!N\\\xac\xa6\x05\x95\x97\xe8c\x07mBC\r?\x05\xe9\xc2'
+broken_share = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (10, -4631721025213042979589861347356780659306830240535861197859764517325887562734340195736450434126969160458041566731454400867632943970175924619455733/50026886), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (27, -24270401085618523783334505003117220106799047612616884518430907865272616408962881421314521261776921788033685380125332876464528089508332921628899455851608130958949887175330399041337508606145698876443199340331/2001075440), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (114, -8170178624838430967234319313708463841225977991544573588746322708214609836991655728012470518327565268115592969326616228746438459721194687558800096380904606942120822940181209590332668734369376094808886697611807753685899493582597941446778442666571247899687326056541834547585928855910054883747/13164970), (115, -35730905741511019316682357405878746582346150424223197764805195764150318829255718856053955657793420785024878212218573163469303123682350594432729356239367183830964080676314456323433843691922291982191038084613218976880146565501480876865339889943762110977707433979754173637242265661363772397313/17400656), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (122, -5054102007815338896208580672235992461873117536982622779599092079043111838315874579070460174239162983539423959220721292749742440696858652547199731939779214550562072263014026548097372141978520172961266595622545116133212801593179968269811776493075499804129555699091566290090103863095072125664344891/750403290), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (140, -22294456808735891660563985138339056546810176848293959781540280556413386665332907611397452729903600565730549933063503399867935297750790184628798305501280226847245489155671023700066189257654345581037597846579052445912906638793456864627215986743621770881227070064069946686032758584176425897503239045998087/21440094), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (269, -4498892217591967811542493730809908115810745483948459504524837763129118805190821767395200486979850290141251546473503697151873937089349044014381504083002355068181278125242930326427846652760230575486879155927065136246271141640229890071705809165265165453955018480168866303593263860289413530977811950037051009504866083208011430996770114750317168207/6003226320), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]</code></pre>
+<p>本题生成了一个 137 阶的有理数系数的多项式，然后提供了多项式上 7 个点的坐标。这些系数的生成方式是：</p>
+<pre class="highlight"><code class="language-python">PR.&lt;x&gt; = PolynomialRing(QQ)
+f = PR.random_element(degree=d)</code></pre>
+<p>阅读 <a href="https://github.com/sagemath/sage/blob/develop/src/sage/rings/polynomial/polynomial_ring.py">Sage 源代码</a>，可以看到它是对每个系数在 <code>QQ</code> 上随机采样，进一步阅读 <a href="https://github.com/sagemath/sage/blob/develop/src/sage/rings/rational_field.py">Sage 源代码</a>，可见它是分子分母分别随机：</p>
+<pre class="highlight"><code class="language-python">num = ZZ.random_element(*args, **kwds)
+den = ZZ.random_element(*args, **kwds)</code></pre>
+<p>而 <code>ZZ</code> 上的<a href="https://github.com/sagemath/sage/blob/develop/src/sage/rings/integer_ring.pyx">随机算法</a>，其值的绝对值是比较小的：</p>
+<pre class="highlight"><code>The default distribution for ``ZZ.random_element()`` is based on
+`X = \mbox{trunc}(4/(5R))`, where `R` is a random
+variable uniformly distributed between `-1` and `1`. This gives
+`\mbox{Pr}(X = 0) = 1/5`, and
+`\mbox{Pr}(X = n) = 2/(5|n|(|n|+1))` for
+`n \neq 0`. Most of the samples will be small; `-1`, `0`, and `1`
+occur with probability `1/5` each. But we also have a small but
+non-negligible proportion of "outliers";
+`\mbox{Pr}(|X| \geq n) = 4/(5n)`, so for instance, we
+expect that `|X| \geq 1000` on one in 1250 samples.</code></pre>
+<p>因此这些多项式系数的分子分母都是很小的。所以，先进行约分，计算已知点的分母的最小公倍数，给每个点的 y 值乘上最小公倍数以后，把有理数都变成整数。接着，参考 <a href="../2022-11-25-hitconctf2022/babysss.html">babysss</a> 的方法，根据 LLL 计算出一组比较小的多项式系数，使得多项式经过给定的 7 个点。最后，再除以最小公倍数，就得到了原来的多项式系数（这里多了一个负号），从而恢复出明文。</p>
+<p>Sage 攻击代码：</p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import *
+from Crypto.Cipher import AES
+from hashlib import md5
+
+# parse input
+lines = open("output.txt", "r").readlines()
+enc = sage_eval(lines[0].removeprefix("enc = "))
+broken_share = sage_eval(lines[1].removeprefix("broken_share = "))
+share = [i for i in broken_share if i[0] != 0]
+print(len(share), share)
+
+# find lcm of denom
+lcm_denom = lcm([s[1].denom() for s in share])
+print(lcm_denom)
+
+# multiply all share by lcm to convert to integer
+share_int = [(s[0], s[1] * lcm_denom) for s in share]
+print(share_int)
+
+# the coefficient of the polynomials are small
+degree = 137
+
+# construct lattice
+coefs = []
+scale = 10**100
+for i in range(degree + 1):
+    arr = [0] * (degree + 1 + len(share_int))
+    arr[i] = 1  # the coefficient itself
+    for j in range(len(share_int)):
+        # the polynomial
+        arr[degree + 1 + j] = share_int[j][0] ** i * scale
+    coefs.append(arr)
+
+arr = [0] * (degree + 1 + len(share_int))
+for j in range(len(share_int)):
+    # the polynomial result
+    arr[degree + 1 + j] = share_int[j][1] * scale
+coefs.append(arr)
+
+# LLL to find small coefficients
+m = Matrix(coefs)
+l = m.LLL()
+print(l[0])
+
+# recovered polynomial
+poly = [-n / lcm_denom for n in l[0][: degree + 1]]
+print(poly)
+
+# verify
+for i in range(len(share_int)):
+    x = share_int[i][0]
+    s = sum([x**j * poly[j] for j in range(degree + 1)])
+    assert s == share[i][1]
+
+# decrypt
+sk = poly
+msg = AES.new(
+    key=md5(str(sk).encode()).digest(), nonce=b"SSS", mode=AES.MODE_CTR
+).decrypt(enc)
+print(msg)</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

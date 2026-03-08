@@ -1,0 +1,526 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-20-tsg-ctf-2025/shadow-spider-network.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>shadow_spider_network - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#shadow_spider_network" class="nav-link">shadow_spider_network</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#tsgctf-2025-shadow-spider-network-writeup" class="nav-link">TSGCTF 2025 - Shadow Spider Network Writeup</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#challenge-overview" class="nav-link">Challenge Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#initial-analysis" class="nav-link">Initial Analysis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#deep-dive-signal-handler-obfuscation" class="nav-link">Deep Dive: Signal Handler Obfuscation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#the-real-verification-mechanism" class="nav-link">The Real Verification Mechanism</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#extracting-the-flag" class="nav-link">Extracting the Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#solving-the-contradiction" class="nav-link">Solving the Contradiction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#solution-script" class="nav-link">Solution Script</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#key-takeaways" class="nav-link">Key Takeaways</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#tools-used" class="nav-link">Tools Used</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#flag" class="nav-link">Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#references" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="shadow_spider_network">shadow_spider_network</h1>
+<p>The attachment contains RC4 logic, but it is not actually used: When the input string overflows the buffer, the <code>__stack_chk_fail</code> is called, which is changed to some logic that triggers the signal handler, which actually checks the flag.</p>
+<p>The rest is solved by AI.</p>
+<p>Attack code:</p>
+<pre class="highlight"><code class="language-python"># decompilation of the signal handler
+# e.g.
+# if ( *(_WORD *)(a3[15] + 17LL) == 125 )
+# else if ( *(_BYTE *)(a3[15] - 19LL) == 109 )
+flag = bytearray(82)
+for line in open("decompiled.txt", "r"):
+    if "a3[15]" in line:
+        if "LL" in line.split()[5]:
+            sign = line.split()[4]
+            offset = int(line.split()[5].removesuffix("LL)"))
+        elif "LL" in line.split()[6]:
+            sign = line.split()[5]
+            offset = int(line.split()[6].removesuffix("LL)"))
+        else:
+            sign = "+"
+            offset = 0
+        value = int(line.split()[-2])
+        if sign == "+":
+            offset = -offset
+        flag[64 - offset] = value
+print(flag)</code></pre>
+<p>Analysis by AI:</p>
+<h1 id="tsgctf-2025-shadow-spider-network-writeup">TSGCTF 2025 - Shadow Spider Network Writeup</h1>
+<p><strong>Category:</strong> Reverse Engineering<br />
+<strong>Difficulty:</strong> Hard<br />
+<strong>Author:</strong> TSG<br />
+<strong>Flag:</strong> <code>TSGCTF{Inv3571ga710n_1n70_BOF_Or13n73d_Pr0gramm1ng_a5_a_73chn1qu3_f0r_0bfu5ca710n}</code></p>
+<h2 id="challenge-overview">Challenge Overview</h2>
+<p>We are given a binary that appears to implement RC4 encryption/decryption for flag verification. The binary prompts for a flag and checks it against what seems to be RC4-encrypted data. However, there's a contradiction: the code checks <code>strlen(input) == 40</code> but then compares 48 bytes against RC4-decrypted data.</p>
+<h2 id="initial-analysis">Initial Analysis</h2>
+<h3 id="basic-reconnaissance">Basic Reconnaissance</h3>
+<pre class="highlight"><code class="language-bash">$ file chall
+chall: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=..., for GNU/Linux 3.2.0, stripped
+
+$ checksec chall
+Arch:     amd64-64-little
+RELRO:    Partial RELRO
+Stack:    Canary found
+NX:       NX enabled
+PIE:      PIE enabled</code></pre>
+<h3 id="main-function-analysis">Main Function Analysis</h3>
+<p>The main function is simple:
+<pre class="highlight"><code class="language-c">void main() {
+    printf("FLAG&gt; ");
+    if (verify_function()) {
+        puts("Wrong");
+    } else {
+        puts("Correct!");
+    }
+    exit(0);
+}</code></pre></p>
+<h3 id="verification-function">Verification Function</h3>
+<p>The verification function <code>sub_40419F</code> appears to implement RC4:</p>
+<ol>
+<li>Initializes S-box with 0-255</li>
+<li>Uses a key from global variable <code>s</code> (37 bytes: "the_flying_cabbage_eats_purple_clocks")</li>
+<li>Performs RC4 key scheduling</li>
+<li>Checks <code>strlen(input) == 40</code></li>
+<li>Generates RC4 keystream and compares 48 bytes against encrypted data at <code>byte_4050A0</code></li>
+</ol>
+<p><strong>Contradiction:</strong> The function checks for 40-character input but compares 48 bytes!</p>
+<h2 id="deep-dive-signal-handler-obfuscation">Deep Dive: Signal Handler Obfuscation</h2>
+<h3 id="signal-handler-discovery">Signal Handler Discovery</h3>
+<p>Looking at initialization functions, we find <code>sub_403F4F</code> which sets up signal handlers:
+<pre class="highlight"><code class="language-c">void setup_signals() {
+    // Set up alternate signal stack
+    struct sigaltstack s;
+    memset(&amp;s, 0, sizeof(s));
+    s.ss_sp = malloc(sysconf(_SC_PAGESIZE));
+    s.ss_size = sysconf(_SC_PAGESIZE);
+    s.ss_flags = 0;
+    sigaltstack(&amp;s, 0);
+
+    // Set up signal handler
+    struct sigaction act;
+    memset(&amp;act, 0, sizeof(act));
+    act.sa_handler = (__sighandler_t)sub_401363;  // Signal handler
+    sigemptyset(&amp;act.sa_mask);
+    act.sa_flags = SA_ONSTACK;  // Use alternate stack
+
+    // Register for SIGSEGV (11) and SIGILL (4)
+    sigaction(11, &amp;act, 0);  // SIGSEGV
+    sigaction(4, &amp;act, 0);   // SIGILL
+}</code></pre></p>
+<h3 id="signal-handler-analysis">Signal Handler Analysis</h3>
+<p>The signal handler <code>sub_401363</code> is complex (1455 lines of decompiled code). It implements a state machine that:</p>
+<ul>
+<li>Checks the current RIP (<code>a3[21]</code>) to determine state</li>
+<li>For each state, checks a specific byte at an offset from <code>a3[15]</code></li>
+<li>If byte matches expected value, sets next RIP to continue</li>
+<li>If mismatch, sets RIP to crash function (<code>sub_401080</code>)</li>
+</ul>
+<p>The handler has 82 unique character checks with offsets from -64 to +17.</p>
+<h2 id="the-real-verification-mechanism">The Real Verification Mechanism</h2>
+<h3 id="understanding-the-signal-handler-checks">Understanding the Signal Handler Checks</h3>
+<p>The signal handler checks take the form:
+<pre class="highlight"><code class="language-c">if (*(_BYTE *)(a3[15] + offset) == expected_char)</code></pre></p>
+<p>Where:</p>
+<ul>
+<li><code>a3[15]</code> is the faulting address (RIP in signal context)</li>
+<li><code>offset</code> ranges from -64 to +17</li>
+<li><code>expected_char</code> is an ASCII value</li>
+</ul>
+<h3 id="the-buffer-overflow-trick">The Buffer Overflow Trick</h3>
+<p>The verification function uses:
+<pre class="highlight"><code class="language-c">_BYTE v1[56];  // 56-byte buffer
+__isoc99_scanf("%s", v1);  // Unsafe - no length limit!</code></pre></p>
+<p>The program:</p>
+<ol>
+<li>Reads input with <code>scanf("%s", v1)</code> which can overflow the 56-byte buffer</li>
+<li>Intentionally causes faults at <code>input + 64</code></li>
+<li>Signal handler checks 82 bytes around the faulting address</li>
+</ol>
+<h3 id="mapping-offsets-to-input">Mapping Offsets to Input</h3>
+<p>If the program faults at <code>input + 64</code>, then:</p>
+<ul>
+<li><code>a3[15]</code> (RIP) = <code>input + 64</code></li>
+<li><code>input[0]</code> is at offset -64</li>
+<li><code>input[1]</code> is at offset -63</li>
+<li>...</li>
+<li><code>input[81]</code> is at offset +17</li>
+</ul>
+<p>Thus, the input needs to be 82 characters to satisfy all checks.</p>
+<h2 id="extracting-the-flag">Extracting the Flag</h2>
+<h3 id="signal-handler-character-checks">Signal Handler Character Checks</h3>
+<p>By analyzing the signal handler, we extract all 82 (offset, char) pairs:</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Char</th>
+<th>Decimal</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-64</td>
+<td>T</td>
+<td>84</td>
+<td>Start of flag</td>
+</tr>
+<tr>
+<td>-63</td>
+<td>S</td>
+<td>83</td>
+<td></td>
+</tr>
+<tr>
+<td>-62</td>
+<td>G</td>
+<td>71</td>
+<td></td>
+</tr>
+<tr>
+<td>-61</td>
+<td>C</td>
+<td>67</td>
+<td></td>
+</tr>
+<tr>
+<td>-60</td>
+<td>T</td>
+<td>84</td>
+<td></td>
+</tr>
+<tr>
+<td>-59</td>
+<td>F</td>
+<td>70</td>
+<td></td>
+</tr>
+<tr>
+<td>-58</td>
+<td>{</td>
+<td>123</td>
+<td>Flag opening</td>
+</tr>
+<tr>
+<td>-57</td>
+<td>I</td>
+<td>73</td>
+<td></td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<td>+17</td>
+<td>}</td>
+<td>125</td>
+<td>Flag closing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reconstructing-the-flag">Reconstructing the Flag</h3>
+<p>We wrote a Python script to reconstruct the flag from the checks:
+<pre class="highlight"><code class="language-python"># Map offsets to indices: index = offset + 64
+checks = [
+    (-64, 84, 'T'), (-63, 83, 'S'), (-62, 71, 'G'),
+    (-61, 67, 'C'), (-60, 84, 'T'), (-59, 70, 'F'),
+    (-58, 123, '{'), (-57, 73, 'I'), (-56, 110, 'n'),
+    # ... all 82 checks ...
+    (+17, 125, '}')
+]
+
+# Reconstruct
+flag_chars = ['?'] * 82
+for offset, decimal, char in checks:
+    index = offset + 64
+    flag_chars[index] = char
+
+flag = ''.join(flag_chars)</code></pre></p>
+<h3 id="the-complete-flag">The Complete Flag</h3>
+<pre class="highlight"><code>TSGCTF{Inv3571ga710n_1n70_BOF_Or13n73d_Pr0gramm1ng_a5_a_73chn1qu3_f0r_0bfu5ca710n}</code></pre>
+<p><strong>Translation (with leetspeak decoded):</strong><br />
+"Investigation into BOF Oriented Programming as a technique for obfuscation"</p>
+<h2 id="solving-the-contradiction">Solving the Contradiction</h2>
+<h3 id="how-the-40-vs-48-byte-issue-is-resolved">How the 40 vs 48 Byte Issue is Resolved</h3>
+<ol>
+<li><strong>Normal execution path:</strong> <code>strlen(input) == 40</code> check fails for 82-byte input</li>
+<li><strong>Signal handler intervention:</strong> The program intentionally causes signals</li>
+<li><strong>Signal handler modifies execution:</strong> Changes RIP or other registers to bypass the check</li>
+<li><strong>State machine completion:</strong> If all 82 checks pass, signal handler sets success state</li>
+</ol>
+<h3 id="rc4s-actual-role">RC4's Actual Role</h3>
+<p>The RC4 verification at <code>loc_404486</code> is just <strong>one state</strong> in the larger signal handler state machine. It's not the primary verification mechanism but rather part of the obfuscation.</p>
+<h2 id="solution-script">Solution Script</h2>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import subprocess
+
+flag = "TSGCTF{Inv3571ga710n_1n70_BOF_Or13n73d_Pr0gramm1ng_a5_a_73chn1qu3_f0r_0bfu5ca710n}"
+
+# Run the binary
+proc = subprocess.run(
+    ["./chall"],
+    input=flag + "\n",
+    text=True,
+    capture_output=True
+)
+
+print(proc.stdout)
+# Output: FLAG&gt; Correct!</code></pre>
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ol>
+<li><strong>Signal-based Control Flow:</strong> The challenge uses signal handlers (SIGSEGV/SIGILL) for control flow obfuscation</li>
+<li><strong>Buffer Overflow as Feature:</strong> Intentional buffer overflow is part of the verification mechanism</li>
+<li><strong>State Machine Verification:</strong> Flag verification happens through a state machine in the signal handler</li>
+<li><strong>Red Herrings:</strong> RC4 and the 40-byte check are distractions from the real verification</li>
+<li><strong>Context Awareness:</strong> Understanding signal context (<code>ucontext_t</code>) is crucial for solving</li>
+</ol>
+<h2 id="tools-used">Tools Used</h2>
+<ul>
+<li>Python for analysis and automation</li>
+<li>GDB for debugging (though patching was needed to bypass anti-debugging)</li>
+<li>Signal handler analysis tools</li>
+</ul>
+<h2 id="flag">Flag</h2>
+<p><code>TSGCTF{Inv3571ga710n_1n70_BOF_Or13n73d_Pr0gramm1ng_a5_a_73chn1qu3_f0r_0bfu5ca710n}</code></p>
+<h2 id="references">References</h2>
+<ul>
+<li>Linux <code>ucontext_t</code> structure and signal handling</li>
+<li>RC4 algorithm implementation</li>
+<li>Buffer overflow exploitation techniques</li>
+<li>Signal-based control flow obfuscation patterns</li>
+</ul></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

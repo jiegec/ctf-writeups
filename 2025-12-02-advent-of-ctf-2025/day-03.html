@@ -1,0 +1,271 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-advent-of-ctf-2025/day-03.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 03 - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-03" class="nav-link">Day 03</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#ai-assisted-solution" class="nav-link">AI assisted solution</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-03">Day 03</h1>
+<p>We are given a DNS domain <code>krampus.csd.lol</code> and need to find hidden domains.</p>
+<p>We test typical DNS queries:</p>
+<ul>
+<li><code>dig txt krampus.csd.lol</code>: Returns <code>v=spf1 include:_spf.krampus.csd.lol -all</code>, so we try <code>_spf.krampus.csd.lol</code></li>
+<li><code>dig txt _spf.krampus.csd.lol</code>: Returns <code>"v=spf1 ip4:203.0.113.0/24 ~all"</code> (not useful)</li>
+<li><code>dig mx krampus.csd.lol</code>: Returns <code>mail.krampus.csd.lol</code>, so we try DMARC</li>
+<li><code>dig txt _dmarc.krampus.csd.lol</code>: Returns <code>"v=DMARC1; p=reject; rua=mailto:dmarc@krampus.csd.lol; ruf=mailto:forensics@ops.krampus.csd.lol; fo=1; adkim=s; aspf=s"</code>, so we examine <code>ops.krampus.csd.lol</code></li>
+<li><code>dig txt ops.krampus.csd.lol</code>: Returns <code>"internal-services: _ldap._tcp.krampus.csd.lol _kerberos._tcp.krampus.csd.lol _metrics._tcp.krampus.csd.lol"</code>, so we look up SRV records for these domains</li>
+<li><code>dig srv _ldap._tcp.krampus.csd.lol</code>: Returns <code>dc01.krampus.csd.lol.</code></li>
+<li><code>dig srv _metrics._tcp.krampus.csd.lol</code>: Returns <code>beacon.krampus.csd.lol.</code>, so we examine <code>beacon.krampus.csd.lol</code></li>
+<li><code>dig txt beacon.krampus.csd.lol</code>: Returns <code>"config=ZXhmaWwua3JhbXB1cy5jc2QubG9s=="</code>, which decodes to <code>exfil.krampus.csd.lol</code></li>
+<li><code>dig txt exfil.krampus.csd.lol</code>: Returns <code>"status=active; auth=dkim; selector=syndicate"</code>, so we find the DKIM key</li>
+<li><code>dig txt syndicate._domainkey.krampus.csd.lol</code>: Returns <code>"v=DKIM1; k=rsa; p=Y3Nke2RuNV9tMTlIVF9CM19LMU5ENF9XME5LeX0="</code>, which decodes to <code>csd{dn5_m19HT_B3_K1ND4_W0NKy}</code></li>
+</ul>
+<h2 id="ai-assisted-solution">AI assisted solution</h2>
+<p>The sequence above was discovered with the help of DeepSeek using Qwen Code.</p>
+<p>DeepSeek can recover the flag given the hints and dns tool call:</p>
+<pre class="highlight"><code>&gt; Find hidden CTF flag in format csd{FLAG} in DNS of krampus.csd.lol. Hints: Email security records like SPF and DMARC often leak internal subdomains. Pay close attention to ALL fields in the DMARC policy - especially where forensic reports get sent. The Syndicate appears to be using DKIM for more than just email signing. If you know the selector name, the key might reveal more than you expect.
+@ The user is asking for a CTF flag in format csd{FLAG} in DNS of krampus.csd.lol. They mention hints about email security records like SPF and DMARC often leaking internal subdomains. Pay close attention to ALL fields in the DMARC policy - especially where forensic reports get sent. The Syndicate appears to be using DKIM for more than just email signing. If you know the selector name, the key might reveal more than you expect.
+
+We need to query DNS records for krampus.csd.lol. First, let's get general DNS records: A, TXT, MX, CNAME, NS, etc. We'll start with TXT records as they contain SPF, DMARC, DKIM. Also maybe subdomains.
+
+Let's query TXT records for krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "krampus.csd.lol", "record": "TXT"} got result krampus.csd.lol. 10 IN TXT "v=spf1 include:_spf.krampus.csd.lol -all"
+@ We have SPF record that includes _spf.krampus.csd.lol. That's a subdomain. Let's query TXT for _spf.krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "_spf.krampus.csd.lol", "record": "TXT"} got result _spf.krampus.csd.lol. 206 IN TXT "v=spf1 ip4:203.0.113.0/24 ~all"
+@ That's just SPF. Now we need DMARC record. DMARC is usually at _dmarc.krampus.csd.lol or _dmarc.csd.lol? Usually _dmarc.&lt;domain&gt;. Let's query _dmarc.krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "_dmarc.krampus.csd.lol", "record": "TXT"} got result _dmarc.krampus.csd.lol. 277 IN TXT "v=DMARC1; p=reject; rua=mailto:dmarc@krampus.csd.lol; ruf=mailto:forensics@ops.krampus.csd.lol; fo=1; adkim=s; aspf=s"
+@ Interesting: ruf (forensic reports) sent to forensics@ops.krampus.csd.lol. That's a subdomain ops.krampus.csd.lol. Might be something there. Also maybe DKIM selectors. DKIM records are at &lt;selector&gt;._domainkey.krampus.csd.lol. The hint says if you know the selector name, the key might reveal more than you expect. We need to find selector name. Could be something like "default", "dkim", "selector1", "krampus", "syndicate". Or maybe we can brute force common selectors. But maybe the selector is hinted in SPF or DMARC? Not sure.
+
+Let's query common DKIM selectors: "default", "dkim", "selector", "key1", "202412", "krampus". Let's try default._domainkey.krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "default._domainkey.krampus.csd.lol", "record": "TXT"} got result Got exception The DNS query name does not exist: default._domainkey.krampus.csd.lol.
+@ Maybe "krampus". Let's try krampus._domainkey.krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "krampus._domainkey.krampus.csd.lol", "record": "TXT"} got result Got exception The DNS query name does not exist: krampus._domainkey.krampus.csd.lol.
+@ Maybe selector is "syndicate". Let's try syndicate._domainkey.krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "syndicate._domainkey.krampus.csd.lol", "record": "TXT"} got result syndicate._domainkey.krampus.csd.lol. 380 IN TXT "v=DKIM1; k=rsa; p=Y3Nke2RuNV9tMTlIVF9CM19LMU5ENF9XME5LeX0="
+@ Great! The DKIM key contains a base64 string: "Y3Nke2RuNV9tMTlIVF9CM19LMU5ENF9XME5LeX0=". That looks like base64 encoded flag. Let's decode it. Use base64_decode tool.
+# tool call base64_decode with arguments {"base64": "Y3Nke2RuNV9tMTlIVF9CM19LMU5ENF9XME5LeX0="} got result b'csd{dn5_m19HT_B3_K1ND4_W0NKy}'
+@ The decoded flag is: csd{dn5_m19HT_B3_K1ND4_W0NKy}. That seems like the flag. However, we should verify if there are other hidden things. The hint says "Pay close attention to ALL fields in the DMARC policy - especially where forensic reports get sent." That led to ops.krampus.csd.lol. Maybe there is something else there. Let's query DNS for ops.krampus.csd.lol. Maybe A record or TXT. Let's query A record.
+# tool call dns_query with arguments {"domain": "ops.krampus.csd.lol", "record": "A"} got result Got exception The DNS response does not contain an answer to the question: ops.krampus.csd.lol. IN A
+@ Maybe TXT. Let's query TXT.
+# tool call dns_query with arguments {"domain": "ops.krampus.csd.lol", "record": "TXT"} got result ops.krampus.csd.lol. 254 IN TXT "internal-services: _ldap._tcp.krampus.csd.lol _kerberos._tcp.krampus.csd.lol _metrics._tcp.krampus.csd.lol"
+@ That's interesting but maybe not needed for flag. The flag is likely the one we found. Let's also check other subdomains like forensics.ops.krampus.csd.lol? That's an email address, not necessarily a subdomain. But maybe there is a TXT record for forensics.ops.krampus.csd.lol? Might be something. Let's query TXT for forensics.ops.krampus.csd.lol.
+# tool call dns_query with arguments {"domain": "forensics.ops.krampus.csd.lol", "record": "TXT"} got result Got exception The DNS query name does not exist: forensics.ops.krampus.csd.lol.
+@ Probably not needed.
+
+Thus the flag is csd{dn5_m19HT_B3_K1ND4_W0NKy}. We should output that.
+
+But let's double-check the flag format: csd{FLAG}. The decoded string is csd{dn5_m19HT_B3_K1ND4_W0NKy}. Looks plausible. However, we should ensure there is no extra encoding. The base64 decoded directly gives the flag. Let's also verify the DKIM key is indeed RSA public key with base64 encoded flag? The p parameter is the public key base64, but in this case it's the flag. Might be a CTF trick.
+
+Thus answer: csd{dn5_m19HT_B3_K1ND4_W0NKy}. Let's provide it.
+&lt; The flag is hidden in the DKIM record for the `syndicate` selector. The DKIM public key contains a base64-encoded string that decodes to the flag.
+
+**Flag:** `csd{dn5_m19HT_B3_K1ND4_W0NKy}`
+
+**How it was found:**
+1. Queried TXT records for `krampus.csd.lol` and found the SPF record referencing `_spf.krampus.csd.lol`
+2. Checked the DMARC policy at `_dmarc.krampus.csd.lol` which revealed a forensic reporting address `forensics@ops.krampus.csd.lol`
+3. Following the hint about DKIM selectors, tried `syndicate._domainkey.krampus.csd.lol` (a common selector name hinted at by "The Syndicate")
+4. The DKIM record contained a base64-encoded string in the `p=` parameter: `Y3Nke2RuNV9tMTlIVF9CM19LMU5ENF9XME5LeX0=`
+5. Decoding this base64 string revealed the flag
+&gt;</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

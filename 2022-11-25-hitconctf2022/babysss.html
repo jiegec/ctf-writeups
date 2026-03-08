@@ -1,0 +1,316 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2022-11-25-hitconctf2022/babysss.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Challenge - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#challenge" class="nav-link">Challenge</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#writeup" class="nav-link">Writeup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#conclusion" class="nav-link">Conclusion</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="challenge">Challenge</h1>
+<p>I implemented a toy Shamir's Secret Sharing for fun. Can you help me check is there any issues with this?</p>
+<p>babysss-1068a45edf321eee75c9ceb3241a9941ab8bdc07.tar.gz</p>
+<p>Author: maple3142</p>
+<h1 id="writeup">Writeup</h1>
+<p>The challenge asks us to break the insecure implementation of SSS(Shamir's Secret Sharing). The core code is:</p>
+<pre class="highlight"><code class="language-python">def polyeval(poly, x):
+    return sum([a * x**i for i, a in enumerate(poly)])
+
+
+DEGREE = 128
+SHARES_FOR_YOU = 8  # I am really stingy :)
+
+poly = [rand.getrandbits(64) for _ in range(DEGREE + 1)]
+shares = []
+for _ in range(SHARES_FOR_YOU):
+    x = rand.getrandbits(16)
+    y = polyeval(poly, x)
+    shares.append((x, y))
+print(shares)
+
+secret = polyeval(poly, 0x48763)</code></pre>
+<p>It generates a polynomial <span class="arithmatex">\(f(x)=a_0+a_1x+\cdots+a_{128}x^{128}\)</span> with integer coefficients and gives us 8 pairs of <span class="arithmatex">\((x_i, y_i)\)</span> where <span class="arithmatex">\(y_i=f(x_i)\)</span>. We need to recover the coefficients to get the secret. It can be solved via LLL algorithm.</p>
+<p>The LLL algorithm finds a linear combination of basis that the length is very small. Thus, we can construct the following matrix:</p>
+<div class="arithmatex">\[
+A = \begin{bmatrix}
+1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 \\
+x_1 &amp; x_2 &amp; x_3 &amp; x_4 &amp; x_5 &amp; x_6 &amp; x_7 &amp; x_8 \\
+x_1^2 &amp; x_2^2 &amp; x_3^2 &amp; x_4^2 &amp; x_5^2 &amp; x_6^2 &amp; x_7^2 &amp; x_8^2 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+x_1^{128} &amp; x_2^{128} &amp; x_3^{128} &amp; x_4^{128} &amp; x_5^{128} &amp; x_6^{128} &amp; x_7^{128} &amp; x_8^{128} \\
+y_1 &amp; y_2 &amp; y_3 &amp; y_4 &amp; y_5 &amp; y_6 &amp; y_7 &amp; y_8 \\
+\end{bmatrix}
+\]</div>
+<p>Where each row forms a basis. Because <span class="arithmatex">\(y_i = f(x_i)\)</span>, we can get:</p>
+<div class="arithmatex">\[
+1 \times a_0 + x_i \times a_1 + \cdots x_i^{128} \times a_{128} + y_i \times (-1) = f(x_i) - f(x_i) = 0
+\]</div>
+<p>Thus the bases are linear dependent. We can verify the linear dependence via sage:</p>
+<pre class="highlight"><code class="language-python"># shares = [(x, y)]
+DEGREE = 128
+SHARES_FOR_YOU = 8
+
+coefs = []
+scale = 10 ** 100
+for i in range(DEGREE+1):
+    coefs.append([scale * shares[j][0] ** i for j in range(SHARES_FOR_YOU)])
+
+coefs.append([scale * shares[j][1] for j in range(SHARES_FOR_YOU)])
+
+m = Matrix(coefs)
+res = m.LLL()[0]
+print(res)
+# =&gt; (0, 0, 0, 0, 0, 0, 0, 0)</code></pre>
+<p>Then, the next thing is to extract the polynomial coefficients. LLL tries the get the smallest basis, so we can leverage this to find the coefficients. Contruct the following matrix:</p>
+<div class="arithmatex">\[
+B = \begin{bmatrix}
+V &amp; I \\
+Y &amp; 0
+\end{bmatrix}
+\]</div>
+<p>Where <span class="arithmatex">\(V\)</span> refers to the Vandermonde matrix of <span class="arithmatex">\(x_i\)</span>, and <span class="arithmatex">\(Y=(y_1, y_2, \cdots y_8)\)</span>. The left half of matrix <span class="arithmatex">\(B\)</span> equals to matrix <span class="arithmatex">\(A\)</span>. The right half is a identity matrix, which will retain the coefficients in the final basis.</p>
+<p>However, this will not work:</p>
+<pre class="highlight"><code class="language-python">coefs = []
+for i in range(DEGREE+1):
+    coefs.append([shares[j][0] ** i for j in range(SHARES_FOR_YOU)] + [1 if i == j else 0 for j in range(DEGREE+1)])
+
+coefs.append([shares[j][1] for j in range(SHARES_FOR_YOU)] + [0] * (DEGREE+1))
+
+m = Matrix(coefs)
+res = m.LLL()[0]
+print(res)
+# =&gt; (1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)</code></pre>
+<p>The LLL algorithm is so smart that it finds a small basis, but we expect the first 8 numbers are zeros. Thus, we need to scale our numbers to force LLL algorithm to find the correct answer for us:</p>
+<div class="arithmatex">\[
+C = \begin{bmatrix}
+cV &amp; I \\
+cY &amp; 0
+\end{bmatrix}
+\]</div>
+<p>I set <span class="arithmatex">\(c=10^{100}\)</span> in my code:</p>
+<pre class="highlight"><code class="language-python">coefs = []
+scale = 10 ** 100
+for i in range(DEGREE+1):
+    coefs.append([scale * shares[j][0] ** i for j in range(SHARES_FOR_YOU)] + [1 if i == j else 0 for j in range(DEGREE+1)])
+
+coefs.append([scale * shares[j][1] for j in range(SHARES_FOR_YOU)] + [0] * (DEGREE+1))
+
+m = Matrix(coefs)
+res = -m.LLL()[0]
+print(res)
+# =&gt; (0, 0, 0, 0, 0, 0, 0, 0, 16876298701281144467, 4341623479214198629, ...)</code></pre>
+<p>The polynomial coeficients are known. The last part is easy:</p>
+<pre class="highlight"><code class="language-python">secret = polyeval(poly, 0x48763)
+print(secret)
+key = sha256(str(secret).encode()).digest()[:16]
+cipher = AES.new(key, AES.MODE_CTR, nonce=b'\x8f\xa5z\xb4mZ\x97\xe9')
+print(cipher.decrypt(
+    b'G$\xf5\x9e\xa9\xb1e\xb5\x86w\xdfz\xbeP\xecJ\xb8wT&lt;&lt;\x84\xc5v\xb4\x02Z\xa4\xed\x8fB\x00[\xc0\x02\xf9\xc0x\x16\xf9\xa4\x02\xb8\xbb'))
+# =&gt; hitcon{doing_SSS_in_integers_is_not_good_:(}</code></pre>
+<h1 id="conclusion">Conclusion</h1>
+<p>The vulnerability is using integer arithmeic in SSS. Finite field arithmetic should be used instead, according to https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

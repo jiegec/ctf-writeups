@@ -1,0 +1,337 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-13-seccon-ctf-2025-quals/mini-bloat.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Mini Bloat - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#mini-bloat" class="nav-link">Mini Bloat</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="mini-bloat">Mini Bloat</h1>
+<p>A webpage is provided. It has 25 challenges for each day, but some are locked. I changed the local system time so that all challenges are unlocked. Solve the challenges using z3:</p>
+<pre class="highlight"><code class="language-python">from z3 import *
+
+x = BitVecs('x', 32)[0]
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) | 1384569162) + ((((x &gt;&gt; 0)) &amp; 1384569162) &lt;&lt; 0))) ^ 2936264725)) ^ ((((((((x &gt;&gt; 0)) | 1384569162) + ((((x &gt;&gt; 0)) &amp; 1384569162) &lt;&lt; 0))) &amp; 61) ^ 58262))) + 88) - (((7784302 ^ ((((((((x &gt;&gt; 0)) | 1384569162) + ((((x &gt;&gt; 0)) &amp; 1384569162) &lt;&lt; 0))) &amp; 61) ^ 58262)))) + 88))) | (-(((((((((((x &gt;&gt; 0)) | 1384569162) + ((((x &gt;&gt; 0)) &amp; 1384569162) &lt;&lt; 0))) ^ 2936264725)) ^ ((((((((x &gt;&gt; 0)) | 1384569162) + ((((x &gt;&gt; 0)) &amp; 1384569162) &lt;&lt; 0))) &amp; 61) ^ 58262))) + 88) - (((7784302 ^ ((((((((x &gt;&gt; 0)) | 1384569162) + ((((x &gt;&gt; 0)) &amp; 1384569162) &lt;&lt; 0))) &amp; 61) ^ 58262)))) + 88))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) - (((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) &amp; 3314920374) &lt;&lt; 1) - 3314920374))) ^ (((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) &amp; 23) ^ 64143))) + 15) - (((2462529297 ^ (((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) &amp; 23) ^ 64143)))) + 15))) | (-((((((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) - (((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) &amp; 3314920374) &lt;&lt; 1) - 3314920374))) ^ (((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) &amp; 23) ^ 64143))) + 15) - (((2462529297 ^ (((((((x &gt;&gt; 0) ^ 3478178528) + (((x &gt;&gt; 0) &amp; 3478178528) &lt;&lt; 1))) &amp; 23) ^ 64143)))) + 15))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) - (((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) &amp; 1748937198) &lt;&lt; 1) - 1748937198))) ^ (((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) &amp; 55) ^ 34058))) + 229) - (((1570970050 ^ (((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) &amp; 55) ^ 34058)))) + 229))) | (-((((((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) - (((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) &amp; 1748937198) &lt;&lt; 1) - 1748937198))) ^ (((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) &amp; 55) ^ 34058))) + 229) - (((1570970050 ^ (((((((x &gt;&gt; 0) ^ 1780962968) + (((x &gt;&gt; 0) &amp; 1780962968) &lt;&lt; 1))) &amp; 55) ^ 34058)))) + 229))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042)) | 546865429) - (((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042))) &amp; 546865429))) ^ (((((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042))) &amp; 155) ^ 33652))) + 249) - (((4072465540 ^ (((((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042))) &amp; 155) ^ 33652)))) + 249))) | (-((((((((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042)) | 546865429) - (((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042))) &amp; 546865429))) ^ (((((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042))) &amp; 155) ^ 33652))) + 249) - (((4072465540 ^ (((((((x &gt;&gt; 0) | 89115042) + ((x &gt;&gt; 0) &amp; 89115042))) &amp; 155) ^ 33652)))) + 249))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 1756734264) + ((x &gt;&gt; 0) &amp; 1756734264))) ^ 2440563804)) ^ (((((((x &gt;&gt; 0) | 1756734264) + ((x &gt;&gt; 0) &amp; 1756734264))) &amp; 73) ^ 57181))) + 253) - (((2150423986 ^ (((((((x &gt;&gt; 0) | 1756734264) + ((x &gt;&gt; 0) &amp; 1756734264))) &amp; 73) ^ 57181)))) + 253))) | (-((((((((((x &gt;&gt; 0) | 1756734264) + ((x &gt;&gt; 0) &amp; 1756734264))) ^ 2440563804)) ^ (((((((x &gt;&gt; 0) | 1756734264) + ((x &gt;&gt; 0) &amp; 1756734264))) &amp; 73) ^ 57181))) + 253) - (((2150423986 ^ (((((((x &gt;&gt; 0) | 1756734264) + ((x &gt;&gt; 0) &amp; 1756734264))) &amp; 73) ^ 57181)))) + 253))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190)) + 1020827518) - (((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190))) &amp; 1020827518) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190))) &amp; 119) ^ 1282))) + 213) - (((3187704957 ^ ((((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190))) &amp; 119) ^ 1282)))) + 213))) | (-(((((((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190)) + 1020827518) - (((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190))) &amp; 1020827518) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190))) &amp; 119) ^ 1282))) + 213) - (((3187704957 ^ ((((((((x &gt;&gt; 0)) ^ 805798190) + (((x &gt;&gt; 0)) &amp; 805798190) + (((x &gt;&gt; 0)) &amp; 805798190))) &amp; 119) ^ 1282)))) + 213))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) - ((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) &amp; 3539701850) &lt;&lt; 1) - 3539701850))) ^ ((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) &amp; 115) ^ 24574))) + 195) - (((1201301253 ^ ((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) &amp; 115) ^ 24574)))) + 195))) | (-(((((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) - ((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) &amp; 3539701850) &lt;&lt; 1) - 3539701850))) ^ ((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) &amp; 115) ^ 24574))) + 195) - (((1201301253 ^ ((((((((x &gt;&gt; 0)) ^ 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537) + (((x &gt;&gt; 0)) &amp; 1435762537))) &amp; 115) ^ 24574)))) + 195))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509)) + 2659923256) - ((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509))) &amp; 2659923256) &lt;&lt; 1))) ^ (((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509))) &amp; 191) ^ 53580))) + 101) - (((2915894634 ^ (((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509))) &amp; 191) ^ 53580)))) + 101))) | (-((((((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509)) + 2659923256) - ((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509))) &amp; 2659923256) &lt;&lt; 1))) ^ (((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509))) &amp; 191) ^ 53580))) + 101) - (((2915894634 ^ (((((((x &gt;&gt; 0) | 2620539509) + ((x &gt;&gt; 0) &amp; 2620539509))) &amp; 191) ^ 53580)))) + 101))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056)) + 70157164) - (((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056))) &amp; 70157164) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056))) &amp; 27) ^ 7456))) + 12) - (((2727236344 ^ ((((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056))) &amp; 27) ^ 7456)))) + 12))) | (-(((((((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056)) + 70157164) - (((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056))) &amp; 70157164) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056))) &amp; 27) ^ 7456))) + 12) - (((2727236344 ^ ((((((((x &gt;&gt; 0)) ^ 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056) + (((x &gt;&gt; 0)) &amp; 2490189056))) &amp; 27) ^ 7456)))) + 12))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 1518986011) + ((x &gt;&gt; 0) &amp; 1518986011))) ^ 907567141)) ^ (((((((x &gt;&gt; 0) | 1518986011) + ((x &gt;&gt; 0) &amp; 1518986011))) &amp; 233) ^ 58673))) + 53) - (((1862300971 ^ (((((((x &gt;&gt; 0) | 1518986011) + ((x &gt;&gt; 0) &amp; 1518986011))) &amp; 233) ^ 58673)))) + 53))) | (-((((((((((x &gt;&gt; 0) | 1518986011) + ((x &gt;&gt; 0) &amp; 1518986011))) ^ 907567141)) ^ (((((((x &gt;&gt; 0) | 1518986011) + ((x &gt;&gt; 0) &amp; 1518986011))) &amp; 233) ^ 58673))) + 53) - (((1862300971 ^ (((((((x &gt;&gt; 0) | 1518986011) + ((x &gt;&gt; 0) &amp; 1518986011))) &amp; 233) ^ 58673)))) + 53))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287)) | 3556416082) - (((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287))) &amp; 3556416082))) ^ (((((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287))) &amp; 127) ^ 39480))) + 182) - (((2007105184 ^ (((((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287))) &amp; 127) ^ 39480)))) + 182))) | (-((((((((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287)) | 3556416082) - (((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287))) &amp; 3556416082))) ^ (((((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287))) &amp; 127) ^ 39480))) + 182) - (((2007105184 ^ (((((((x &gt;&gt; 0) | 1733392287) + ((x &gt;&gt; 0) &amp; 1733392287))) &amp; 127) ^ 39480)))) + 182))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((~((((x &gt;&gt; 0) + 3203219297) ^ 0))) &amp; 816832357) | (((((x &gt;&gt; 0) + 3203219297) ^ 0)) &amp; (~816832357)))) ^ (((((((x &gt;&gt; 0) + 3203219297) ^ 0)) &amp; 35) ^ 17948))) + 27) - (((2594550854 ^ (((((((x &gt;&gt; 0) + 3203219297) ^ 0)) &amp; 35) ^ 17948)))) + 27))) | (-((((((((~((((x &gt;&gt; 0) + 3203219297) ^ 0))) &amp; 816832357) | (((((x &gt;&gt; 0) + 3203219297) ^ 0)) &amp; (~816832357)))) ^ (((((((x &gt;&gt; 0) + 3203219297) ^ 0)) &amp; 35) ^ 17948))) + 27) - (((2594550854 ^ (((((((x &gt;&gt; 0) + 3203219297) ^ 0)) &amp; 35) ^ 17948)))) + 27))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1)) + 1635390504) - ((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1))) &amp; 1635390504) &lt;&lt; 1))) ^ (((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1))) &amp; 85) ^ 27486))) + 199) - (((13936615 ^ (((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1))) &amp; 85) ^ 27486)))) + 199))) | (-((((((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1)) + 1635390504) - ((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1))) &amp; 1635390504) &lt;&lt; 1))) ^ (((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1))) &amp; 85) ^ 27486))) + 199) - (((13936615 ^ (((((((x &gt;&gt; 0) ^ 1145480092) + (((x &gt;&gt; 0) &amp; 1145480092) &lt;&lt; 1))) &amp; 85) ^ 27486)))) + 199))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((~(((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694)))) &amp; 962226830) | ((((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694))) &amp; (~962226830)))) ^ ((((((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694))) &amp; 49) ^ 48995))) + 172) - (((1642428365 ^ ((((((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694))) &amp; 49) ^ 48995)))) + 172))) | (-((((((((~(((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694)))) &amp; 962226830) | ((((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694))) &amp; (~962226830)))) ^ ((((((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694))) &amp; 49) ^ 48995))) + 172) - (((1642428365 ^ ((((((((x &gt;&gt; 0)) ^ 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694) + (((x &gt;&gt; 0)) &amp; 3182772694))) &amp; 49) ^ 48995)))) + 172))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1)) | 187137467) - (((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1))) &amp; 187137467))) ^ (((((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1))) &amp; 97) ^ 23423))) + 169) - (((3401581057 ^ (((((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1))) &amp; 97) ^ 23423)))) + 169))) | (-((((((((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1)) | 187137467) - (((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1))) &amp; 187137467))) ^ (((((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1))) &amp; 97) ^ 23423))) + 169) - (((3401581057 ^ (((((((x &gt;&gt; 0) ^ 540418527) + (((x &gt;&gt; 0) &amp; 540418527) &lt;&lt; 1))) &amp; 97) ^ 23423)))) + 169))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182)) | 463631219) - (((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182))) &amp; 463631219))) ^ (((((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182))) &amp; 171) ^ 22989))) + 20) - (((2050098916 ^ (((((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182))) &amp; 171) ^ 22989)))) + 20))) | (-((((((((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182)) | 463631219) - (((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182))) &amp; 463631219))) ^ (((((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182))) &amp; 171) ^ 22989))) + 20) - (((2050098916 ^ (((((((x &gt;&gt; 0) | 2468655182) + ((x &gt;&gt; 0) &amp; 2468655182))) &amp; 171) ^ 22989)))) + 20))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0)) | 83774761) - ((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0))) &amp; 83774761))) ^ ((((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0))) &amp; 133) ^ 11968))) + 38) - (((4264454251 ^ ((((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0))) &amp; 133) ^ 11968)))) + 38))) | (-(((((((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0)) | 83774761) - ((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0))) &amp; 83774761))) ^ ((((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0))) &amp; 133) ^ 11968))) + 38) - (((4264454251 ^ ((((((((x &gt;&gt; 0)) | 2604035175) + ((((x &gt;&gt; 0)) &amp; 2604035175) &lt;&lt; 0))) &amp; 133) ^ 11968)))) + 38))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0)) + 3644112744) - (((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0))) &amp; 3644112744) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0))) &amp; 125) ^ 31697))) + 231) - (((50786764 ^ ((((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0))) &amp; 125) ^ 31697)))) + 231))) | (-(((((((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0)) + 3644112744) - (((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0))) &amp; 3644112744) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0))) &amp; 125) ^ 31697))) + 231) - (((50786764 ^ ((((((((x &gt;&gt; 0)) | 306073394) + ((((x &gt;&gt; 0)) &amp; 306073394) &lt;&lt; 0))) &amp; 125) ^ 31697)))) + 231))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) - (((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) &amp; 2641125361) &lt;&lt; 1) - 2641125361))) ^ (((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) &amp; 119) ^ 25982))) + 225) - (((2390178933 ^ (((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) &amp; 119) ^ 25982)))) + 225))) | (-((((((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) - (((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) &amp; 2641125361) &lt;&lt; 1) - 2641125361))) ^ (((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) &amp; 119) ^ 25982))) + 225) - (((2390178933 ^ (((((((x &gt;&gt; 0) | 2324148829) + ((x &gt;&gt; 0) &amp; 2324148829))) &amp; 119) ^ 25982)))) + 225))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) - ((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) &amp; 140644520) &lt;&lt; 1) - 140644520))) ^ ((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) &amp; 183) ^ 48021))) + 142) - (((3021213660 ^ ((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) &amp; 183) ^ 48021)))) + 142))) | (-(((((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) - ((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) &amp; 140644520) &lt;&lt; 1) - 140644520))) ^ ((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) &amp; 183) ^ 48021))) + 142) - (((3021213660 ^ ((((((((x &gt;&gt; 0)) ^ 4228164139) + ((((x &gt;&gt; 0)) &amp; 4228164139) * 2))) &amp; 183) ^ 48021)))) + 142))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((~((((x &gt;&gt; 0) + 3436437852) ^ 0))) &amp; 3220248353) | (((((x &gt;&gt; 0) + 3436437852) ^ 0)) &amp; (~3220248353)))) ^ (((((((x &gt;&gt; 0) + 3436437852) ^ 0)) &amp; 169) ^ 40111))) + 100) - (((34411511 ^ (((((((x &gt;&gt; 0) + 3436437852) ^ 0)) &amp; 169) ^ 40111)))) + 100))) | (-((((((((~((((x &gt;&gt; 0) + 3436437852) ^ 0))) &amp; 3220248353) | (((((x &gt;&gt; 0) + 3436437852) ^ 0)) &amp; (~3220248353)))) ^ (((((((x &gt;&gt; 0) + 3436437852) ^ 0)) &amp; 169) ^ 40111))) + 100) - (((34411511 ^ (((((((x &gt;&gt; 0) + 3436437852) ^ 0)) &amp; 169) ^ 40111)))) + 100))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((~((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621)))) &amp; 1570622272) | (((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621))) &amp; (~1570622272)))) ^ (((((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621))) &amp; 61) ^ 5331))) + 13) - (((3059199274 ^ (((((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621))) &amp; 61) ^ 5331)))) + 13))) | (-((((((((~((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621)))) &amp; 1570622272) | (((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621))) &amp; (~1570622272)))) ^ (((((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621))) &amp; 61) ^ 5331))) + 13) - (((3059199274 ^ (((((((x &gt;&gt; 0) | 1527442621) + ((x &gt;&gt; 0) &amp; 1527442621))) &amp; 61) ^ 5331)))) + 13))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) ^ 588063032) + (((x &gt;&gt; 0) &amp; 588063032) &lt;&lt; 1))) ^ 141881540)) ^ (((((((x &gt;&gt; 0) ^ 588063032) + (((x &gt;&gt; 0) &amp; 588063032) &lt;&lt; 1))) &amp; 41) ^ 61569))) + 32) - (((412964300 ^ (((((((x &gt;&gt; 0) ^ 588063032) + (((x &gt;&gt; 0) &amp; 588063032) &lt;&lt; 1))) &amp; 41) ^ 61569)))) + 32))) | (-((((((((((x &gt;&gt; 0) ^ 588063032) + (((x &gt;&gt; 0) &amp; 588063032) &lt;&lt; 1))) ^ 141881540)) ^ (((((((x &gt;&gt; 0) ^ 588063032) + (((x &gt;&gt; 0) &amp; 588063032) &lt;&lt; 1))) &amp; 41) ^ 61569))) + 32) - (((412964300 ^ (((((((x &gt;&gt; 0) ^ 588063032) + (((x &gt;&gt; 0) &amp; 588063032) &lt;&lt; 1))) &amp; 41) ^ 61569)))) + 32))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add((((((((((((((x &gt;&gt; 0) + 1441747761) ^ 0)) ^ 222377785)) ^ (((((((x &gt;&gt; 0) + 1441747761) ^ 0)) &amp; 195) ^ 62653))) + 182) - (((3593444192 ^ (((((((x &gt;&gt; 0) + 1441747761) ^ 0)) &amp; 195) ^ 62653)))) + 182))) | (-((((((((((x &gt;&gt; 0) + 1441747761) ^ 0)) ^ 222377785)) ^ (((((((x &gt;&gt; 0) + 1441747761) ^ 0)) &amp; 195) ^ 62653))) + 182) - (((3593444192 ^ (((((((x &gt;&gt; 0) + 1441747761) ^ 0)) &amp; 195) ^ 62653)))) + 182))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())
+
+s = Solver()
+s.add(((((((((((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0)) + 4237204247) - (((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0))) &amp; 4237204247) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0))) &amp; 63) ^ 21931))) + 53) - (((2274095246 ^ ((((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0))) &amp; 63) ^ 21931)))) + 53))) | (-(((((((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0)) + 4237204247) - (((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0))) &amp; 4237204247) &lt;&lt; 1))) ^ ((((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0))) &amp; 63) ^ 21931))) + 53) - (((2274095246 ^ ((((((((x &gt;&gt; 0)) | 2824840111) + ((((x &gt;&gt; 0)) &amp; 2824840111) &lt;&lt; 0))) &amp; 63) ^ 21931)))) + 53))))) &gt;&gt; 31) ^ 1) == 1)
+if s.check() == sat:
+    print(s.model())</code></pre>
+<p>All solutions are stored in the local storage:</p>
+<pre class="highlight"><code class="language-json">{"1":[1559119409],"2":[2281820615],"3":[3413531028],"4":[3436485615],"5":[2829004470],"6":[1389400533],"7":[1070462966],"8":[2534665693],"9":[305368212],"10":[4270731763],"11":[1024060755],"12":[3944557506],"13":[493359155],"14":[2601114477],"15":[2712755675],"16":[3463169353],"17":[1603909851],"18":[3354656626],"19":[2291380519],"20":[3228661065],"21":[4045939578],"22":[2428467629],"23":[3990651856],"24":[2239715624],"25":[3534079978]}</code></pre>
+<p>After that, the flag is shown.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

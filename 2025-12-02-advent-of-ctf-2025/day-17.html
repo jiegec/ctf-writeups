@@ -1,0 +1,453 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-advent-of-ctf-2025/day-17.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 17 Won’t You Guide My Drone Tonight? - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-17-wont-you-guide-my-drone-tonight" class="nav-link">Day 17 Won’t You Guide My Drone Tonight?</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#protocol-analysis" class="nav-link">Protocol Analysis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#game-mechanics" class="nav-link">Game Mechanics</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#problem-interpretation" class="nav-link">Problem Interpretation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#challenges" class="nav-link">Challenges</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#key-insights" class="nav-link">Key Insights</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#recommended-attack-strategy" class="nav-link">Recommended Attack Strategy</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#unresolved-questions" class="nav-link">Unresolved Questions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#code-structure-needed" class="nav-link">Code Structure Needed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-17-wont-you-guide-my-drone-tonight">Day 17 Won’t You Guide My Drone Tonight?</h1>
+<p>Reverse engineer the protocol by AI:</p>
+<h2 id="protocol-analysis">Protocol Analysis</h2>
+<ul>
+<li>Server: ctf.csd.lol:6969</li>
+<li>Protocol uses "KMPS" magic header (0x53504d4b)</li>
+<li>Message types: 1=handshake, 2=get state, 3=make move, 4=get flag/status</li>
+</ul>
+<h2 id="game-mechanics">Game Mechanics</h2>
+<ul>
+<li>Current node: 32-bit integer <code>C</code></li>
+<li>Target node: <code>T</code> (from type 4 response: "Reach 0x... to get the flag")</li>
+<li>Neighbors/move vectors: list of 32-bit integers <code>[m1, m2, ..., mn]</code></li>
+<li>Move operation: from node <code>u</code>, move vector <code>m</code> takes you to node <code>u ^ m</code></li>
+<li>To move: send <code>(m, u ^ m)</code> in type 3 message</li>
+<li>Server validates: <code>m</code> must be in neighbor list, and second value must equal <code>u ^ m</code></li>
+<li>Error message: "Not a neighbor of the current node" if validation fails</li>
+</ul>
+<h2 id="problem-interpretation">Problem Interpretation</h2>
+<p>Graph navigation problem:</p>
+<ul>
+<li>Nodes are 32-bit integers</li>
+<li>From node <code>u</code>, can move to <code>u ^ m</code> for each <code>m</code> in neighbor list of <code>u</code></li>
+<li>Need to find path from start <code>C</code> to target <code>T</code></li>
+<li>Only see neighbors of current node</li>
+<li>Limited time per connection ("short amount of time before kicked off")</li>
+</ul>
+<h2 id="challenges">Challenges</h2>
+<ol>
+<li>Graph structure unknown</li>
+<li>Move vectors change with position (different nodes have different allowed moves)</li>
+<li>Server appears to rate-limit connections</li>
+<li>Need to solve quickly within time limit</li>
+</ol>
+<h2 id="key-insights">Key Insights</h2>
+<ul>
+<li>Move vectors are XOR differences, not destination nodes</li>
+<li>Server maintains some state (likely per IP/session)</li>
+<li>Target is fixed location, changes displayed based on current position</li>
+</ul>
+<h2 id="recommended-attack-strategy">Recommended Attack Strategy</h2>
+<ol>
+<li>Implement graph exploration with reconnection</li>
+<li>Cache visited nodes and moves</li>
+<li>Use BFS to find path to target</li>
+<li>Execute path quickly within time limit</li>
+<li>Handle server rate-limiting with delays</li>
+</ol>
+<h2 id="unresolved-questions">Unresolved Questions</h2>
+<ol>
+<li>Does server reset state on new connection?</li>
+<li>Is graph consistent or random?</li>
+<li>Time limit duration?</li>
+<li>Can multiple type3 messages be sent in one connection?</li>
+</ol>
+<h2 id="code-structure-needed">Code Structure Needed</h2>
+<ul>
+<li>Graph explorer with BFS</li>
+<li>State persistence across connections</li>
+<li>Rate limit handling</li>
+<li>Fast path execution</li>
+</ul>
+<p>According to the analysis, use random walk that skips already walked notes until we reach the target:</p>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python3
+import socket
+import struct
+import re
+import time
+from collections import deque
+
+
+class GraphExplorer:
+    def __init__(self):
+        self.sock = None
+        self.current = None
+        self.target = None
+
+    def connect(self):
+        if self.sock:
+            self.sock.close()
+        self.sock = socket.socket()
+        self.sock.settimeout(3)
+        self.sock.connect(("ctf.csd.lol", 6969))
+
+    def send_msg(self, msg_type, data=b""):
+        print("Send", msg_type, data)
+        length = 8 + len(data)
+        header = struct.pack("&lt;IBBH", 0x53504D4B, 1, msg_type, length)
+        self.sock.sendall(header + data)
+
+    def recv_exact(self, n):
+        data = b""
+        while len(data) &lt; n:
+            chunk = self.sock.recv(n - len(data))
+            if not chunk:
+                raise ConnectionError("Connection closed")
+            data += chunk
+        print("Recv", data)
+        return data
+
+    def get_state(self):
+        """Get current node and neighbors"""
+        # Type 2
+        self.send_msg(2)
+        resp = self.recv_exact(16)
+
+        C = struct.unpack("&lt;I", resp[8:12])[0]
+        n = struct.unpack("&lt;I", resp[12:16])[0]
+
+        neighbors = []
+        if n &gt; 0:
+            data = self.recv_exact(4 * n)
+            for i in range(0, 4 * n, 4):
+                val = struct.unpack("&lt;I", data[i : i + 4])[0]
+                neighbors.append(val)
+
+        self.current = C
+        return C, neighbors
+
+    def get_target(self):
+        """Get target node"""
+        # Type 4
+        self.send_msg(4)
+        resp = self.recv_exact(72)
+        msg_text = resp[8:].decode("ascii", errors="ignore").rstrip("\x00")
+        match = re.search(r"0x([0-9a-f]+)", msg_text, re.IGNORECASE)
+        if match:
+            T = int(match.group(1), 16)
+            self.target = T
+            return T
+        return None
+
+    def move_to(self, neighbor):
+        """Move to neighbor node"""
+        if not self.sock:
+            return False
+
+        v23 = neighbor
+        v24 = self.current ^ neighbor
+
+        data = struct.pack("&lt;II", v23, v24)
+        self.send_msg(3, data)
+
+        try:
+            resp = self.recv_exact(12)
+            # Check if move succeeded
+            # Response should be 12 bytes: header + echoed v23
+            echoed = struct.unpack("&lt;I", resp[8:12])[0]
+            if echoed == v23:
+                self.current = v24  # Update current
+                return True
+            else:
+                print(f"Unexpected response: {resp.hex()}")
+                return False
+        except:
+            print("Move failed or connection closed")
+            return False
+
+    def simple_solve(self):
+        """Try to solve by exploring"""
+        self.connect()
+
+        self.send_msg(1)
+        self.recv_exact(16)
+
+        C, neighbors = self.get_state()
+        T = self.get_target()
+
+        history = []
+        while True:
+            history.append(C)
+            print(f"Start: 0x{C:08x}, Target: 0x{T:08x}")
+            print(f"Neighbors ({len(neighbors)}): {[hex(n) for n in neighbors]}")
+
+            # Check if target is direct neighbor
+            if T in neighbors:
+                print(f"Target is direct neighbor!")
+                if self.move_to(T):
+                    print(f"Moved to target!")
+                    # Get flag
+                    self.send_msg(4)
+                    resp = self.recv_exact(72)
+                    flag_msg = resp[8:].decode("ascii", errors="ignore").rstrip("\x00")
+                    print(f"Flag: {flag_msg}")
+                    if flag_msg.startswith("csd{"):
+                        return flag_msg
+                return None
+
+            # Find a new neighbor
+            while neighbors[-1] in history:
+                neighbors.pop()
+            n = neighbors[-1]
+            print(f"\nTrying neighbor: 0x{n:08x}")
+            if self.move_to(n):
+                C, neighbors = self.get_state()
+                continue
+
+        return None
+
+
+def main():
+    explorer = GraphExplorer()
+
+    try:
+        flag = explorer.simple_solve()
+        if flag:
+            print(f"\nSUCCESS! Flag: {flag}")
+            return flag
+    except Exception as e:
+        print(f"Error: {e}")
+        import traceback
+
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,508 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-08-30-corctf2025/nintendo-sswitch.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Nintendo-SSwitch - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#nintendo-sswitch" class="nav-link">Nintendo-SSwitch</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#initial-reconnaissance" class="nav-link">Initial Reconnaissance</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#analyzing-the-binary" class="nav-link">Analyzing the Binary</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#understanding-the-trigger" class="nav-link">Understanding the Trigger</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#decryption-algorithm" class="nav-link">Decryption Algorithm</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#flag" class="nav-link">Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="nintendo-sswitch">Nintendo-SSwitch</h1>
+<pre class="highlight"><code>Just get the flag dummy.
+
+To connect, spawn an instance then run
+
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand='openssl s_client -connect &lt;host&gt;:1 -quiet' ctf@localhost
+
+with password ctf.</code></pre>
+<h2 id="initial-reconnaissance">Initial Reconnaissance</h2>
+<p>Connecting to the server via the provided SSH command, we examine the filesystem. Notice that <code>/home</code> and <code>/opt</code> have the same modification date (<code>Aug 29</code>) as <code>/home/ctf</code>:</p>
+<pre class="highlight"><code class="language-shell">$ ls -al /
+total 60
+drwxr-xr-x   1 root root 4096 Aug 31 13:59 .
+drwxr-xr-x   1 root root 4096 Aug 31 13:59 ..
+lrwxrwxrwx   1 root root    7 Aug 11 00:00 bin -&gt; usr/bin
+drwxr-xr-x   2 root root 4096 May  9 14:50 boot
+drwxr-xr-x   5 root root  360 Aug 31 13:59 dev
+drwxr-xr-x   1 root root 4096 Aug 31 13:59 etc
+drwxr-xr-x   1 root root 4096 Aug 29 16:18 home
+lrwxrwxrwx   1 root root    7 Aug 11 00:00 lib -&gt; usr/lib
+lrwxrwxrwx   1 root root    9 Aug 11 00:00 lib64 -&gt; usr/lib64
+drwxr-xr-x   2 root root 4096 Aug 11 00:00 media
+drwxr-xr-x   2 root root 4096 Aug 11 00:00 mnt
+drwxr-xr-x   1 root root 4096 Aug 29 16:18 opt
+dr-xr-xr-x 379 root root    0 Aug 31 13:59 proc
+drwx------   2 root root 4096 Aug 11 00:00 root
+drwxr-xr-x   1 root root 4096 Aug 31 14:05 run
+lrwxrwxrwx   1 root root    8 Aug 11 00:00 sbin -&gt; usr/sbin
+drwxr-xr-x   2 root root 4096 Aug 11 00:00 srv
+dr-xr-xr-x  13 root root    0 Aug 31 02:47 sys
+drwxrwxrwt   2 root root 4096 Aug 11 00:00 tmp
+drwxr-xr-x   1 root root 4096 Aug 11 00:00 usr
+drwxr-xr-x   1 root root 4096 Aug 11 00:00 var</code></pre>
+<p>The <code>/opt</code> directory contains the flag blob:</p>
+<pre class="highlight"><code class="language-shell">$ find /opt
+/opt
+/opt/ctf
+/opt/ctf/flag.blob
+$ base64 /opt/ctf/flag*
+KiIppwcOdIzGO5FtC1CEHFsVodUEi4nPMdpd54Kc8ZB1TLqc6r8kJRlyGr0E6YhhCkbDVA==</code></pre>
+<h2 id="analyzing-the-binary">Analyzing the Binary</h2>
+<p>The <code>flag.blob</code> file contains encrypted/encoded data. Searching for references to "blob" in the filesystem reveals a suspicious library:</p>
+<pre class="highlight"><code class="language-shell">$ cd /usr
+$ grep -R blob
+grep: lib/x86_64-linux-gnu/libsystemd.so.0.35.0: binary file matches
+grep: lib/x86_64-linux-gnu/libgpg-error.so.0.33.1: binary file matches
+grep: lib/x86_64-linux-gnu/libgpg-error.so.0: binary file matches
+grep: lib/x86_64-linux-gnu/libsystemd.so.0: binary file matches
+grep: lib/x86_64-linux-gnu/libselinux.so.1: binary file matches
+lib/x86_64-linux-gnu/perl-base/Config.pm:# https://github.com/Perl/perl5/blob/blead/Porting/Glossary
+grep: lib/x86_64-linux-gnu/libfido2.so.1.12.0: binary file matches
+grep: lib/x86_64-linux-gnu/libfido2.so.1: binary file matches
+grep: lib/x86_64-linux-gnu/libcrypto.so.3: binary file matches
+grep: lib/x86_64-linux-gnu/engines-3/loader_attic.so: binary file matches
+grep: lib/x86_64-linux-gnu/libnss_ctf.so.2: binary file matches
+grep: lib/openssh/ssh-sk-helper: binary file matches
+grep: lib/openssh/ssh-keysign: binary file matches
+grep: sbin/sshd: binary file matches
+grep: bin/gpgv: binary file matches
+grep: bin/ssh-keygen: binary file matches
+grep: bin/slogin: binary file matches
+grep: bin/ssh: binary file matches
+grep: bin/ssh-add: binary file matches</code></pre>
+<p>The <code>lib/x86_64-linux-gnu/libnss_ctf.so.2</code> is a custom NSS (Name Service Switch) module. NSS modules are loaded by system libraries to handle user/group lookups. This custom module likely contains the decryption logic.</p>
+<p>We extract the library and analyze it with Ghidra. Key functions:</p>
+<pre class="highlight"><code class="language-c">
+undefined8 _nss_ctf_getpwnam_r(char *param_1)
+
+{
+  int iVar1;
+  char *__s2;
+  undefined4 *in_R8;
+
+  __s2 = (char *)get_trigger_user();
+  iVar1 = strcmp(param_1,__s2);
+  if (iVar1 == 0) {
+    FUN_00101327();
+  }
+  *in_R8 = 2;
+  return 0;
+}
+
+
+undefined * get_trigger_user(void)
+
+{
+  byte local_15 [9];
+  uint local_c;
+
+  local_15[0] = 0x11;
+  local_15[1] = 0x16;
+  local_15[2] = 0x11;
+  local_15[3] = 0xb;
+  local_15[4] = 0x1a;
+  local_15[5] = 0x11;
+  local_15[6] = 0x1b;
+  local_15[7] = 0x10;
+  local_15[8] = 0x7f;
+  for (local_c = 0; local_c &lt; 9; local_c = local_c + 1) {
+    (&amp;DAT_001040b8)[(int)local_c] = local_15[(int)local_c] ^ 0x7f;
+  }
+  return &amp;DAT_001040b8;
+}
+
+
+void FUN_00101327(void)
+
+{
+  byte bVar1;
+  char *pcVar2;
+  undefined4 local_34;
+  FILE *local_30;
+  char *content;
+  size_t local_20;
+  FILE *local_18;
+  long local_10;
+
+  if (DAT_001040c4 == 0) {
+    pcVar2 = (char *)get_blob_path();
+    local_18 = fopen(pcVar2,"rb");
+    if (local_18 != (FILE *)0x0) {
+      fseek(local_18,0,2);
+      local_20 = ftell(local_18);
+      rewind(local_18);
+      content = (char *)malloc(local_20 + 1);
+      if (content == (char *)0x0) {
+        fclose(local_18);
+      }
+      else {
+        fread(content,1,local_20,local_18);
+        fclose(local_18);
+        local_34 = 0x3244ad92;
+        for (local_10 = 0; local_10 &lt; (long)local_20; local_10 = local_10 + 1) {
+          bVar1 = FUN_001012ea(&amp;local_34);
+          content[local_10] = content[local_10] ^ bVar1;
+        }
+        content[local_20] = '\0';
+        pcVar2 = (char *)get_outfile();
+        local_30 = fopen(pcVar2,"w");
+        if (local_30 != (FILE *)0x0) {
+          fputs(content,local_30);
+          fclose(local_30);
+        }
+        memset(content,0,local_20);
+        free(content);
+        DAT_001040c4 = 1;
+      }
+    }
+  }
+  return;
+}
+
+
+undefined * get_blob_path(void)
+
+{
+  byte local_28 [28];
+  uint local_c;
+
+  local_28[0] = 0x85;
+  local_28[1] = 0xc5;
+  local_28[2] = 0xda;
+  local_28[3] = 0xde;
+  local_28[4] = 0x85;
+  local_28[5] = 0xc9;
+  local_28[6] = 0xde;
+  local_28[7] = 0xcc;
+  local_28[8] = 0x85;
+  local_28[9] = 0xcc;
+  local_28[10] = 0xc6;
+  local_28[0xb] = 0xcb;
+  local_28[0xc] = 0xcd;
+  local_28[0xd] = 0x84;
+  local_28[0xe] = 200;
+  local_28[0xf] = 0xc6;
+  local_28[0x10] = 0xc5;
+  local_28[0x11] = 200;
+  local_28[0x12] = 0xaa;
+  for (local_c = 0; local_c &lt; 0x13; local_c = local_c + 1) {
+    (&amp;DAT_00104090)[(int)local_c] = local_28[(int)local_c] ^ 0xaa;
+  }
+  return &amp;DAT_00104090;
+}</code></pre>
+<h2 id="understanding-the-trigger">Understanding the Trigger</h2>
+<p>The <code>get_trigger_user()</code> function returns an deobfuscated username. Implementing it locally reveals the username <code>nintendo</code>:</p>
+<pre class="highlight"><code class="language-c">$ cat get_trigger_user.c
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+int main() {
+  uint8_t local_15[9];
+  uint8_t temp[10];
+  int local_c;
+
+  local_15[0] = 0x11;
+  local_15[1] = 0x16;
+  local_15[2] = 0x11;
+  local_15[3] = 0xb;
+  local_15[4] = 0x1a;
+  local_15[5] = 0x11;
+  local_15[6] = 0x1b;
+  local_15[7] = 0x10;
+  local_15[8] = 0x7f;
+  for (local_c = 0; local_c &lt; 9; local_c = local_c + 1) {
+    temp[(int)local_c] = local_15[(int)local_c] ^ 0x7f;
+  }
+  temp[9] = 0;
+  printf("%s\n", temp);
+  return 0;
+}
+$ gcc get_trigger_user.c -o get_trigger_user
+$ ./get_trigger_user
+nintendo</code></pre>
+<p>Similarly, <code>get_blob_path()</code> returns the deobfuscated path <code>/opt/ctf/flag.blob</code>:</p>
+<pre class="highlight"><code class="language-c">$ cat get_blob_path.c
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+int main() {
+  uint8_t local_28[28];
+  uint8_t temp[29];
+  int local_c;
+
+  local_28[0] = 0x85;
+  local_28[1] = 0xc5;
+  local_28[2] = 0xda;
+  local_28[3] = 0xde;
+  local_28[4] = 0x85;
+  local_28[5] = 0xc9;
+  local_28[6] = 0xde;
+  local_28[7] = 0xcc;
+  local_28[8] = 0x85;
+  local_28[9] = 0xcc;
+  local_28[10] = 0xc6;
+  local_28[0xb] = 0xcb;
+  local_28[0xc] = 0xcd;
+  local_28[0xd] = 0x84;
+  local_28[0xe] = 200;
+  local_28[0xf] = 0xc6;
+  local_28[0x10] = 0xc5;
+  local_28[0x11] = 200;
+  local_28[0x12] = 0xaa;
+  for (local_c = 0; local_c &lt; 0x13; local_c = local_c + 1) {
+    temp[(int)local_c] = local_28[(int)local_c] ^ 0xaa;
+  }
+  temp[19] = 0;
+  printf("%s\n", temp);
+  return 0;
+}
+$ gcc get_blob_path.c -o get_blob_path
+$ ./get_blob_path
+/opt/ctf/flag.blob</code></pre>
+<h2 id="decryption-algorithm">Decryption Algorithm</h2>
+<p>The <code>FUN_00101327()</code> function decrypts the blob when triggered by a lookup for user <code>nintendo</code>. The decryption uses a simple XOR stream cipher with a 32-bit LFSR-like PRNG (<code>FUN_001012ea</code>).</p>
+<p>We implement the decryption locally:</p>
+<pre class="highlight"><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+uint32_t FUN_001012ea(uint32_t *param_1)
+
+{
+  uint32_t uVar1;
+
+  uVar1 = *param_1 ^ *param_1 &lt;&lt; 0xd;
+  uVar1 = uVar1 ^ uVar1 &gt;&gt; 0x11;
+  *param_1 = uVar1 ^ uVar1 &lt;&lt; 5;
+  return *param_1;
+}
+
+int main() {
+  char content[100];
+  FILE *fp = fopen("input", "rb");
+  fread(content, 1, 52, fp);
+  int local_20 = 52;
+  uint32_t local_34 = 0x3244ad92;
+  uint8_t bVar1;
+  for (int local_10 = 0; local_10 &lt; (long)local_20; local_10 = local_10 + 1) {
+    bVar1 = FUN_001012ea(&amp;local_34);
+    content[local_10] = content[local_10] ^ bVar1;
+  }
+  content[local_20] = '\0';
+  printf("%s\n", content);
+}</code></pre>
+<h2 id="flag">Flag</h2>
+<p>Running the decryption yields the flag: <code>corctf{nsswitch_can_be_sneaky_sometimes_i_guess_idk}</code>.</p>
+<p><strong>Note</strong>: An alternative approach would be to SSH as <code>nintendo@localhost</code> (if allowed), which would trigger the NSS module to decrypt the blob automatically. The module writes the decrypted flag to an output file when the user <code>nintendo</code> is looked up.</p></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

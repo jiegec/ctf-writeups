@@ -1,0 +1,657 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/lcg.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Recover Linear Congruential Generator (LCG) Parameters - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#recover-linear-congruential-generator-lcg-parameters" class="nav-link">Recover Linear Congruential Generator (LCG) Parameters</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#recover-full-lcg-parameters-from-complete-outputs" class="nav-link">Recover Full LCG Parameters from Complete Outputs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#recover-truncated-lcg" class="nav-link">Recover truncated LCG</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#ctf-challenges" class="nav-link">CTF challenges</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="recover-linear-congruential-generator-lcg-parameters">Recover Linear Congruential Generator (LCG) Parameters</h1>
+<p>Linear Congruential Generators (LCGs) generate pseudorandom numbers using the recurrence:
+<span class="arithmatex">\(x_{i+1} = (a \cdot x_i + b) \bmod p\)</span></p>
+<p>This document provides techniques for recovering LCG parameters (<code>a</code>, <code>b</code>, <code>p</code>) and seeds from various types of outputs, including truncated outputs where only partial bits are known.</p>
+<h2 id="recover-full-lcg-parameters-from-complete-outputs">Recover Full LCG Parameters from Complete Outputs</h2>
+<p>When we have complete outputs from an LCG, we can recover all parameters using algebraic techniques.</p>
+<p><strong>Attack principle:</strong> Given consecutive outputs <span class="arithmatex">\(x_0, x_1, x_2, \dots\)</span>, we can:</p>
+<ol>
+<li>Cancel out <span class="arithmatex">\(b\)</span> by computing differences <span class="arithmatex">\(y_i = x_{i+1} - x_i\)</span>, then <span class="arithmatex">\(y_i \bmod p = ((ax_i + b) - (ax_{i-1} + b)) \bmod p = (a(x_i - x_{i-1})) \bmod p\)</span>, so <span class="arithmatex">\(y_{i} = ay_{i-1} \pmod p\)</span></li>
+<li>Cancel out <span class="arithmatex">\(a\)</span> by computing <span class="arithmatex">\(z_i = y_{i+2}y_i - y_{i+1}^2\)</span> so <span class="arithmatex">\(z_i \bmod p = (a^2y_i^2 - (ay_i)^2) \bmod p = 0\)</span></li>
+<li>Recover <span class="arithmatex">\(p\)</span> as <span class="arithmatex">\(\gcd(z_i)\)</span></li>
+<li>Recover <span class="arithmatex">\(a\)</span> from <span class="arithmatex">\(y_i = a \cdot y_{i-1} \pmod p\)</span></li>
+<li>Recover <span class="arithmatex">\(b\)</span> from <span class="arithmatex">\(x_{i+1} = a \cdot x_i + b \pmod p\)</span></li>
+</ol>
+<p><strong>Reference:</strong> <a href="https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator">https://security.stackexchange.com/questions/4268/cracking-a-linear-congruential-generator</a></p>
+<p><strong>Example code:</strong></p>
+<pre class="highlight"><code class="language-python"># recover LCG
+# given an array of x_i
+# x_{i+1} = (ax_i + b) \bmod p
+
+from pwn import *
+from Crypto.Util.number import *
+
+p = getPrime(256)
+state = random.randrange(1, p)
+x0 = state
+a = random.randrange(1, p)
+b = random.randrange(1, p)
+x = []
+for i in range(100):
+    state = (a * state + b) % p
+    x.append(state)
+
+# recover p
+# compute y_i = x_{i+1} - x_i
+y = []
+for i in range(len(x) - 1):
+    y.append(x[i + 1] - x[i])
+
+# compute z_i = y_{i+2}y_i - y_{i+1}^2
+z = []
+for i in range(len(y) - 2):
+    z.append(y[i + 2] * y[i] - y[i + 1] ** 2)
+
+# compute gcd, we found p
+assert p == math.gcd(*z)
+print("p is found")
+
+# compute a from y_iy_{i-1}^{-1} \bmod p
+assert a == (y[1] * pow(y[0], -1, p)) % p
+print("a is found")
+
+# compute b from (x_{i+1} - ax_i) \bmod p
+assert b == (x[1] - a * x[0]) % p
+print("b is found")
+
+# find initial state x_0 = (x_1 - b) * a^{-1} \bmod p
+assert x0 == (x[0] - b) * pow(a, -1, p) % p
+print("initial state is found")</code></pre>
+<h2 id="recover-truncated-lcg">Recover truncated LCG</h2>
+<p>Reference: <a href="https://github.com/ajuelosemmanuel/Truncated_LCG_Seed_Recovery/tree/main">https://github.com/ajuelosemmanuel/Truncated_LCG_Seed_Recovery/tree/main</a></p>
+<p>Truncated LCG is where you can only know part of the generated number, e.g. the MSB or LSB bits.</p>
+<h3 id="variant-1-p-and-msb-bits-are-known-b-0">Variant 1: p and MSB bits are known, b = 0</h3>
+<p>The first variant is, p and MSB bits are known and b = 0, so:</p>
+<p><span class="arithmatex">\(x_{i+1} = ax_i \bmod p\)</span>, so <span class="arithmatex">\(x_i = x_0 a^i \bmod p\)</span></p>
+<p>We only know the MSB bits of <span class="arithmatex">\(x_i\)</span>, e.g. we only have <span class="arithmatex">\(y_i = \lfloor x_i / 256 \rfloor\)</span>, we need to recover <span class="arithmatex">\(a\)</span>. We know that <span class="arithmatex">\(256y_i\)</span> is close to <span class="arithmatex">\(x_i\)</span>.</p>
+<p>We need to convert it to a closest vector problem, consider the following vectors:</p>
+<p><span class="arithmatex">\(v_1 = (1, a, a^2, a^3, \cdots, a^{n-1})\)</span></p>
+<p><span class="arithmatex">\(v_2 = (0, p, 0, 0, \cdots, 0)\)</span></p>
+<p><span class="arithmatex">\(v_3 = (0, 0, p, 0, \cdots, 0)\)</span></p>
+<p>...</p>
+<p><span class="arithmatex">\(v_n = (0, p, 0, 0, \cdots, p)\)</span></p>
+<p>If there is a linear combination of these vectors using integer coefficients:</p>
+<p><span class="arithmatex">\(w = c_1v_1 + c_2v_2 + \cdots c_nv_n = (c_1, c_1a+c_2p, \cdots, c_na^{n-1} + c_np)\)</span></p>
+<p>If <span class="arithmatex">\(w\)</span> is very close to <span class="arithmatex">\(y = (256y_0, 256y_1, \cdots, 256y_{n-1})\)</span>, then we are finding a solution that <span class="arithmatex">\(c_1\)</span> is close to <span class="arithmatex">\(256y_0=256\lfloor x_0/256 \rfloor\)</span>, <span class="arithmatex">\(c_1a+c_2p\)</span> is close to <span class="arithmatex">\(256 \lfloor (x_0a \bmod p)/256 \rfloor\)</span>. The modulo <span class="arithmatex">\(p\)</span> is implemented by adding <span class="arithmatex">\(c_ip\)</span> to <span class="arithmatex">\(c_ia^{i-1}\)</span>. Since only the LSB bits are removed, so the solution should corresponds to the seed that minimizes all the differences. Given enough values, we can recover the seed <span class="arithmatex">\(x_0\)</span> by <span class="arithmatex">\(c_1\)</span>.</p>
+<p>Code:</p>
+<pre class="highlight"><code class="language-python"># recover seed from a truncated LCG without b
+# we only know the MSB of generated values
+# given a, p, an array of (seed * a ** i) % p // (2 ** shift)
+# recover seed
+
+# the idea is learned from:
+# https://github.com/ajuelosemmanuel/Truncated_LCG_Seed_Recovery/blob/main/attack_exemple_lsb.py
+# create matrix
+# 1 a a^2 a^3 ... a^{size-1}
+# 0 p   0   0 ...          0
+# 0 0   p   0 ...          0
+# ...
+# 0 0   0   0 ...          p
+# the linear combination of these row vectors become:
+# seed seed*a-p*k_1 seed*a^2-p*k_2 ... seed*a^{size-1}-p*k_{size-1}
+# we already know a vector of (seed * a ** i) % p // (2 ** shift)
+# so the linear combination of the row vectors are close to the known vector,
+# because modulo p is mapped to seed*a^i-p*k_i
+# use CVP to find the combination, so seed is known
+
+from pwn import *
+from fpylll import *
+from Crypto.Util.number import *
+
+# compute (seed * a ** i) % p // (2 ** shift)
+p = getPrime(128)
+seed = random.randrange(1, p)
+a = random.randrange(1, p)
+shift = 8
+all_nums = [((seed * pow(a, i, p)) % p) // (2**shift) for i in range(5)]
+
+
+def attack(a: int, p: int, shift: int, Ys: list):
+    # the problem is:
+    # given (seed * a^i) % p // (2 ** shift)
+    # recover seed
+
+    # compute the value before division
+    I = 2**shift
+    y = [(el * I) % p for el in Ys]
+
+    # construct row vectors as a matrix
+    size = len(Ys)
+    matrix = [[0] * size for _ in range(size)]
+    for i in range(size):
+        matrix[0][i] = pow(a, i, p)
+    for i, j in zip(range(1, size), range(1, size)):
+        if i == j:
+            matrix[i][j] = p
+
+    # find closest vector to y
+    L = IntegerMatrix.from_matrix(matrix)
+    reduced = LLL.reduction(L)
+    Xi_I = CVP.closest_vector(reduced, y, method="fast")
+
+    # seed is the first element
+    probable_seed = Xi_I[0] % p
+
+    # recover the generated values
+    probable_ys = [
+        ((probable_seed * pow(a, i, p)) % p) // (2**shift) for i in range(0, len(Ys))
+    ]
+
+    print("Seed recovery success:", probable_ys == Ys)
+    return probable_seed
+
+
+# recover seed
+assert attack(a, p, shift, all_nums) == seed</code></pre>
+<h3 id="variant-1b-p-and-msb-bits-are-known-b-0">Variant 1b: p and MSB bits are known, b != 0</h3>
+<p>The variant 1b no longer enforces <span class="arithmatex">\(b = 0\)</span>. On top of the variant 1, an extra step is required to cancel out <span class="arithmatex">\(b\)</span>:</p>
+<p><span class="arithmatex">\(x_{i+1} = (ax_i + b) \bmod p\)</span></p>
+<p>Set <span class="arithmatex">\(z_i = (x_i + b(a-1)^{-1}) \bmod p\)</span>, so</p>
+<p><span class="arithmatex">\(z_{i+1} = (x_{i+1} + b(a-1)^{-1}) \bmod p = (ax_i + b + b(a-1)^{-1}) \bmod p = (ax_i + b(a-1)(a-1)^{-1} + b(a-1)^{-1}) \bmod p = (ax_i + ab(a-1)^{-1} \bmod p = (a(x_i + b(a-1)^{-1})) \bmod p = az_i \bmod p\)</span></p>
+<p>Now, we can apply the solution of variant 1 to <span class="arithmatex">\(z_i\)</span>, and recover <span class="arithmatex">\(x_i\)</span> by subtracting <span class="arithmatex">\(b(a-1)^{-1}\)</span> from <span class="arithmatex">\(z_i\)</span>:</p>
+<pre class="highlight"><code class="language-python"># recover seed from a truncated LCG without b
+# we only know the MSB of generated values
+# given a, b, p, an array of truncated x_i where
+# x_{i+1} = (ax_i + b) \bmod p
+# recover x_0
+
+# the idea is learned from:
+# https://github.com/ajuelosemmanuel/Truncated_LCG_Seed_Recovery/blob/main/attack_exemple_lsb.py
+# create matrix
+# 1 a a^2 a^3 ... a^{size-1}
+# 0 p   0   0 ...          0
+# 0 0   p   0 ...          0
+# ...
+# 0 0   0   0 ...          p
+# the linear combination of these row vectors become:
+# seed seed*a-p*k_1 seed*a^2-p*k_2 ... seed*a^{size-1}-p*k_{size-1}
+# we already know a vector of (seed * a ** i) % p // (2 ** shift)
+# after we cancel out b
+# so the linear combination of the row vectors are close to the known vector,
+# because modulo p is mapped to seed*a^i-p*k_i
+# use CVP to find the combination, so seed is known
+
+from pwn import *
+from fpylll import *
+from Crypto.Util.number import *
+
+# compute truncated values
+p = getPrime(8)
+seed = random.randrange(1, p)
+a = random.randrange(1, p)
+b = random.randrange(1, p)
+shift = 1
+all_nums = []
+orig = []
+x = seed
+for i in range(10):
+    orig.append(x)
+    all_nums.append(x // (2**shift))
+    x = (a * x + b) % p
+
+
+def attack(a: int, b: int, p: int, shift: int, Ys: list):
+    # the problem is:
+    # x_{i+1} = (ax_i + b) \bmod p
+    # recover x_0
+
+    # compute the value before division
+    I = 2**shift
+    y = [(el * I) % p for el in Ys]
+
+    # cancel b by adding b(a-1)^{-1}
+    # x_{i+1} = (ax_i + b) \bmod p
+    # z_i = x_i + b(a-1)^{-1}
+    # z_{i+1} = (x_{i+1} + b(a-1)^{-1}) \bmod p
+    #         = (ax_i + b + b(a-1)^{-1}) \bmod p
+    #         = (ax_i + ab(a-1)^{-1}) \bmod p
+    #         = (az_i) \bmod p
+    z = [(y[i] + b * pow(a - 1, -1, p)) % p for i in range(len(y))]
+
+    # construct row vectors as a matrix
+    size = len(z)
+    matrix = [[0] * size for _ in range(size)]
+    for i in range(size):
+        matrix[0][i] = pow(a, i, p)
+    for i, j in zip(range(1, size), range(1, size)):
+        if i == j:
+            matrix[i][j] = p
+
+    # find closest vector to y
+    L = IntegerMatrix.from_matrix(matrix)
+    reduced = LLL.reduction(L)
+    Xi_I = CVP.closest_vector(reduced, z, method="fast")
+
+    # seed is the first element, drop the extra coefficient
+    probable_seed = (Xi_I[0] - b * pow(a - 1, -1, p)) % p
+
+    # recover the generated values
+    probable_ys = []
+    x = probable_seed
+    for i in range(len(Ys)):
+        probable_ys.append(x // (2 * shift))
+        x = (a * x + b) % p
+
+    print("Seed recovery success:", probable_ys == Ys)
+    return probable_seed
+
+
+# recover seed
+assert attack(a, b, p, shift, all_nums) == seed</code></pre>
+<h3 id="variant-2-p-and-lsb-bits-are-known-b-0">Variant 2: p and LSB bits are known, b == 0</h3>
+<p>Now, we only know the LSB bits, e.g. <span class="arithmatex">\(y_i = x_i \bmod 256\)</span>. To convert into variant 1:</p>
+<p><span class="arithmatex">\(x_i = (256z_i + y_i) \bmod p\)</span></p>
+<p><span class="arithmatex">\(256^{-1}x_i \bmod p = (z_i + 256^{-1}y_i) \bmod p\)</span></p>
+<p>Now, <span class="arithmatex">\(z_i\)</span> is the small one. We have a approximation of <span class="arithmatex">\(256^{-1}x_i\)</span> by <span class="arithmatex">\(256^{-1}y_i\)</span>. So, we can solve the problem in the same way as variant 1.</p>
+<p>Code:</p>
+<pre class="highlight"><code class="language-python"># recover seed from a truncated LCG without b
+# we only know the LSB of generated values
+# given a, p, an array of (seed * a ** i) % p % (2 ** shift)
+# recover seed
+
+# convert the problem to where we know the MSB
+# y_i is the LSB, z_i is the MSB
+# x_i = (2 ** shift) * z_i + y_i
+# x_i * (2 ** shift)^{-1} = z_i + y_i * (2 ** shift)^{-1}
+# now y_i * (2 ** shift)^{-1} approximately equals to x_i * (2 ** shift)^{-1} modulo p
+
+from pwn import *
+from fpylll import *
+from Crypto.Util.number import *
+
+# compute (seed * a ** i) % p % (2 ** shift)
+p = getPrime(128)
+seed = random.randrange(1, p)
+a = random.randrange(1, p)
+shift = 8
+all_nums = [((seed * pow(a, i, p)) % p) % (2**shift) for i in range(20)]
+
+
+def attack(a: int, p: int, shift: int, Ys: list):
+    # the problem is:
+    # given (seed * a^i) % p % (2 ** shift)
+    # recover seed
+
+    # convert to
+    # given (seed * a^i) % p // (2 ** shift)
+
+    # compute the value before division for MSB
+    I = pow(2**shift, -1, p)
+    y = [(el * I) % p for el in Ys]
+
+    # construct row vectors as a matrix
+    size = len(Ys)
+    matrix = [[0] * size for _ in range(size)]
+    for i in range(size):
+        matrix[0][i] = pow(a, i, p)
+    for i, j in zip(range(1, size), range(1, size)):
+        if i == j:
+            matrix[i][j] = p
+
+    # find closest vector to y
+    L = IntegerMatrix.from_matrix(matrix)
+    reduced = LLL.reduction(L)
+    Xi_I = CVP.closest_vector(reduced, y, method="fast")
+
+    # seed is the first element, but we need to multiple 2**shift back
+    probable_seed = Xi_I[0] * (2**shift) % p
+
+    # recover the generated values
+    probable_ys = [
+        ((probable_seed * pow(a, i, p)) % p) % (2**shift) for i in range(0, len(Ys))
+    ]
+
+    print("Seed recovery success:", probable_ys == Ys)
+    return probable_seed
+
+
+# recover seed
+assert attack(a, p, shift, all_nums) == seed</code></pre>
+<h3 id="variant-2b-p-and-lsb-bits-are-known-b-0">Variant 2b: p and LSB bits are known, b != 0</h3>
+<p>To lift the limitation of <span class="arithmatex">\(b\)</span>, cancel out <span class="arithmatex">\(b\)</span> in the same way as in Variant 1b.</p>
+<p><span class="arithmatex">\(x_{i+1} = (ax_i + b) \bmod p\)</span></p>
+<p><span class="arithmatex">\(y_i = x_i \bmod 256\)</span></p>
+<p><span class="arithmatex">\(x_i = (256z_i + y_i) \bmod p\)</span></p>
+<p><span class="arithmatex">\(256^{-1}x_i \bmod p = (z_i + 256^{-1}y_i) \bmod p\)</span></p>
+<p><span class="arithmatex">\(z_i = 256^{-1}(x_i + b(a-1)^{-1})\)</span></p>
+<p><span class="arithmatex">\(z_{i+1} = az_i \bmod p\)</span></p>
+<h3 id="solution">Solution</h3>
+<p>Here is the solution for all variants:</p>
+<pre class="highlight"><code class="language-python"># recover seed from a truncated LCG without b
+# we only know the MSB/LSB of generated values
+# given a, b, p, an array of truncated x_i where
+# x_{i+1} = (ax_i + b) \bmod p
+# recover x_0
+
+# the idea is learned from:
+# https://github.com/ajuelosemmanuel/Truncated_LCG_Seed_Recovery/blob/main/attack_exemple_lsb.py
+# create matrix
+# 1 a a^2 a^3 ... a^{size-1}
+# 0 p   0   0 ...          0
+# 0 0   p   0 ...          0
+# ...
+# 0 0   0   0 ...          p
+# the linear combination of these row vectors become:
+# seed seed*a-p*k_1 seed*a^2-p*k_2 ... seed*a^{size-1}-p*k_{size-1}
+# we already know a vector that approximate (seed * a ** i) % p
+# so the linear combination of the row vectors are close to the known vector,
+# because modulo p is mapped to seed*a^i-p*k_i
+# use CVP to find the combination, so seed is known
+
+from pwn import *
+from fpylll import *
+from Crypto.Util.number import *
+
+
+def attack(a: int, b: int, p: int, lsb: bool, shift: int, Ys: list):
+    # the problem is:
+    # x_{i+1} = (ax_i + b) \bmod p
+    # recover x_0
+
+    # compute the value before division for approximation
+    if lsb:
+        I = pow(2**shift, -1, p)
+    else:
+        I = 2**shift
+    y = [(el * I) % p for el in Ys]
+
+    # cancel b by adding b(a-1)^{-1}
+    # x_{i+1} = (ax_i + b) \bmod p
+    # z_i = x_i + b(a-1)^{-1}
+    # z_{i+1} = (x_{i+1} + b(a-1)^{-1}) \bmod p
+    #         = (ax_i + b + b(a-1)^{-1}) \bmod p
+    #         = (ax_i + ab(a-1)^{-1}) \bmod p
+    #         = (az_i) \bmod p
+    if lsb:
+        z = [
+            (y[i] + b * pow(a - 1, -1, p) * pow(2**shift, -1, p)) % p
+            for i in range(len(y))
+        ]
+    else:
+        z = [(y[i] + b * pow(a - 1, -1, p)) % p for i in range(len(y))]
+
+    # construct row vectors as a matrix
+    size = len(z)
+    matrix = [[0] * size for _ in range(size)]
+    for i in range(size):
+        matrix[0][i] = pow(a, i, p)
+    for i, j in zip(range(1, size), range(1, size)):
+        if i == j:
+            matrix[i][j] = p
+
+    # find closest vector to y
+    L = IntegerMatrix.from_matrix(matrix)
+    reduced = LLL.reduction(L)
+    Xi_I = CVP.closest_vector(reduced, z, method="fast")
+
+    # seed is the first element, drop the extra coefficient
+    probable_seed = Xi_I[0] % p
+    if lsb:
+        probable_seed = (probable_seed * (2**shift)) % p
+    probable_seed = (probable_seed - b * pow(a - 1, -1, p)) % p
+
+    # recover the generated values
+    probable_ys = []
+    x = probable_seed
+    for i in range(len(Ys)):
+        if lsb:
+            probable_ys.append(x % (2**shift))
+        else:
+            probable_ys.append(x // (2**shift))
+        x = (a * x + b) % p
+
+    print("Seed recovery success:", probable_ys == Ys)
+    return probable_seed
+
+
+def test(lsb: bool):
+    # compute truncated values
+    p = getPrime(8)
+    seed = random.randrange(1, p)
+    a = random.randrange(1, p)
+    b = random.randrange(1, p)
+    if lsb:
+        # lowest 6 bits
+        shift = 6
+    else:
+        # highest 6 bits
+        shift = 2
+    all_nums = []
+    orig = []
+    x = seed
+    for i in range(20):
+        orig.append(x)
+        if lsb:
+            # LSB
+            all_nums.append(x % (2**shift))
+        else:
+            # MSB
+            all_nums.append(x // (2**shift))
+        x = (a * x + b) % p
+
+    # recover seed
+    assert attack(a, b, p, lsb, shift, all_nums) == seed
+
+
+test(False)
+test(True)</code></pre>
+<h2 id="ctf-challenges">CTF challenges</h2>
+<ul>
+<li><a href="../2025-10-25-qiangwang-nitai-quals-2025/FMS.html">Qiangwang Mimic Quals 2025 FMS</a></li>
+</ul></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

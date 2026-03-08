@@ -1,0 +1,615 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-12-02-advent-of-ctf-2025/day-12.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Day 12 - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#day-12" class="nav-link">Day 12</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#advent-of-ctf-2025-day-12-krampus-syndicate-signing-service" class="nav-link">Advent of CTF 2025 - Day 12: Krampus Syndicate Signing Service</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#challenge-overview" class="nav-link">Challenge Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#files-provided" class="nav-link">Files Provided</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#analysis" class="nav-link">Analysis</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#solution" class="nav-link">Solution</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#why-this-works" class="nav-link">Why This Works</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#flag" class="nav-link">Flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#lessons-learned" class="nav-link">Lessons Learned</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="day-12">Day 12</h1>
+<p>Attachment:</p>
+<pre class="highlight"><code class="language-python">import hashlib
+import fastecdsa.curve
+import random
+def inv_mod(k, p):
+    return pow(k, p - 2, p)
+
+# secp256k1 parameters
+curve = fastecdsa.curve.secp256k1
+G = curve.G
+n = curve.q
+
+def sign(msg, k, d):
+    z = int.from_bytes(hashlib.sha256(msg).digest(), 'big')
+    R = G * k
+    r = R.x % n
+    s = (inv_mod(k, n) * (z + r * d)) % n
+    return r, s
+
+def verify(msg, signature, Q):
+    r, s = signature
+    if not (1 &lt;= r &lt; n and 1 &lt;= s &lt; n):
+        return False
+    z = int.from_bytes(hashlib.sha256(msg).digest(), 'big')
+    w = inv_mod(s, n)
+    u1 = (z * w) % n
+    u2 = (r * w) % n
+    R = G * u1 + Q * u2
+    return R.x % n == r
+
+key = open('flag.txt', 'rb').read()
+d = int.from_bytes(key, 'big')
+d = (d % (n - 1)) + 1 
+P = G * d
+k = random.randint(0, n - 1)
+
+msgs = [
+    b'Beware the Krampus Syndicate!',
+    b'Santa is watching...',
+    b'Good luck getting the key'
+]
+
+for m in msgs:
+    r, s = sign(m, k, d)
+    r_bytes = r.to_bytes(32, 'big')
+    s_bytes = s.to_bytes(32, 'big')
+    print(f'msg: {m}')
+    print(f'r  : {r_bytes.hex()}')
+    print(f's  : {s_bytes.hex()}')
+    assert verify(m, (r, s), P)
+    # gonna change nonces!
+    k += 1</code></pre>
+<pre class="highlight"><code>msg: b'Beware the Krampus Syndicate!'
+r  : a4312e31e6803220d694d1040391e8b7cc25a9b2592245fb586ce90a2b010b63
+s  : e54321716f79543591ab4c67e989af3af301e62b3b70354b04e429d57f85aa2e
+msg: b'Santa is watching...'
+r  : 6c5f7047d21df064b3294de7d117dd1f7ccf5af872d053f12bddd4c6eb9f6192
+s  : 1ccf403d4a520bc3822c300516da8b29be93423ab544fb8dbff24ca0e1368367
+msg: b'Good luck getting the key'
+r  : 2c15aceb49e63e4a2c8357102fbd345ac2cbd1b214c77fba0cd9ffe8d20d2c1e
+s  : 1ee49ef3857ad1d9ff3109bfb4a91cb464ab6fdc88ace610ead7e6dee0957d95</code></pre>
+<p>Idea: ECDSA nonce reuse, we can solve k and d using the three messages.</p>
+<p>Attack script written by AI agent with bug fixed by human:</p>
+<pre class="highlight"><code class="language-python">import hashlib
+
+# secp256k1 parameters
+n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
+def inv_mod(k, p):
+    return pow(k, p - 2, p)
+
+# Parse the output data
+msgs = [
+    b'Beware the Krampus Syndicate!',
+    b'Santa is watching...',
+    b'Good luck getting the key'
+]
+
+rs_values = [
+    (0xa4312e31e6803220d694d1040391e8b7cc25a9b2592245fb586ce90a2b010b63,
+     0xe54321716f79543591ab4c67e989af3af301e62b3b70354b04e429d57f85aa2e),
+    (0x6c5f7047d21df064b3294de7d117dd1f7ccf5af872d053f12bddd4c6eb9f6192,
+     0x1ccf403d4a520bc3822c300516da8b29be93423ab544fb8dbff24ca0e1368367),
+    (0x2c15aceb49e63e4a2c8357102fbd345ac2cbd1b214c77fba0cd9ffe8d20d2c1e,
+     0x1ee49ef3857ad1d9ff3109bfb4a91cb464ab6fdc88ace610ead7e6dee0957d95)
+]
+
+print("Computing z values...")
+# Compute z values (hash of messages)
+z_values = []
+for m in msgs:
+    z = int.from_bytes(hashlib.sha256(m).digest(), 'big')
+    z_values.append(z)
+    print(f"Message: {m}, z: {hex(z)}")
+
+r1, s1 = rs_values[0]
+r2, s2 = rs_values[1]
+r3, s3 = rs_values[2]
+z1, z2, z3 = z_values
+
+print(f"\nr1: {hex(r1)}")
+print(f"s1: {hex(s1)}")
+print(f"r2: {hex(r2)}")
+print(f"s2: {hex(s2)}")
+print(f"r3: {hex(r3)}")
+print(f"s3: {hex(s3)}")
+
+# Actually, let me try a different approach
+# We have:
+# s1 = k^-1 * (z1 + r1*d) mod n  -&gt; k = s1^-1 * (z1 + r1*d) mod n
+# s2 = (k+1)^-1 * (z2 + r2*d) mod n -&gt; k+1 = s2^-1 * (z2 + r2*d) mod n
+# Subtract: 1 = s2^-1*(z2 + r2*d) - s1^-1*(z1 + r1*d) mod n
+# Multiply by s1*s2: s1 - s2 = s1*s2^-1*(z2 + r2*d) - s2*s1^-1*(z1 + r1*d) mod n
+# This is messy...
+
+# Better: From first two equations:
+# k*s1 = z1 + r1*d  (1)
+# (k+1)*s2 = z2 + r2*d  (2)
+# Subtract (1) from (2):
+# (k+1)*s2 - k*s1 = z2 - z1 + (r2 - r1)*d
+# k*(s2 - s1) + s2 = z2 - z1 + (r2 - r1)*d
+# So: k*(s2 - s1) - (r2 - r1)*d = z2 - z1 - s2  (A)
+
+# From second and third:
+# (k+1)*s2 = z2 + r2*d  (2)
+# (k+2)*s3 = z3 + r3*d  (3)
+# Subtract (2) from (3):
+# (k+2)*s3 - (k+1)*s2 = z3 - z2 + (r3 - r2)*d
+# k*(s3 - s2) + 2*s3 - s2 = z3 - z2 + (r3 - r2)*d
+# So: k*(s3 - s2) - (r3 - r2)*d = z3 - z2 + s2 - 2*s3  (B)
+
+print("\nSetting up equations...")
+A_coeff_k = (s2 - s1) % n
+A_coeff_d = (-(r2 - r1)) % n  # = (r1 - r2) % n
+A_rhs = (z2 - z1 - s2) % n
+
+B_coeff_k = (s3 - s2) % n
+B_coeff_d = (-(r3 - r2)) % n  # = (r2 - r3) % n
+B_rhs = (z3 - z2 + s2 - 2*s3) % n
+
+print(f"Equation A: {hex(A_coeff_k)}*k + {hex(A_coeff_d)}*d = {hex(A_rhs)}")
+print(f"Equation B: {hex(B_coeff_k)}*k + {hex(B_coeff_d)}*d = {hex(B_rhs)}")
+
+# Solve using linear algebra
+det = (A_coeff_k * B_coeff_d - A_coeff_d * B_coeff_k) % n
+print(f"\nDeterminant: {hex(det)}")
+
+if det == 0:
+    print("Cannot solve - determinant is zero")
+else:
+    inv_det = inv_mod(det, n)
+
+    # k = det([[A_rhs, A_coeff_d], [B_rhs, B_coeff_d]]) / det
+    k_num = (A_rhs * B_coeff_d - A_coeff_d * B_rhs) % n
+    k = (k_num * inv_det) % n
+
+    # d = det([[A_coeff_k, A_rhs], [B_coeff_k, B_rhs]]) / det
+    d_num = (A_coeff_k * B_rhs - A_rhs * B_coeff_k) % n
+    d = (d_num * inv_det) % n
+
+    print(f"\nRecovered k: {hex(k)}")
+    print(f"Recovered d: {hex(d)}")
+
+    # Verify with equation (1): k*s1 = z1 + r1*d mod n
+    lhs = (k * s1) % n
+    rhs = (z1 + r1 * d) % n
+    print(f"\nVerification:")
+    print(f"k*s1 mod n: {hex(lhs)}")
+    print(f"z1 + r1*d mod n: {hex(rhs)}")
+    print(f"Match: {lhs == rhs}")
+
+    # Verify with equation (2): (k+1)*s2 = z2 + r2*d mod n
+    lhs2 = ((k + 1) * s2) % n
+    rhs2 = (z2 + r2 * d) % n
+    print(f"(k+1)*s2 mod n: {hex(lhs2)}")
+    print(f"z2 + r2*d mod n: {hex(rhs2)}")
+    print(f"Match: {lhs2 == rhs2}")
+
+    # Convert d to bytes
+    d = d - 1 # this line is added by human
+    flag_bytes = d.to_bytes(32, 'big')
+    print(f"\nFlag bytes (32 bytes): {flag_bytes}")
+    print(f"Flag hex: {flag_bytes.hex()}")
+
+    # Try to decode
+    # Remove padding
+    for i in range(32):
+        if flag_bytes[i] != 0:
+            candidate = flag_bytes[i:]
+            try:
+                text = candidate.decode('ascii')
+                if text.isprintable() and len(text) &gt; 5:
+                    print(f"Possible flag (starting at byte {i}): {text}")
+            except:
+                pass</code></pre>
+<p>Writeup written by AI agent (there is a small bug that AI forgot to add one to the flag, which is fixed in the script above):</p>
+<h1 id="advent-of-ctf-2025-day-12-krampus-syndicate-signing-service">Advent of CTF 2025 - Day 12: Krampus Syndicate Signing Service</h1>
+<h2 id="challenge-overview">Challenge Overview</h2>
+<p>The Krampus Syndicate claims their new signing service uses "bitcoin-level encryption" with industry-standard elliptic-curve cryptography. They assert the system is mathematically sound and designed so that there's absolutely no way to recover the signing key, even if you can see every signature it produces.</p>
+<p>They provide a transcript of signed messages (<code>out.txt</code>) and the signing script (<code>gen.py</code>). Our task is to audit their claim and recover the hidden secret (flag).</p>
+<h2 id="files-provided">Files Provided</h2>
+<ol>
+<li><code>gen.py</code> - The signing script</li>
+<li><code>out.txt</code> - Transcript of signed messages</li>
+</ol>
+<h2 id="analysis">Analysis</h2>
+<h3 id="the-signing-script-genpy">The Signing Script (<code>gen.py</code>)</h3>
+<p>The script implements ECDSA (Elliptic Curve Digital Signature Algorithm) using the secp256k1 curve (the same curve used in Bitcoin):</p>
+<pre class="highlight"><code class="language-python">import hashlib
+import fastecdsa.curve
+import random
+
+curve = fastecdsa.curve.secp256k1
+G = curve.G
+n = curve.q
+
+def sign(msg, k, d):
+    z = int.from_bytes(hashlib.sha256(msg).digest(), 'big')
+    R = G * k
+    r = R.x % n
+    s = (inv_mod(k, n) * (z + r * d)) % n
+    return r, s</code></pre>
+<p>Key points:
+- Private key <code>d</code> is derived from <code>flag.txt</code> bytes
+- Nonce <code>k</code> is randomly generated once: <code>k = random.randint(0, n - 1)</code>
+- <strong>Critical vulnerability</strong>: After each signature, <code>k</code> is incremented: <code>k += 1</code>
+- Three messages are signed with nonces <code>k</code>, <code>k+1</code>, <code>k+2</code></p>
+<h3 id="the-vulnerability-predictable-nonces">The Vulnerability: Predictable Nonces</h3>
+<p>In ECDSA, the nonce <code>k</code> must be <strong>cryptographically random and unique</strong> for each signature. If <code>k</code> is predictable or reused, an attacker can recover the private key.</p>
+<p>The mathematical basis:</p>
+<ol>
+<li>
+<p>ECDSA signature: <code>(r, s)</code> where:</p>
+<ul>
+<li><code>r = (k * G).x mod n</code></li>
+<li><code>s = k⁻¹(z + r*d) mod n</code></li>
+<li><code>z</code> = hash of message</li>
+<li><code>d</code> = private key</li>
+<li><code>n</code> = curve order</li>
+</ul>
+</li>
+<li>
+<p>For two signatures with nonces <code>k</code> and <code>k+1</code>:</p>
+<ul>
+<li><code>s₁ = k⁻¹(z₁ + r₁*d) mod n</code> → <code>k*s₁ = z₁ + r₁*d mod n</code> (1)</li>
+<li><code>s₂ = (k+1)⁻¹(z₂ + r₂*d) mod n</code> → <code>(k+1)*s₂ = z₂ + r₂*d mod n</code> (2)</li>
+</ul>
+</li>
+<li>
+<p>Subtracting (1) from (2):</p>
+<ul>
+<li><code>(k+1)*s₂ - k*s₁ = (z₂ - z₁) + (r₂ - r₁)*d mod n</code></li>
+<li><code>k*(s₂ - s₁) + s₂ = (z₂ - z₁) + (r₂ - r₁)*d mod n</code></li>
+</ul>
+</li>
+</ol>
+<p>With three signatures (<code>k</code>, <code>k+1</code>, <code>k+2</code>), we have three equations and two unknowns (<code>k</code> and <code>d</code>), allowing us to solve the system.</p>
+<h2 id="solution">Solution</h2>
+<h3 id="step-1-extract-data">Step 1: Extract Data</h3>
+<p>From <code>out.txt</code>:</p>
+<pre class="highlight"><code>msg: b'Beware the Krampus Syndicate!'
+r  : a4312e31e6803220d694d1040391e8b7cc25a9b2592245fb586ce90a2b010b63
+s  : e54321716f79543591ab4c67e989af3af301e62b3b70354b04e429d57f85aa2e
+
+msg: b'Santa is watching...'
+r  : 6c5f7047d21df064b3294de7d117dd1f7ccf5af872d053f12bddd4c6eb9f6192
+s  : 1ccf403d4a520bc3822c300516da8b29be93423ab544fb8dbff24ca0e1368367
+
+msg: b'Good luck getting the key'
+r  : 2c15aceb49e63e4a2c8357102fbd345ac2cbd1b214c77fba0cd9ffe8d20d2c1e
+s  : 1ee49ef3857ad1d9ff3109bfb4a91cb464ab6fdc88ace610ead7e6dee0957d95</code></pre>
+<p>Compute message hashes <code>z</code>:</p>
+<ul>
+<li><code>z₁ = sha256("Beware the Krampus Syndicate!")</code></li>
+<li><code>z₂ = sha256("Santa is watching...")</code></li>
+<li><code>z₃ = sha256("Good luck getting the key")</code></li>
+</ul>
+<h3 id="step-2-set-up-equations">Step 2: Set Up Equations</h3>
+<p>From the three signatures:</p>
+<ol>
+<li><code>k*s₁ = z₁ + r₁*d mod n</code></li>
+<li><code>(k+1)*s₂ = z₂ + r₂*d mod n</code></li>
+<li><code>(k+2)*s₃ = z₃ + r₃*d mod n</code></li>
+</ol>
+<p>Rearrange to linear equations in <code>k</code> and <code>d</code>:</p>
+<p>From (1) and (2):</p>
+<ul>
+<li><code>k*(s₂ - s₁) - (r₂ - r₁)*d = z₂ - z₁ - s₂ mod n</code> (Equation A)</li>
+</ul>
+<p>From (2) and (3):</p>
+<ul>
+<li><code>k*(s₃ - s₂) - (r₃ - r₂)*d = z₃ - z₂ + s₂ - 2*s₃ mod n</code> (Equation B)</li>
+</ul>
+<h3 id="step-3-solve-linear-system">Step 3: Solve Linear System</h3>
+<p>We have:</p>
+<pre class="highlight"><code>A: a₁*k + b₁*d = c₁ mod n
+B: a₂*k + b₂*d = c₂ mod n</code></pre>
+<p>Where:</p>
+<ul>
+<li><code>a₁ = s₂ - s₁ mod n</code></li>
+<li><code>b₁ = r₁ - r₂ mod n</code> (since <code>-(r₂ - r₁) = r₁ - r₂</code>)</li>
+<li><code>c₁ = z₂ - z₁ - s₂ mod n</code></li>
+<li><code>a₂ = s₃ - s₂ mod n</code></li>
+<li><code>b₂ = r₂ - r₃ mod n</code></li>
+<li><code>c₂ = z₃ - z₂ + s₂ - 2*s₃ mod n</code></li>
+</ul>
+<p>Solve using linear algebra modulo <code>n</code>:</p>
+<ul>
+<li>Determinant: <code>det = a₁*b₂ - b₁*a₂ mod n</code></li>
+<li><code>k = (c₁*b₂ - b₁*c₂) * det⁻¹ mod n</code></li>
+<li><code>d = (a₁*c₂ - c₁*a₂) * det⁻¹ mod n</code></li>
+</ul>
+<h3 id="step-4-implementation">Step 4: Implementation</h3>
+<pre class="highlight"><code class="language-python">import hashlib
+
+# secp256k1 parameters
+n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
+def inv_mod(k, p):
+    return pow(k, p - 2, p)
+
+# Data from out.txt
+msgs = [...]
+rs_values = [...]
+z_values = [...]
+
+# Extract values
+r1, s1 = rs_values[0]
+r2, s2 = rs_values[1]
+r3, s3 = rs_values[2]
+z1, z2, z3 = z_values
+
+# Set up coefficients
+a1 = (s2 - s1) % n
+b1 = (r1 - r2) % n
+c1 = (z2 - z1 - s2) % n
+
+a2 = (s3 - s2) % n
+b2 = (r2 - r3) % n
+c2 = (z3 - z2 + s2 - 2*s3) % n
+
+# Solve
+det = (a1 * b2 - b1 * a2) % n
+inv_det = inv_mod(det, n)
+
+k = ((c1 * b2 - b1 * c2) % n) * inv_det % n
+d = ((a1 * c2 - c1 * a2) % n) * inv_det % n
+
+# Convert d to bytes (flag)
+flag_bytes = d.to_bytes(32, 'big')</code></pre>
+<h3 id="step-5-recover-flag">Step 5: Recover Flag</h3>
+<p>The private key <code>d</code> contains the flag:
+<pre class="highlight"><code>Flag bytes: b'\x00\x00csd{pr3d1ct4bl3_n0nc3_==_w34k~}'
+Flag: csd{pr3d1ct4bl3_n0nc3_==_w34k~}</code></pre></p>
+<h2 id="why-this-works">Why This Works</h2>
+<p>The vulnerability is a classic ECDSA nonce reuse attack:</p>
+<ol>
+<li><strong>Nonce predictability</strong>: Using <code>k</code>, <code>k+1</code>, <code>k+2</code> makes the nonces predictable</li>
+<li><strong>Linear equations</strong>: The ECDSA equations become linear when nonces are known/related</li>
+<li><strong>Solvable system</strong>: With 3 equations and 2 unknowns, we can solve for the private key</li>
+</ol>
+<p>In secure ECDSA implementations:</p>
+<ul>
+<li>Nonce <code>k</code> must be cryptographically random for each signature</li>
+<li>Never reuse or predictably generate nonces</li>
+<li>Use RFC 6979 for deterministic nonce generation if needed</li>
+</ul>
+<h2 id="flag">Flag</h2>
+<p><code>csd{pr3d1ct4bl3_n0nc3_==_w34k~}</code></p>
+<p>The flag itself describes the vulnerability: "predictable nonce == weak".</p>
+<h2 id="lessons-learned">Lessons Learned</h2>
+<ol>
+<li><strong>Cryptographic primitives ≠ secure implementation</strong>: Even with mathematically sound algorithms (ECDSA on secp256k1), implementation flaws can break security.</li>
+<li><strong>Nonce management is critical</strong>: In signature schemes, nonce generation is as important as key generation.</li>
+<li><strong>Real-world impact</strong>: Similar vulnerabilities have affected real systems, including Bitcoin wallets with poor random number generation.</li>
+<li><strong>Defense in depth</strong>: Use deterministic nonce generation (RFC 6979) or hardware random number generators for critical applications.</li>
+</ol></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

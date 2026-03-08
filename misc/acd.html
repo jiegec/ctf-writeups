@@ -1,0 +1,428 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/misc/acd.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Approximate Common Divisor (ACD) Problem - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#approximate-common-divisor-acd-problem" class="nav-link">Approximate Common Divisor (ACD) Problem</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#simultaneous-diophantine-approximation-sda-approach" class="nav-link">Simultaneous Diophantine Approximation (SDA) Approach</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#orthogonal-based-approach-ol" class="nav-link">Orthogonal based approach (OL)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="approximate-common-divisor-acd-problem">Approximate Common Divisor (ACD) Problem</h1>
+<p>This document provides implementations for solving the Approximate Common Divisor (ACD) problem, which appears in various cryptographic CTF challenges.</p>
+<p><strong>Reference:</strong> <a href="https://eprint.iacr.org/2016/215.pdf">Algorithms for the Approximate Common Divisor Problem</a></p>
+<p>Approximate Common Divisor Problem: for unknown integer <span class="arithmatex">\(p\)</span>, we are given some <span class="arithmatex">\(pq_i + r_i\)</span>, where <span class="arithmatex">\(q_i\)</span> and <span class="arithmatex">\(r_i\)</span> are integers and <span class="arithmatex">\(r_i\)</span> are small: <span class="arithmatex">\(\mathrm{abs}(r_i) &lt; 2^{\rho}\)</span>. If without the <span class="arithmatex">\(r_i\)</span> term, we can simply compute GCD of many <span class="arithmatex">\(pq_i\)</span> to recover <span class="arithmatex">\(p\)</span>. However, <span class="arithmatex">\(r\)</span> makes it approximate.</p>
+<p>Partial Approximate Common Divisor Problem: <span class="arithmatex">\(r_0 = 0\)</span>, so we have an exact multiple of <span class="arithmatex">\(p\)</span> given. Others are approximate.</p>
+<p><strong>CTF challenges using ACD:</strong></p>
+<ul>
+<li><a href="../2025-10-26-xctf-final-2025/litt1e.html">litt1e</a></li>
+</ul>
+<h2 id="simultaneous-diophantine-approximation-sda-approach">Simultaneous Diophantine Approximation (SDA) Approach</h2>
+<p><strong>Attack principle:</strong> Given <span class="arithmatex">\(x_i = p \cdot q_i + r_i\)</span> with small <span class="arithmatex">\(r_i\)</span>, we have <span class="arithmatex">\(x_i/x_0 \approx q_i/q_0\)</span>. If we can find <span class="arithmatex">\(q_0\)</span>, we can compute:</p>
+<ul>
+<li><span class="arithmatex">\(r_0 = x_0 \bmod q_0\)</span></li>
+<li><span class="arithmatex">\(p = (x_0 - r_0) / q_0\)</span></li>
+</ul>
+<p>To find <span class="arithmatex">\(q_0\)</span> satisfying all approximations <span class="arithmatex">\(x_i/x_0 \approx q_i/q_0\)</span>, construct a lattice with basis vectors:</p>
+<p><span class="arithmatex">\(v_0 = (2^{\rho+1}, x_1, x_2, \cdots, x_t)\)</span></p>
+<p><span class="arithmatex">\(v_1 = (0, -x_0, 0, \cdots, 0)\)</span></p>
+<p><span class="arithmatex">\(\vdots\)</span></p>
+<p><span class="arithmatex">\(v_t = (0, 0, 0, \cdots, -x_0)\)</span></p>
+<p>After LLL reduction, the short vector <span class="arithmatex">\(q_0v_0 + q_1v_1 + \cdots + q_tv_t\)</span> reveals <span class="arithmatex">\(q_0\)</span> as the first entry divided by <span class="arithmatex">\(2^{\rho+1}\)</span>.</p>
+<p><strong>Implementation:</strong></p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import getPrime
+import random
+
+
+def matrix_lll(matrix: list[list[int]], transform: bool = False):
+    """
+    Compute LLL reduction on the given matrix.
+
+    Args:
+        matrix (list[list[int]]): the row-major two-dimensional integer matrix
+        transform (bool): return transformation matrix if True
+
+    Returns:
+        LLL-reduced matrix and optionally the transformation matrix
+    """
+    try:
+        from flint import fmpz_mat
+
+        B = fmpz_mat(matrix)
+        return B.lll(transform=transform)
+    except ImportError:
+        from sage.all import Matrix
+
+        B = Matrix(matrix)
+        return B.LLL(transformation=transform)
+
+
+def sda(x: list[int], rho: int) -&gt; int | None:
+    """
+    Solve ACD problem using Simultaneous Diophantine Approximation from
+    [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
+
+    Args:
+        x (list[int]): an array of known x_i = pq_i + r_i
+        rho (int): the log2 bound of r_i, i.e. |r_i| &lt; 2 ** rho
+
+    Returns:
+        the recovered p, or None for failure
+    """
+
+    # Simultaneous Diophantine approximation approach (SDA)
+
+    # step 1:
+    # create matrix
+    # 2^{rho+1},  x_2,  x_3, ...,  x_t
+    #         0, -x_1, ...
+    #         0,    0, -x_1, ...
+    #         ...
+    #         0,    0,       ..., -x_1
+    t = len(x)
+    matrix = [[0] * t for _ in range(t)]
+    matrix[0][0] = 2 ** (rho + 1)
+    for i in range(t - 1):
+        matrix[0][i + 1] = x[i + 1]
+        matrix[i + 1][i + 1] = -x[0]
+
+    # step 2:
+    # use lll reduction
+    # reduced vector: (q_12^{rho+1}, q_1x_2-q_2x_1, ..., q_1x_t-q_tx_1)
+    reduced = matrix_lll(matrix)
+
+    # step 3:
+    # recover q_1 from first entry of short vector
+    q_1 = reduced[0, 0] // (2 ** (rho + 1))
+
+    # step 4:
+    # recover p
+    # x_1 = pq_1 + r_1
+    # so r_1 = x_1 mod q_1
+    # p = (x_1 - r_1) / q_1
+    r_1 = x[0] % q_1
+    p = abs((x[0] - r_1) // q_1)
+    return p
+
+
+# It may fail sometimes
+p = getPrime(512)
+rho = 50
+x = [random.randrange(0, p) * p + random.randrange(0, 2**rho) for i in range(5)]
+res = sda(x, rho)
+print(f"Got result:", res != None)
+print(f"Result correct:", res == p)</code></pre>
+<h2 id="orthogonal-based-approach-ol">Orthogonal based approach (OL)</h2>
+<p>Create a lattice according to the paper, and for the <span class="arithmatex">\(t-1\)</span> short vectors in the lattice, <span class="arithmatex">\(v_0 = \Sigma u_i r_i\)</span> and <span class="arithmatex">\(0 = \Sigma u_iq_i\)</span>, where <span class="arithmatex">\(v_0\)</span> is the first entry of the short vector, and <span class="arithmatex">\(u_i\)</span> are the coefficient of each basis vector. So we got <span class="arithmatex">\(t-1\)</span> vectors that are orthogonal to the vector of <span class="arithmatex">\((q_0, q_1, \cdots, q_t)\)</span>. We can compute the <span class="arithmatex">\(q_i\)</span> by finding the kernel of the vector subspace spanned by <span class="arithmatex">\(u_i\)</span> vectors. Then, we can recover <span class="arithmatex">\(q\)</span> in a similar way as previous.</p>
+<pre class="highlight"><code class="language-python">from Crypto.Util.number import getPrime
+import random
+
+
+def matrix_lll(matrix: list[list[int]], transform: bool = False):
+    """
+    Compute LLL reduction on the given matrix.
+
+    Args:
+        matrix (list[list[int]]): the row-major two-dimensional integer matrix
+        transform (bool): return transformation matrix if True
+
+    Returns:
+        LLL-reduced matrix and optionally the transformation matrix
+    """
+    try:
+        from flint import fmpz_mat
+
+        B = fmpz_mat(matrix)
+        return B.lll(transform=transform)
+    except ImportError:
+        from sage.all import Matrix
+
+        B = Matrix(matrix)
+        return B.LLL(transformation=transform)
+
+
+def find_nullspace_basis(matrix):
+    """
+    Find the basis of the one-dimensional null space of the space spanend by all vectors except for the last one.
+
+    Args:
+        matrix: the input matrix
+
+    Returns:
+        the integer basis of the null space
+    """
+    try:
+        from flint import fmpz_mat
+
+        q, nullity = fmpz_mat(matrix.tolist()[:-1]).nullspace()
+        assert nullity == 1  # null space should have only one dimension
+        return [q[0, i] for i in range(q.ncols())]
+    except ImportError:
+        q = matrix[:-1][:].right_kernel()
+        assert len(q.basis()) == 1  # null space should have only one dimension
+        return q.basis()[0]
+
+
+def ol(x: list[int], rho: int) -&gt; int:
+    """
+    Solve ACD problem using Orthogonal based approach from
+    [Algorithms for the Approximate Common Divisor Problem](https://eprint.iacr.org/2016/215.pdf)
+
+    Args:
+        x (list[int]): an array of known x_i = pq_i + r_i
+        rho (int): the log2 bound of r_i, i.e. |r_i| &lt; 2 ** rho
+
+    Returns:
+        the recovered p
+    """
+
+    # step 1:
+    # create matrix
+    # R = 2^rho
+    # x_1, R, 0, ..., 0
+    # x_2, 0, R, ..., 0
+    # ...
+    # x_t, 0, 0, ..., R
+    R = 2**rho
+    t = len(x)
+    matrix = [[0] * (t + 1) for _ in range(t)]
+    for i in range(t):
+        matrix[i][0] = x[i]
+        matrix[i][i + 1] = R
+
+    # step 2:
+    # lll reduction
+    # transform coefficients for each short vector: (u_1, u_2, ..., u_t)
+    # are stored in rows of U
+    # U * matrix == LLL-reduced matrix
+    _, U = matrix_lll(matrix, True)
+
+    # for short enough vector
+    # v_0 = sum(u_i * r_i),
+    # 0 = sum(u_i * q_i)
+    # so u vector is orthogonal to q vector
+
+    # step 3:
+    # find kernel (null space) of the space,
+    # spanned by t-1 u vectors from U
+    q_1 = abs(find_nullspace_basis(U)[0])
+
+    # step 4:
+    # recover p
+    # r_1 = x_1 mod q_1
+    r_1 = x[0] % q_1
+    # p = (x_1 - r_1) // q_1
+    p = (x[0] - r_1) // q_1
+
+    return p
+
+
+# It may fail sometimes
+p = getPrime(512)
+rho = 50
+x = [random.randrange(0, p) * p + random.randrange(0, 2**rho) for i in range(5)]
+res = ol(x, rho)
+print(f"Got result:", res != None)
+print(f"Result correct:", res == p)</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

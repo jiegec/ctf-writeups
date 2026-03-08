@@ -1,0 +1,415 @@
+<!-- https://raw.githubusercontent.com/mkdocs/mkdocs/refs/heads/master/mkdocs/themes/mkdocs/base.html -->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://jia.je/ctf-writeups/2025-11-26-qiangwang-nitai-final-2025/babyprng.html">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>babyprng - CTF Writeups by @jiegec</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <!-- added by @jiegec begin -->
+        <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css " rel="stylesheet">
+        <!-- added by @jiegec end -->
+        <!-- added by @jiegec begin -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- added by @jiegec end -->
+
+      <!-- added by @jiegec begin -->
+      <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      </script>
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-3109FRSVTT"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+      
+          gtag('config', 'G-3109FRSVTT');
+      </script>
+      
+      <script src="https://analytics.jiege.pro/api/script.js" data-site-id="1" defer></script>
+      <!-- added by @jiegec end --> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">CTF Writeups by @jiegec</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/solution.html" class="nav-link">Writeups by Solution</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../misc/pyjail.html" class="nav-link">Pyjail</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../puppeteer/index.html" class="nav-link">Redbud Puppeteer</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#babyprng" class="nav-link">babyprng</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="babyprng">babyprng</h1>
+<p>附件：</p>
+<pre class="highlight"><code class="language-python">import random
+from dataclasses import dataclass
+from typing import List, Tuple
+
+from Crypto.Util.number import bytes_to_long, getPrime, long_to_bytes
+from secret import flag
+
+MODULE_BITS = 512
+BETA = 0.6
+
+
+@dataclass(frozen=True)
+class MaskSpec:
+    low_bits: int
+    high_shift: int
+
+    def keep_low(self, value: int) -&gt; int:
+        return value &amp; ((1 &lt;&lt; self.low_bits) - 1)
+
+    def keep_high(self, value: int) -&gt; int:
+        return (value &gt;&gt; self.high_shift) &lt;&lt; self.high_shift
+
+
+@dataclass
+class LinearRecurrence:
+    modulus: int
+    coeffs: List[int]
+    history: List[int]
+
+    def tick(self) -&gt; int:
+        nxt = (self.coeffs[0] * self.history[-1] + self.coeffs[1] * self.history[-2]) % self.modulus
+        self.history.append(nxt)
+        return nxt
+
+
+@dataclass
+class ClockworkPRNG:
+    n1: int
+    n2: int
+    x_rec: LinearRecurrence
+    y_rec: LinearRecurrence
+    z_trace: List[int]
+
+    @classmethod
+    def bootstrap(cls) -&gt; "ClockworkPRNG":
+        n1 = getPrime(MODULE_BITS)
+        n2 = getPrime(MODULE_BITS)
+
+        a_coeffs = [random.randrange(1, n1) for _ in range(2)]
+        b_coeffs = [random.randrange(1, n2) for _ in range(2)]
+
+        x_seed = [random.randrange(1, n2) for _ in range(2)]
+        y_seed = [random.randrange(1, n2) for _ in range(2)]
+        z_seed = [((x_seed[i] - y_seed[i]) % n1) for i in range(2)]
+
+        return cls(
+            n1=n1,
+            n2=n2,
+            x_rec=LinearRecurrence(n1, a_coeffs, x_seed),
+            y_rec=LinearRecurrence(n2, b_coeffs, y_seed),
+            z_trace=z_seed,
+        )
+
+    def step(self) -&gt; Tuple[int, int, int]:
+        x_val = self.x_rec.tick()
+        y_val = self.y_rec.tick()
+        z_val = (x_val - y_val) % self.n1
+        self.z_trace.append(z_val)
+        return x_val, y_val, z_val
+
+    @property
+    def a_coeffs(self) -&gt; List[int]:
+        return self.x_rec.coeffs
+
+    @property
+    def b_coeffs(self) -&gt; List[int]:
+        return self.y_rec.coeffs
+
+
+MASK = MaskSpec(low_bits=int(MODULE_BITS * BETA), high_shift=int(MODULE_BITS * (1 - BETA)))
+
+
+def gather_leakage(prng: ClockworkPRNG, count: int = 5) -&gt; Tuple[List[int], List[int]]:
+    low_x, high_z = [], []
+    for _ in range(count):
+        x_val, _, z_val = prng.step()
+        low_x.append(MASK.keep_low(x_val))
+        high_z.append(MASK.keep_high(z_val))
+    return low_x, high_z
+
+
+def encrypt_flag(prng: ClockworkPRNG) -&gt; bytes:
+    pad = prng.step()[1]
+    plaintext = bytes_to_long(flag)
+    return long_to_bytes(pad ^ plaintext)
+
+
+def emit_challenge():
+    engine = ClockworkPRNG.bootstrap()
+    xs, zs = gather_leakage(engine)
+    blob = encrypt_flag(engine)
+    print(engine.a_coeffs, engine.b_coeffs, engine.n1, engine.n2, xs, zs, blob)
+
+
+if __name__ == "__main__":
+    emit_challenge()
+
+"""
+[10622255399663562069145222517631074636757726505025087959277441735616749694319550854863797670443534651186783567693433208322290346562348465617862644514847389, 5150224460963481866238166841282851820818799947914254748673565625815793126729527793491938920282232686079347210569442266283305865531049268112169511496927746], [5204753952338586880092348641669994129156178590855745261366232039885223974622545298276563525577443972124651339577891468011258412431471629386828307912459683, 5079734225447067974754947945327873911346636735905981526770074407711905651696829190513809796947471049379019689297209799730493816027786423191781843875675531], 10958629774530192764747159728121861053823929124378086630226413004437630713430771741823493173237142084991026926121932444744870148381851604042781380970444669, 9200429328134412336748885997782239392391071834610532031258802195740647984625163693533960417075416851627572621668211171924294159251959827253934478090380211, [172725921333705219686828397089776629172393055263012306396644606402731506210035516013543058124, 202745603270735608816524609283552093051331406448017971177380147701504875041184048198495558462, 68257763774743195610382299802371568139328884220019261062295558680693871404298028655323585656, 43570456098916056176492492662033934339435783469233318932894634807752715508937618248659738676, 81841093335490318218610136444202014180397509231955246448074176971442543798922263928961552133], [271002669418479642642553068844767379421050469420412042037755345994650216281759046698397156930164080245025575271381613567101064496930163675096593859608576, 211135275275860792942153398813833694516264877765852833336196411843651599326161620416771042200698342659972594458559247361195195948983619285219890713067520, 991565319401384342708138044676400067103250615156973756673688176776512913820178642376466735143963291078610359922261986209305378761794438074244766231429120, 7241056566248466988336854177955892118871557610915394850944392384375122314753075306409754732545646373509067809914409174184285627474963632984172466026840064, 5077484677424452789903502336300408141020037022065419442932638660556301184491285669822304104044377634411443772881151522717100856738472316902437457252843520], b'\xa9\xeb\x90\xab\t\x8a\xf1\xfe6y\xdf\xa8\xe7\x17\xa6\x9c\xc4|;q\x87_\xd3E\x1f)\x0bT\x08\x8a\xb6\x91c\xfcS\xab7\xc1\x13\x83\xcdgqp=RV\xd9\x82\xcf\xe8\xf9\xf7\xc3\xe2\x12_\xa4\xc7\x9fp\x07\x8a\x07'
+"""</code></pre>
+<p>题目实现了一个随机数生成器，提供了中间输出的 MSB/LSB 和模数，对于这类题目，可以得到一系列的同余方程式，其中的未知数都是有界的，再用 <a href="https://github.com/keeganryan/cuso">cuso</a> 求解未知数，再用未知数恢复 Flag：</p>
+<pre class="highlight"><code class="language-python">from sage.all import var
+import cuso
+from Crypto.Util.number import bytes_to_long, getPrime, long_to_bytes
+
+# from task.py
+a_coeffs = [
+    10622255399663562069145222517631074636757726505025087959277441735616749694319550854863797670443534651186783567693433208322290346562348465617862644514847389,
+    5150224460963481866238166841282851820818799947914254748673565625815793126729527793491938920282232686079347210569442266283305865531049268112169511496927746,
+]
+b_coeffs = [
+    5204753952338586880092348641669994129156178590855745261366232039885223974622545298276563525577443972124651339577891468011258412431471629386828307912459683,
+    5079734225447067974754947945327873911346636735905981526770074407711905651696829190513809796947471049379019689297209799730493816027786423191781843875675531,
+]
+n1 = 10958629774530192764747159728121861053823929124378086630226413004437630713430771741823493173237142084991026926121932444744870148381851604042781380970444669
+n2 = 9200429328134412336748885997782239392391071834610532031258802195740647984625163693533960417075416851627572621668211171924294159251959827253934478090380211
+xs = [
+    172725921333705219686828397089776629172393055263012306396644606402731506210035516013543058124,
+    202745603270735608816524609283552093051331406448017971177380147701504875041184048198495558462,
+    68257763774743195610382299802371568139328884220019261062295558680693871404298028655323585656,
+    43570456098916056176492492662033934339435783469233318932894634807752715508937618248659738676,
+    81841093335490318218610136444202014180397509231955246448074176971442543798922263928961552133,
+]
+zs = [
+    271002669418479642642553068844767379421050469420412042037755345994650216281759046698397156930164080245025575271381613567101064496930163675096593859608576,
+    211135275275860792942153398813833694516264877765852833336196411843651599326161620416771042200698342659972594458559247361195195948983619285219890713067520,
+    991565319401384342708138044676400067103250615156973756673688176776512913820178642376466735143963291078610359922261986209305378761794438074244766231429120,
+    7241056566248466988336854177955892118871557610915394850944392384375122314753075306409754732545646373509067809914409174184285627474963632984172466026840064,
+    5077484677424452789903502336300408141020037022065419442932638660556301184491285669822304104044377634411443772881151522717100856738472316902437457252843520,
+]
+blob = b"\xa9\xeb\x90\xab\t\x8a\xf1\xfe6y\xdf\xa8\xe7\x17\xa6\x9c\xc4|;q\x87_\xd3E\x1f)\x0bT\x08\x8a\xb6\x91c\xfcS\xab7\xc1\x13\x83\xcdgqp=RV\xd9\x82\xcf\xe8\xf9\xf7\xc3\xe2\x12_\xa4\xc7\x9fp\x07\x8a\x07"
+
+relations = []
+modulus = []
+bounds = {}
+
+x_seed = [var(f"x_seed_{i}") for i in range(2)]
+y_seed = [var(f"y_seed_{i}") for i in range(2)]
+z_seed = [var(f"z_seed_{i}") for i in range(2)]
+
+for i in range(2):
+    bounds[x_seed[i]] = (1, n2)
+    bounds[y_seed[i]] = (1, n2)
+    bounds[z_seed[i]] = (0, n1)
+    # z_seed[i] = x_seed[i] - y_seed[i] mod n1
+    relations.append(z_seed[i] == x_seed[i] - y_seed[i])
+    modulus.append(n1)
+
+for i in range(5):
+    # tick x
+    nxt_x = var(f"nxt_x_{i}")
+    # nxt = coeffs[0] * history[-1] + coeffs[1] * history[-2] % modulus
+    relations.append(nxt_x == a_coeffs[0] * x_seed[-1] + a_coeffs[1] * x_seed[-2])
+    modulus.append(n1)
+    x_seed.append(nxt_x)
+    bounds[nxt_x] = (0, n1)
+
+    # LSB of nxt_x is xs[i]
+    nxt_x_msb = var(f"nxt_x_{i}_msb")
+    low_bits = int(512 * 0.6)
+    relations.append(nxt_x == nxt_x_msb * (2**low_bits) + xs[i])
+    modulus.append(None)
+    bounds[nxt_x_msb] = (0, 2 ** (n1.bit_length() - low_bits))
+
+    # tick y
+    nxt_y = var(f"nxt_y_{i}")
+    # nxt = coeffs[0] * history[-1] + coeffs[1] * history[-2] % modulus
+    relations.append(nxt_y == b_coeffs[0] * y_seed[-1] + b_coeffs[1] * y_seed[-2])
+    modulus.append(n2)
+    y_seed.append(nxt_y)
+    bounds[nxt_y] = (0, n2)
+
+    # tick z
+    nxt_z = var(f"nxt_z_{i}")
+    relations.append(nxt_z == nxt_x - nxt_y)
+    modulus.append(n1)
+    bounds[nxt_z] = (0, n1)
+
+    # MSB of nxt_z is zs[i]
+    nxt_z_lsb = var(f"nxt_z_{i}_lsb")
+    high_shift = int(512 * (1 - 0.6))
+    relations.append(nxt_z == nxt_z_lsb + zs[i])
+    modulus.append(None)
+    bounds[nxt_z_lsb] = (0, 2**high_shift)
+
+
+roots = cuso.find_small_roots(
+    relations=relations,
+    bounds=bounds,
+    modulus=modulus,
+)
+
+print(roots)
+
+# tick y
+# nxt = coeffs[0] * history[-1] + coeffs[1] * history[-2] % modulus
+y = (b_coeffs[0] * roots[0][y_seed[-1]] + b_coeffs[1] * roots[0][y_seed[-2]]) % n2
+flag = long_to_bytes(bytes_to_long(blob) ^ y)
+print(flag)</code></pre></div>
+
+                <!-- added by @jiegec begin -->
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <script src="https://giscus.app/client.js"
+                      data-repo="jiegec/ctf-writeups"
+                      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTE1MzAxODQ="
+                      data-category="General"
+                      data-category-id="DIC_kwDOCQgqyM4CvbYX"
+                      data-mapping="pathname"
+                      data-strict="1"
+                      data-reactions-enabled="1"
+                      data-emit-metadata="0"
+                      data-input-position="top"
+                      data-theme="light"
+                      data-lang="en"
+                      data-loading="lazy"
+                      crossorigin="anonymous"
+                      async>
+                  </script>
+                </div>
+                <!-- added by @jiegec end -->
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2025 Jiajie Chen</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
