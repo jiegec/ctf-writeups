@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF Event
 
+* [2026.03.28 **Codegate CTF 2026 Preliminary**](2026-03-28-codegate-2026-preliminary/README.md)
 * [2025.12.20 **TSG CTF 2025**](2025-12-20-tsg-ctf-2025/README.md)
 * [2025.12.19 **HKCERT CTF 2025 Quals**](2025-12-19-hkcert-ctf-2025-quals/README.md)
 * [2025.12.13 **SECCON CTF 14 Quals**](2025-12-13-seccon-ctf-2025-quals/README.md)

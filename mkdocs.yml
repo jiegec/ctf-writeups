@@ -1,7 +1,7 @@
 site_name: CTF Writeups by @jiegec
 site_description: CTF Writeups by @jiegec
 site_url: https://jia.je/ctf-writeups
-copyright: Copyright &copy; 2025 Jiajie Chen
+copyright: Copyright &copy; 2025-2026 Jiajie Chen
 nav:
   - Home: README.md
   - Writeups by Solution: misc/solution.md
