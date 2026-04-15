@@ -10,4 +10,4 @@ Solved challenges that I involved in:
 
 Crypto:
 
-- [Ghost](./ghost.md)
+- [Ghost](./Ghost.md)
