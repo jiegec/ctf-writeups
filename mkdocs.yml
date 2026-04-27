@@ -9,7 +9,6 @@ nav:
   - Redbud Puppeteer: puppeteer/index.md
 theme:
   custom_dir: overrides
-  name: mkdocs
 plugins:
   - glightbox
 use_directory_urls: false
