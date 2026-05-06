@@ -20,8 +20,8 @@ The web calculator application has a server-side code injection vulnerability in
 
 The frontend implements basic client-side filtering that blocks:
 
-- Quotes: ' " 
-- Brackets: [ ] { }
+- Quotes: `' "`
+- Brackets: `[ ] { }`
 - These are easily bypassed since they're only client-side
 
 ## Server-side Filtering

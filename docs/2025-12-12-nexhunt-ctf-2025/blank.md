@@ -16,7 +16,7 @@ The binary is a simple reverse engineering challenge that XORs encrypted data se
 ## Binary Structure
 - Main function loops 10 times (NUM_SEGMENTS = 10)
 - For each iteration:
-  1. XORs 32 bytes from cipher_segments[i] with pads[i]
+  1. XORs 32 bytes from `cipher_segments[i]` with `pads[i]`
   2. Writes result to file descriptor 5
   3. Reads 1 byte from file descriptor 7
   4. Writes "OK" to file descriptor 8
@@ -28,7 +28,7 @@ The binary is a simple reverse engineering challenge that XORs encrypted data se
 
 ## Solution Approach
 1. Extract cipher_segments and pads arrays from the binary
-2. XOR corresponding segments (cipher[i] ^ pads[i])
+2. XOR corresponding segments (`cipher[i] ^ pads[i]`)
 3. Remove null bytes and decode as UTF-8
 4. Concatenate all decoded segments
 
