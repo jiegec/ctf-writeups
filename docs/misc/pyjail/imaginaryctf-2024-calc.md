@@ -77,7 +77,7 @@ safe_eval(os._exit, "")
 Now the audit hook effectively does nothing. The next problem is, how do we access `hook`? It is a local function to `safe_eval`, so we cannot access it from outside, unless:
 
 1. We can get a frame via raising an exception and catching it, as [audited - pwn, 263pts writeup by rickastley / the cr0wn](https://ctftime.org/writeup/25467); however, we cannot use try-except in an expression due to `compile(..., "eval")`
-2. We can get a frame by registering a signal handler and raising the signal, as [[ICTF 2024 - All PyJails 『ANY %』on Shy blog](https://blog.antoine.rocks/%F0%9F%91%A9%E2%80%8D%F0%9F%8F%ABwriteups/ictf%202024%20-%20all%20pyjails/)]
+2. We can get a frame by registering a signal handler and raising the signal, as [ICTF 2024 - All PyJails 『ANY %』on Shy blog](https://blog.antoine.rocks/%F0%9F%91%A9%E2%80%8D%F0%9F%8F%ABwriteups/ictf%202024%20-%20all%20pyjails/)
 
 The second method is used:
 
