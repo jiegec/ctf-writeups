@@ -7,6 +7,7 @@ nav:
   - Writeups by Solution: misc/solution.md
   - Pyjail: misc/pyjail.md
   - Redbud Puppeteer: puppeteer/index.md
+  - Redbud Summer 2026: summer2026/index.md
 theme:
   custom_dir: overrides
 plugins:
