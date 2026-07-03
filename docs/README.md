@@ -56,6 +56,10 @@ Enter [here](./misc/solution.md).
 
 Enter [here](./puppeteer/index.md).
 
+## Writeups for Redbud Summer 2026
+
+Enter [here](./summer2026/index.md).
+
 ## Private Writeups
 
 The competitions listed below do not allow publishing writeups on the Internet. If you are interested, you can message me on Discord to discuss privately.
