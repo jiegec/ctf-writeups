@@ -20,16 +20,40 @@ Requirements:
 
 1. Pickle `find_class` limited to `collections` module without `__`: use `collections.namedtuple` where a malicious field name with RCE reaches `eval` as a default argument expression
 
-`collections.namedtuple` internally calls `eval()` to construct a lambda for `__new__`. Its source roughly:
+`collections.namedtuple` internally calls `eval()` to construct a lambda for `__new__` ([Python 3.9 source](https://github.com/python/cpython/blob/0bbaf5de9744ae1acea3e2c9ad2257d1cc68e847/Lib/collections/__init__.py#L345)):
 
 ```python
-field_names = tuple(map(_sys.intern, field_names))
-arg_list = ', '.join(field_names)
+# Step 1: field_names is converted to a list of strings
+if isinstance(field_names, str):
+    field_names = field_names.replace(',', ' ').split()
+field_names = list(map(str, field_names))      # (A)
+
+# Step 2: validation - each name must be a valid identifier
+for name in [typename] + field_names:          # (B)
+    if type(name) is not str:
+        raise TypeError(...)
+    if not name.isidentifier():
+        raise ValueError(...)
+    if _iskeyword(name):
+        raise ValueError(...)
+
+# Step 3: further checks on field names
+seen = set()
+for name in field_names:                       # (C)
+    if name.startswith('_') and not rename:
+        raise ValueError(...)
+    if name in seen:
+        raise ValueError(...)
+    seen.add(name)
+
+# Step 4: final processing and eval
+field_names = tuple(map(_sys.intern, field_names))  # (D)
+arg_list = ', '.join(field_names)                    # (E)
 code = f'lambda _cls, {arg_list}: _tuple_new(_cls, ({arg_list}))'
-__new__ = eval(code, namespace)
+__new__ = eval(code, namespace)                      # (F)
 ```
 
-By overriding `map`/`list`/`tuple` in `collections` globals, we can control how `field_names` is processed so that a malicious payload ends up in `arg_list` and gets evaluated as a default argument expression. The namespace has `__builtins__: {}`, so the payload must obtain real builtins through other means.
+To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) while still having the payload end up in `arg_list` at (E). Both approaches below override function names in `collections` globals via the `__getattr__` mechanism to achieve this. The namespace at (F) has `__builtins__: {}`, so the payload must obtain real builtins through other means.
 
 Summarized from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs) and [splitline's exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py).
 
