@@ -55,8 +55,6 @@ __new__ = eval(code, namespace)                      # (F)
 
 To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) while still having the payload end up in `arg_list` at (E). Both approaches below override function names in `collections` globals via the `__getattr__` mechanism to achieve this. The namespace at (F) has `__builtins__: {}`, so the payload must obtain real builtins through other means.
 
-Summarized from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs) and [splitline's exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py).
-
 ## Approach A: UserDict.__radd__
 
 **How it works:**
