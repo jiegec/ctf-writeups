@@ -359,3 +359,11 @@ Requirements:
 1. Function can only use at most one stack element: use `CALL_FUNCTION` instead of `CALL_METHOD`, i.e. use `B = A.method; C = B()` instead of `A.method()`
 
 Details [here](./pyjail/imaginaryctf-round-23-stackless-jail.md).
+
+## HITCON 2022 picklection
+
+Requirements:
+
+1. Pickle `find_class` limited to `collections` module without `__`: use `collections.namedtuple` where a malicious field name with RCE reaches `eval` as a default argument expression
+
+Details [here](./pyjail/hitcon-2022-picklection.md).
