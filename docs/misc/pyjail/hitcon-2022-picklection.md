@@ -65,11 +65,11 @@ To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) 
 
 3. **Inject payload**: Call `namedtuple("a", {payload: 0})`. Inside namedtuple:
 
-        - `list(map(str, field_names))` -> `UserDict(defaultdict(str, {payload: 0}))` -- a UserDict with payload as key
-        - Validation loop only sees `"a"` (due to `__radd__` trick)
-        - `tuple(map(_sys.intern, field_names))` -> `(payload,)` -- payload becomes the sole field name
-        - `arg_list = ', '.join(field_names)` -> the payload string
-        - `eval(f'lambda _cls, {payload}: ...')` evaluates the default argument expression, executing the command
+    - `list(map(str, field_names))` -> `UserDict(defaultdict(str, {payload: 0}))` -- a UserDict with payload as key
+    - Validation loop only sees `"a"` (due to `__radd__` trick)
+    - `tuple(map(_sys.intern, field_names))` -> `(payload,)` -- payload becomes the sole field name
+    - `arg_list = ', '.join(field_names)` -> the payload string
+    - `eval(f'lambda _cls, {payload}: ...')` evaluates the default argument expression, executing the command
 
 Attack script:
 
@@ -126,13 +126,13 @@ Instead of `UserDict.__radd__`, this approach manipulates `UserString` and inter
 
 2. **Replace key functions**:
 
-        - `UserString.replace` -> `_check_methods` (class attribute via BUILD slotstate)
-        - `UserString.__str__` -> `_type_repr`
-        - `Counter_instance.split` -> `_check_methods` (instance attribute)
-        - `_check_methods.__defaults__` -> `(abstractmethod,)` (so zero-arg call uses `abstractmethod` as default)
-        - `abstractmethod.__mro__` -> `()` (so `getattr` on it returns empty tuple)
-        - `_sys.intern` -> `abstractmethod`
-        - `_collections_abc.NotImplemented` -> `Counter()` instance (so `_check_methods` returns it instead of raising)
+    - `UserString.replace` -> `_check_methods` (class attribute via BUILD slotstate)
+    - `UserString.__str__` -> `_type_repr`
+    - `Counter_instance.split` -> `_check_methods` (instance attribute)
+    - `_check_methods.__defaults__` -> `(abstractmethod,)` (so zero-arg call uses `abstractmethod` as default)
+    - `abstractmethod.__mro__` -> `()` (so `getattr` on it returns empty tuple)
+    - `_sys.intern` -> `abstractmethod`
+    - `_collections_abc.NotImplemented` -> `Counter()` instance (so `_check_methods` returns it instead of raising)
 
 3. **Prepare payload**: Set `Counter_instance.__qualname__ = [payload]` and `Counter_instance.__module__ = "builtins"`. The payload uses `[].__reduce_ex__(3)[0].__globals__["__builtins__"]` to get real builtins without hardcoded subclass indices.
 
