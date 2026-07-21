@@ -1,6 +1,6 @@
 # HITCON 2022 picklection
 
-> Summarized by AI from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs), [splitline's writeup](https://blog.splitline.tw/hitcon-ctf-2022/#%F0%9F%A5%92-picklection-misc) ([exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py)), and the [nese team's writeup](https://nese.team/writeup/hitcon2022.pdf). May contain errors. This challenge uses Python 3.9.13. Challenge archive [here](https://github.com/hitconctf/ctf2022.hitcon.org/releases/download/archive/picklection-0e1ebbc615be72e9c738f3d0c1aad19a95ae000a.zip).
+> Summarized by AI from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs), [splitline's writeup](https://blog.splitline.tw/hitcon-ctf-2022/#%F0%9F%A5%92-picklection-misc) ([exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py)), and the [NeSE team's writeup](https://nese.team/writeup/hitcon2022.pdf). May contain errors. This challenge uses Python 3.9.13. Challenge archive [here](https://github.com/hitconctf/ctf2022.hitcon.org/releases/download/archive/picklection-0e1ebbc615be72e9c738f3d0c1aad19a95ae000a.zip).
 
 ```python
 #!/usr/local/bin/python3
@@ -369,11 +369,11 @@ r.sendline(pb.p.hex().encode())
 print(r.recvall(timeout=3).decode(errors='replace'))
 ```
 
-## Approach D: `_itemgetter` + `namedtuple.__kwdefaults__` (nese team)
+## Approach D: `_itemgetter` + `namedtuple.__kwdefaults__` (NeSE team)
 
 **How it works:**
 
-From the [nese team's writeup](https://nese.team/writeup/hitcon2022.pdf). The trick: `list(map(str, field_names))` and `tuple(map(_sys.intern, field_names))` use different overrides for `list` and `tuple`, so validation sees a benign name while the payload goes to `eval`.
+From the [NeSE team's writeup](https://nese.team/writeup/hitcon2022.pdf). The trick: `list(map(str, field_names))` and `tuple(map(_sys.intern, field_names))` use different overrides for `list` and `tuple`, so validation sees a benign name while the payload goes to `eval`.
 
 1. Create `ig2 = _itemgetter(2)`, `ig3 = _itemgetter(3)`. These extract specific indices from sequences.
 2. Build a `defaults` list `['', '', ['z'], [payload]]` and set `namedtuple.__kwdefaults__` so a subsequent `namedtuple('b', ['b1','b2','b3','b4'])` uses them.
