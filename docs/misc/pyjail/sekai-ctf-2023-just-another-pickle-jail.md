@@ -109,7 +109,15 @@ All three solutions below exploit a common weakness: `BUILD` modifies `inst.__di
 
 **How it works:**
 
-`BINPERSID` pops a value `pid` from the stack and calls `self.persistent_load(pid)`. By setting `up.persistent_load` to arbitrary functions via `BUILD` (which writes directly to `up.__dict__`, bypassing `__setattr__`), we can call any single-argument function.
+`BINPERSID` pops a value `pid` from the stack and calls `self.persistent_load(pid)`:
+
+```python
+def load_binpersid(self):
+    pid = self.stack.pop()
+    self.append(self.persistent_load(pid))
+```
+
+By setting `up.persistent_load` to arbitrary functions via `BUILD` (which writes directly to `up.__dict__`, bypassing `__setattr__`), we can call any single-argument function.
 
 1. **Copy builtins into `__main__`**: `BUILD __main__` with `__builtins__` state copies all builtin entries into `__main__.__dict__`, making them accessible via `find_class`.
 
