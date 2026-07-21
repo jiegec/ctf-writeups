@@ -110,7 +110,7 @@ Requirments:
 
 Details [here](../2025-12-19-hkcert-ctf-2025-quals/easyJail.md).
 
-## SECCON CTF 2025 Quals excepython
+## SECCON CTF 14 2025 Quals excepython
 
 Requirements:
 
@@ -259,7 +259,7 @@ Requirements:
 
 Details [here](./pyjail/uoftctf-2024-jail-zero.md).
 
-## SECCON CTF 2024 Quals 1linepyjail
+## SECCON CTF 13 2024 Quals 1linepyjail
 
 Requirements:
 
