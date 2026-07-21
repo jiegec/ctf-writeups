@@ -360,6 +360,16 @@ Requirements:
 
 Details [here](./pyjail/imaginaryctf-round-23-stackless-jail.md).
 
+## b01lers CTF 2023 Blacklisted
+
+Requirements:
+
+1. No `.`, `_`, parentheses, brackets, quotes, spaces: use `@f` decorator syntax to call functions and form feed `\x0c` as whitespace
+2. `open`/`print` stripped: use `oopenpen`/`pprintrint` — after stripping only the target word remains
+3. Blacklisted words (`exec`, `import`, `os`, etc.): use `sorted` instead of `list`, or fullwidth NFKC bypass for `exec`
+
+Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
+
 ## HITCON 2022 picklection
 
 Requirements:
