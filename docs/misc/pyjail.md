@@ -76,7 +76,7 @@ except Exception as e:
 - `pydoc.tempfile_pager(text, cmd)`
 - `object.__subclasses__()[popen_index](['sh'])` (via `<class 'subprocess.Popen'>`)
 
-## SECCON CTF 14 Final increasing
+## SECCON CTF 14 2026 Final increasing
 
 Requirements:
 
@@ -342,6 +342,16 @@ Requirements:
 
 Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
 
+## b01lers CTF 2023 Blacklisted
+
+Requirements:
+
+1. No `.`, `_`, parentheses, brackets, quotes, spaces: use `@f` decorator syntax to call functions and form feed `\x0c` as whitespace
+2. `open`/`print` stripped: use `oopenpen`/`pprintrint` — after stripping only the target word remains
+3. Blacklisted words (`exec`, `import`, `os`, etc.): use `sorted` instead of `list`, or fullwidth NFKC bypass for `exec`
+
+Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
+
 ## GDG Algiers 2022 Type_it
 
 Requirements:
@@ -359,16 +369,6 @@ Requirements:
 1. Function can only use at most one stack element: use `CALL_FUNCTION` instead of `CALL_METHOD`, i.e. use `B = A.method; C = B()` instead of `A.method()`
 
 Details [here](./pyjail/imaginaryctf-round-23-stackless-jail.md).
-
-## b01lers CTF 2023 Blacklisted
-
-Requirements:
-
-1. No `.`, `_`, parentheses, brackets, quotes, spaces: use `@f` decorator syntax to call functions and form feed `\x0c` as whitespace
-2. `open`/`print` stripped: use `oopenpen`/`pprintrint` — after stripping only the target word remains
-3. Blacklisted words (`exec`, `import`, `os`, etc.): use `sorted` instead of `list`, or fullwidth NFKC bypass for `exec`
-
-Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
 
 ## HITCON 2022 picklection
 
