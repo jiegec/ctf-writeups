@@ -1,6 +1,6 @@
 # HITCON 2022 picklection
 
-> Summarized by AI from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs) and [splitline's exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py). May contain errors. This challenge uses Python 3.9.13. Challenge archive [here](https://github.com/hitconctf/ctf2022.hitcon.org/releases/download/archive/picklection-0e1ebbc615be72e9c738f3d0c1aad19a95ae000a.zip).
+> Summarized by AI from the [HITCON 2022 organizers' writeup](https://hackmd.io/@94y7q597ST2hNdB9lbTJhA/SkCri-pOs) and [splitline's writeup](https://blog.splitline.tw/hitcon-ctf-2022/#%F0%9F%A5%92-picklection-misc) ([exploit](https://github.com/splitline/My-CTF-Challenges/blob/master/hitcon-quals/2022/misc/Picklection/exp/exploit.py)). May contain errors. This challenge uses Python 3.9.13. Challenge archive [here](https://github.com/hitconctf/ctf2022.hitcon.org/releases/download/archive/picklection-0e1ebbc615be72e9c738f3d0c1aad19a95ae000a.zip).
 
 ```python
 #!/usr/local/bin/python3
@@ -115,7 +115,7 @@ r.sendline((pickle.PROTO + b'\x04' + p).hex().encode())
 print(r.recvall(timeout=3).decode(errors='replace'))
 ```
 
-## Approach B: UserString manipulation (splitline)
+## Approach B: UserString manipulation
 
 **How it works:**
 
