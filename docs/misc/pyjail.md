@@ -85,7 +85,7 @@ Requirements:
 
 Details [here](./pyjail/secconctf-14-final-increasing.md).
 
-## hxp 39C3 CTF sponsored
+## hxp 39C3 CTF 2025 sponsored
 
 Requirements:
 
