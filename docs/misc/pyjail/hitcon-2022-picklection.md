@@ -64,6 +64,7 @@ To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) 
 2. **Override `map`/`list`**: Update `_collections_abc.__all__` to include `"map"` and `"list"`, set `_collections_abc.map = defaultdict` and `_collections_abc.list = UserDict`. Accessing `collections.map`/`list` triggers `__getattr__`, injecting them into `collections.__dict__`.
 
 3. **Inject payload**: Call `namedtuple("a", {payload: 0})`. Inside namedtuple:
+
    - `list(map(str, field_names))` → `UserDict(defaultdict(str, {payload: 0}))` — a UserDict with payload as key
    - Validation loop only sees `"a"` (due to `__radd__` trick)
    - `tuple(map(_sys.intern, field_names))` → `(payload,)` — payload becomes the sole field name
@@ -124,6 +125,7 @@ Instead of `UserDict.__radd__`, this approach manipulates `UserString` and inter
 1. **Set up `__getattr__` injectees**: Add `_check_methods`, `_type_repr`, `abstractmethod`, `map`, `tuple`, `str` to `_collections_abc.__all__`. Set corresponding attributes on `_collections_abc` so `__getattr__` injects them into `collections`.
 
 2. **Replace key functions**:
+
    - `UserString.replace` → `_check_methods` (class attribute via BUILD slotstate)
    - `UserString.__str__` → `_type_repr`
    - `Counter_instance.split` → `_check_methods` (instance attribute)
@@ -379,6 +381,7 @@ From the [nese team's writeup](https://nese.team/writeup/hitcon2022.pdf). The tr
 4. Replace `collections.map` → `tuple2`, `collections.list` → `_itemgetter(2)`, `collections.tuple` → `_itemgetter(3)` via `_collections_abc.__all__`.
 
 Inside `namedtuple('a', [])`:
+
 - `list(map(str, field_names))` → `_itemgetter(2)(tuple2(str, []))` → `['z']` (passes validation)
 - `tuple(map(_sys.intern, field_names))` → `_itemgetter(3)(tuple2(sys.intern, ['z']))` → `[payload]`
 - `arg_list = payload` → `lambda _cls, z=EXPLOIT:0` — eval executes the default argument
