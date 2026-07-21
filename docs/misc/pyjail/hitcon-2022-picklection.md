@@ -53,7 +53,7 @@ code = f'lambda _cls, {arg_list}: _tuple_new(_cls, ({arg_list}))'
 __new__ = eval(code, namespace)                      # (F)
 ```
 
-To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) while still having the payload end up in `arg_list` at (E). Both approaches below override function names in `collections` globals via the `__getattr__` mechanism to achieve this. The namespace at (F) has `__builtins__: {}`, so the payload must obtain real builtins through other means.
+To inject a malicious payload into `eval`, we must bypass checks at (B) and (C) while still having the payload end up in `arg_list` at (E). The approaches below override function names in `collections` globals via the `__getattr__` mechanism to achieve this. The namespace at (F) has `__builtins__: {}`, so the payload must obtain real builtins through other means.
 
 ## Approach A: UserDict.__radd__ (organizers)
 
