@@ -284,7 +284,7 @@ The key insight: when `namedtuple` executes `_tuple_new = tuple.__new__`, `tuple
 2. Create `XC = ABCMeta("XC", (), {"__new__": _check_methods})` — a class whose `__new__` is `_check_methods`.
 3. Set `_collections_abc.NotImplemented = [payload]` — so `_check_methods` returns the payload list when method check fails.
 4. Set `_collections_abc.tuple = XC` — injected into `collections` globals via `__getattr__`.
-5. Call `namedtuple('x', [])`. Inside namedtuple, `tuple(...)` resolves to `XC(...)`, calling `_check_methods` which returns the payload list. The payload ends up in `arg_list`. The `#` in the payload comments out the rest, leaving clean code: ``lambda _cls, a: 1, `_tuple_new.__globals__["__builtins__"]...system("cmd")` `` — a tuple whose second element executes the command.
+5. Call `namedtuple('x', [])`. Inside namedtuple, `tuple(...)` resolves to `XC(...)`, calling `_check_methods` which returns the payload list. The payload ends up in `arg_list`. The `#` in the payload comments out the rest, leaving `lambda _cls, a: 1, _tuple_new.__globals__["__builtins__"].__import__("os").system("cmd")` — a tuple whose second element executes the command.
 
 ```python
 #!/usr/bin/env python3
