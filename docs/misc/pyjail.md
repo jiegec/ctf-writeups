@@ -352,6 +352,14 @@ Requirements:
 
 Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
 
+## SEKAI CTF 2023 just-another-pickle-jail
+
+Requirements:
+
+1. `find_class` limited to `__main__` with substring blacklist, most opcodes disabled: use `BUILD` to overwrite `Unpickler` instance attributes and `BINPERSID`/`NEXT_BUFFER` for arbitrary function calls
+
+Details [here](./pyjail/sekai-ctf-2023-just-another-pickle-jail.md).
+
 ## GDG Algiers 2022 Type_it
 
 Requirements:
