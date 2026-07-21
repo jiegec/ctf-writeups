@@ -352,7 +352,7 @@ Requirements:
 
 Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
 
-## SEKAI CTF 2023 just-another-pickle-jail
+## Sekai CTF 2023 just-another-pickle-jail
 
 Requirements:
 

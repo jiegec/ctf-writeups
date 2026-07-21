@@ -1,4 +1,4 @@
-# SEKAI CTF 2023 just-another-pickle-jail
+# Sekai CTF 2023 just-another-pickle-jail
 
 > Based on [maple3142's writeup](https://blog.maple3142.net/2023/08/27/sekai-ctf-2023-writeups/) and the [official solution](https://github.com/project-sekai-ctf/sekaictf-2023/blob/main/misc/just-another-pickle-jail/solution/gen-pkl.py). May contain errors. This challenge uses Python 3.11.
 
