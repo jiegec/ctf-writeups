@@ -73,7 +73,7 @@ print(f"IV: {hexlify(iv).decode()}")
 
 With the known key and IV, we can decrypt `./Users/tcollins/Desktop/flag.txt.r47m02d16`.
 
-Alternatively, we used a simpler approach (remember to back up your files on `C:\` first—we used Wine, so `~/.wine/drive_c` and `~/Downloads`, etc.):
+Alternatively, we used a simpler approach (remember to back up your files on `C:\` first, we used Wine, so `~/.wine/drive_c` and `~/Downloads`, etc.):
 
 1. Copy `flag.txt.r47m02d16` to the `C:\` drive and rename it to remove the suffix
 2. Run `wine SearchIndexer.exe '7kX#mP2$vL9@wQ4!nR8*jT6%hS1^dF3&'`

@@ -38,7 +38,7 @@ if __name__ == '__main__':
 Requirements:
 
 1. No `.`, `_`, parentheses, brackets, quotes, spaces, tabs: use `@f` decorator syntax to call functions without parens, and form feed `\x0c` as whitespace
-2. `open` and `print` stripped: write `oopenpen` and `pprintrint` — after stripping, only `open` and `print` remain
+2. `open` and `print` stripped: write `oopenpen` and `pprintrint`, after stripping, only `open` and `print` remain
 3. Blacklisted words (`exec`, `import`, `os`, `sys`, `list`, `max`, `min`, `set`, `tuple`): use `sorted` instead of `list`, `input` instead of `exec`+`input`
 
 Challenge archive [here](https://github.com/b01lers/b01lers-ctf-2023-public).
@@ -59,10 +59,10 @@ class^LX:pass
 
 This is equivalent to `print(sorted(open(input(X))))`. The flow:
 
-1. `input(X)` — displays the class repr as prompt, reads a filename from stdin
-2. `open(filename)` — opens the file
-3. `sorted(file_object)` — reads all lines into a sorted list (file objects are iterable)
-4. `print(sorted_lines)` — prints the result
+1. `input(X)`: displays the class repr as prompt, reads a filename from stdin
+2. `open(filename)`: opens the file
+3. `sorted(file_object)`: reads all lines into a sorted list (file objects are iterable)
+4. `print(sorted_lines)`: prints the result
 
 The `open`/`print` stripping is bypassed by doubling: `oopenpen` → `open`, `pprintrint` → `print`. Form feed `^L` (`\x0c`) replaces the space in `class X:pass`.
 
@@ -90,7 +90,7 @@ class\x0cA:pass
 
 Python NFKC-normalizes identifiers during compilation, so fullwidth `ｅｘｅｃ` becomes `exec`. The character blacklist checks for ASCII `x` (not fullwidth `ｘ`), and the word blacklist checks for ASCII `exec` (not `ｅｘｅｃ`).
 
-This calls `exec(input(A))`. The `input()` reads the next line from stdin, and `exec()` executes it with full builtins access — completely unrestricted.
+This calls `exec(input(A))`. The `input()` reads the next line from stdin, and `exec()` executes it with full builtins access, completely unrestricted.
 
 Attack script:
 

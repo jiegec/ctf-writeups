@@ -8,16 +8,14 @@ pickle.loads(input("pickle: ").split()[0].encode())
 
 Requirements:
 
-1. No whitespace: `.split()[0]` — use `STACK_GLOBAL` (no newlines needed)
-2. Valid UTF-8: `.encode()` — use `BINPUT` to consume leading byte 0xC2 as integer index, then `STACK_GLOBAL` as continuation byte 0x93
+1. No whitespace (`.split()[0]`): use `STACK_GLOBAL` (no newlines needed)
+2. Valid UTF-8 (`.encode()`): use `BINPUT` to consume leading byte 0xC2 as integer index, then `STACK_GLOBAL` as continuation byte 0x93
 
 `STACK_GLOBAL` (0x93) is the only `find_class` opcode that doesn't need newlines. But 0x93 is a non-ASCII UTF-8 continuation byte, always preceded by a leading byte 0xC2 (from U+0093). `BINPUT` (q, 0x71) reads 1 byte as a memo index without pushing to the stack, making it ideal for consuming 0xC2 while leaving 0x93 as the `STACK_GLOBAL` opcode:
 
-```python
-# q\u0093 → bytes 71 C2 93
-# q reads \xc2 as index 194, stores stack[-1] in memo[194]
-# \x93 = STACK_GLOBAL: pops 'system'(name), 'os'(module) → os.system
-```
+1. `q\u0093` -> bytes `71 C2 93`
+2. `q` reads `\xc2` as index 194, stores `stack[-1]` in `memo[194]`
+3. `\x93` = `STACK_GLOBAL`: pops `'system'` (name), `'os'` (module) -> `os.system`
 
 ## Approach A
 
@@ -80,6 +78,7 @@ Disassembled:
 ```
 
 Two multi-byte sequences instead of one:
-- `q\xc2\x8f` — BINPUT consumes `\xc2`, then `\x8f` = EMPTY_SET.
-- `00` — POP to remove frozenset, POP to remove `'system'`, leaving `['os']`.
-- `h\xc2\x93` — BINGET reads `\xc2` as index, retrieves `'system'` from memo, then `\x93` = STACK_GLOBAL.
+
+- `q\xc2\x8f`: BINPUT consumes `\xc2`, then `\x8f` = EMPTY_SET.
+- `00`: POP to remove frozenset, POP to remove `'system'`, leaving `['os']`.
+- `h\xc2\x93`: BINGET reads `\xc2` as index, retrieves `'system'` from memo, then `\x93` = STACK_GLOBAL.

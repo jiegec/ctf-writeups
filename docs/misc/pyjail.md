@@ -334,8 +334,8 @@ Details [here](./pyjail/tcp1p-ctf-2024-functional.md).
 
 Requirements:
 
-1. No whitespace: `.split()[0]` — use `STACK_GLOBAL` (no newlines needed)
-2. Valid UTF-8: `.encode()` — use `BINPUT` to consume leading byte 0xC2 as integer index, then `STACK_GLOBAL` as continuation byte 0x93
+1. No whitespace (`.split()[0]`): use `STACK_GLOBAL` (no newlines needed)
+2. Valid UTF-8 (`.encode()`): use `BINPUT` to consume leading byte 0xC2 as integer index, then `STACK_GLOBAL` as continuation byte 0x93
 
 Details [here](./dicectf-2024-quals-unipickle.md).
 
@@ -356,7 +356,7 @@ Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
 Requirements:
 
 1. No `.`, `_`, parentheses, brackets, quotes, spaces: use `@f` decorator syntax to call functions and form feed `\x0c` as whitespace
-2. `open`/`print` stripped: use `oopenpen`/`pprintrint` — after stripping only the target word remains
+2. `open`/`print` stripped: use `oopenpen`/`pprintrint`, after stripping only the target word remains
 3. Blacklisted words (`exec`, `import`, `os`, etc.): use `sorted` instead of `list`, or fullwidth NFKC bypass for `exec`
 
 Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
