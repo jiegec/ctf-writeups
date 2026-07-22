@@ -19,6 +19,8 @@ Requirements:
 
 ## Approach A
 
+See <https://www.justus.pw/writeups/dicectf-2024/unipickle.html>
+
 Attack script:
 
 ```python
