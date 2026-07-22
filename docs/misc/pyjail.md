@@ -330,6 +330,15 @@ Requirements:
 
 Details [here](./pyjail/tcp1p-ctf-2024-functional.md).
 
+## Dice CTF 2024 Quals unipickle
+
+Requirements:
+
+1. No whitespace: `.split()[0]` — use `STACK_GLOBAL` (no newlines needed)
+2. Valid UTF-8: `.encode()` — use `BINPUT` to consume leading byte 0xC2 as integer index, then `STACK_GLOBAL` as continuation byte 0x93
+
+Details [here](./dicectf-2024-quals-unipickle.md).
+
 ## TCP1P CTF 2023 PyMagic
 
 Requirements:
