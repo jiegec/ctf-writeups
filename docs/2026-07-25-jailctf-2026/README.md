@@ -15,4 +15,3 @@ Solved Challenges:
 - [collatz](collatz.md)
 - [format](format.md)
 - [cyclegolf](cyclegolf.md)
-
