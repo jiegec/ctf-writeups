@@ -78,8 +78,10 @@ Use [automated script](./find_chains.py) to find chains:
 - `code.interact()`
 - `doctest.debug_script(src)`
 - `os.system("sh")`
+- `os.execl("/bin/sh", "sh")`
 - `pdb.run(src)`
 - `pdb.set_trace()`
+- `pdb.test()`
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 - `object.__subclasses__()[popen_index](['sh'])` (via `<class 'subprocess.Popen'>`)
