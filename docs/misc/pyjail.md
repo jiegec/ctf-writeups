@@ -43,7 +43,6 @@ Use [automated script](./find_chains.py) to find chains:
     - `().__class__.__base__.__subclasses__()`
     - `().__class__.__mro__[1].__subclasses__()` or `().__class__.__mro__.__getitem__(1).__subclasses__()`
     - `().__setattr__.__objclass__.__subclasses__()`
-    - 
 - Find via `class.*.__globals__`:
     - `().__class__.__subclasses__()[codecs_codecinfo_index].__new__.__globals__["__builtins__"]`
     - With `import re`:
