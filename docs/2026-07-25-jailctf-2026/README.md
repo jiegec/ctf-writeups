@@ -6,6 +6,8 @@ CTFTime: <https://ctftime.org/event/3286>
 
 Official Writeups: <https://github.com/jailctf/challenges-2026>
 
+Result: 1606 Points, 11th Place, Human Division
+
 Solved Challenges:
 
 - [sanity check](sanity-check.md)
