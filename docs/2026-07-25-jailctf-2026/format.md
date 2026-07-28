@@ -265,3 +265,5 @@ for index in range(length):
 ```
 
 Flag: `jail{a_PIE_leak_is_all_you_need_SW4CrB4q6gA}`.
+
+Also see [official writeup](https://github.com/jailctf/challenges-2026/blob/master/format/solve/solve.py).

