@@ -80,14 +80,15 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 - `code.InteractiveConsole().interact()`
 - `code.interact()`
 - `doctest.debug_script(src)`
-- `os.system("sh")`
 - `os.execl("/bin/sh", "sh")`
+- `os.system("sh")`
 - `pdb.run(src)`
 - `pdb.set_trace()`
 - `pdb.test()`
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
-- `object.__subclasses__()[popen_index](['sh'])` (via `<class 'subprocess.Popen'>`)
+- `subprocess.Popen(['sh'])`
+- `subprocess.check_call(['sh'])`
 
 ## jailCTF 2026 the quasar files
 
