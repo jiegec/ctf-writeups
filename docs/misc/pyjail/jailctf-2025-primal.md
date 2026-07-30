@@ -37,3 +37,5 @@ According to [mirelgigel/writeupjailctf](https://github.com/mirelgigel/writeupja
 3. Use `False` (length 5) instead of `0`
 4. For strings, use `\xXX` (length 3) to avoid length problems
 5. Use `execl` (length 5) instead of `system`
+
+Also see [official writeup](https://github.com/jailctf/challenges-2025/blob/master/primal/solve/README.md).

@@ -67,7 +67,7 @@ def wiener(e, n):
         x = PolynomialRing(RationalField(), "x").gen()
         f = x**2 - (n - phi + 1) * x + n
         roots = f.roots()
-        # Check if polynomial as two roots
+        # Check if polynomial has two roots
         if len(roots) != 2:
             continue
         # Check if roots of the polynomial are p and q
@@ -414,3 +414,90 @@ CTF challenges:
 ## Known n, close p and q
 
 If $p$ and $q$ are very close (e.g. $q$ is the smallest prime larger than $p$), the diff can be very small. We can enumerate the diff and solve $p$ and $q$.
+
+## Known n, small e and some bits of d mod (p-1)
+
+$d_p = d \bmod (p-1)$ is the CRT exponent used in RSA-CRT decryption. Given partial knowledge of $d_p$, specifically a contiguous block of missing bits, we can recover $p$ using Coppersmith's method.
+
+From $e \cdot d \equiv 1 \pmod{\phi(n)}$, we have $e \cdot d_p \equiv 1 \pmod{p-1}$:
+
+$$
+e \cdot d_p = 1 + k \cdot (p-1) \quad \text{for some integer } k
+$$
+
+Since $d_p < p-1$, we have $k < e$, which is small when $e$ is small.
+
+Suppose the middle bits of $d_p$ are missing: $d_p = d_p^{\text{leak}} + x \cdot 2^{\text{OFFSET}}$ with $0 \le x < 2^{\text{WIDTH}}$. Substituting:
+
+$$
+e \cdot d_p^{\text{leak}} + e \cdot x \cdot 2^{\text{OFFSET}} + k - 1 = k \cdot p
+$$
+
+Let $A_k = e \cdot d_p^{\text{leak}} + k - 1$, $B = e \cdot 2^{\text{OFFSET}}$. Then $A_k + B \cdot x = k \cdot p$. Reducing modulo $p$ gives a linear polynomial with a root modulo $p$:
+
+$$
+A_k + B \cdot x \equiv 0 \pmod{p}
+$$
+
+Since $p \approx n^{0.5}$, Coppersmith's theorem guarantees finding roots $x < n^{\beta^2}$ where $\beta \approx 0.5$. The attack works when $\text{WIDTH} < \log_2(n)/4$.
+
+For each candidate $k \in [1, e-1]$, set up $f_k(x) = x + A_k \cdot B^{-1} \pmod{n}$ and call `small_roots`.
+
+```python
+from sage.all import *
+from Crypto.Util.number import *
+
+e = 257
+OFFSET = 291
+WIDTH = 444
+
+p = getPrime(1024)
+q = getPrime(1024)
+n = p * q
+phi = (p - 1) * (q - 1)
+d = int(pow(e, -1, phi))
+dp = d % (p - 1)
+mask = ((1 << WIDTH) - 1) << OFFSET
+dp_leak = dp & ~mask
+
+print(f"n = {n}")
+print(f"e = {e}")
+print(f"p bits = {p.bit_length()}, q bits = {q.bit_length()}")
+print(f"known bits: {OFFSET} low, {p.bit_length() - OFFSET - WIDTH} high, missing: {WIDTH}")
+
+
+def attack(n, e, dp_leak, OFFSET, WIDTH):
+    R = Zmod(n)["x"]
+    x = R.gens()[0]
+    X = 2**WIDTH
+    B = e * 2**OFFSET
+    B_inv = inverse_mod(B, n)
+
+    for k in range(1, e):
+        A = e * dp_leak + k - 1
+        cc = (A * B_inv) % n
+        f = x + cc
+        roots = f.small_roots(X=X, beta=0.49, epsilon=0.05)
+        if roots:
+            print(f"k={k}: found {len(roots)} root(s)")
+        for x0 in roots:
+            x0 = int(x0)
+            p_cand = (A + B * x0) // k
+            if n % p_cand == 0:
+                q_cand = n // p_cand
+                print(f"recovered p = {p_cand}")
+                print(f"recovered q = {q_cand}")
+                print(f"p match: {p_cand == p}")
+                print(f"q match: {q_cand == q}")
+                return p_cand
+    return None
+
+
+res = attack(n, e, dp_leak, OFFSET, WIDTH)
+assert res is not None and n % res == 0
+print("Success")
+```
+
+CTF challenges:
+
+- [Codegate 2026 Finals DP](../2026-07-23-codegate-2026-finals/dp.md)
