@@ -338,3 +338,5 @@ while left + 1 < right:
     else:
         right = mid
 ```
+
+Idea from pitust on Discord after competition: since the keys are uniformly distributed 64-bit random numbers, use each value's own top bits as its address in a large sparse table, and on collision do hash-table linear probing with a sorted swap (the smaller value swaps forward), so every probe run stays sorted and the whole table ends up sorted, then a final scan copies out the non-zero cells. This pushes the score up to ~26k.
