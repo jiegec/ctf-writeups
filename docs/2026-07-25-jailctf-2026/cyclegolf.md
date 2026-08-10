@@ -357,15 +357,54 @@ Starting from the flash sort (version 8, 13,534), the biggest improvement was re
 
 ```python
 # score 13,000 (bucket counting sort with linked lists)
+# memory layout:
+#   m[0 .. 12999]        input values
+#   m[13000 + i]         "next" pointer of element i (index + 1, 0 = end of list)
+#   m[26000 .. 38999]    output buffer (sorted values are written here)
+#   m[39000 + b]         head of bucket b (index + 1, 0 = empty)
+# bucket = top 13 bits of the value (2^13 = 8192 buckets, one per 2^51 range)
 def f(m):
+    # build: push every value onto the head of its bucket's linked list
+    m[-1] = 0
+    while m[-1] < 13000:                      # for i in range(N):
+        m[-5] = m[m[-1]] // 2251799813685248  #   b = value >> 51
+        m[13000 + m[-1]] = m[39000 + m[-5]]   #   next[i] = head[b]
+        m[39000 + m[-5]] = m[-1] + 1          #   head[b] = i + 1
+        m[-1] = m[-1] + 1
+
+    # walk the buckets in order, copying each run out, and insertion-sort
+    # the runs of length >= 2 (buckets hold ~N/8192 = 1.6 elements on average,
+    # so the insertion sorts are nearly free)
+    m[-9] = 26000                             # w = output write pointer
+    m[-1] = 0
+    while m[-1] < 8192:                       # for b in range(2**13):
+        m[-10] = m[39000 + m[-1]]             #   node = head[b]
+        m[-6] = m[-9]                         #   s = w  (start of the run)
+        while m[-10] > 0:                     #   while node: walk the list
+            m[m[-9]] = m[m[-10] - 1]          #     out[w] = a[node - 1]
+            m[-10] = m[13000 + m[-10] - 1]    #     node = next[node - 1]
+            m[-9] = m[-9] + 1                 #     w = w + 1
+        m[-7] = m[-9]                         #   e = w  (end of the run)
+        m[-8] = m[-7] - m[-6]                 #   length = e - s
+        if m[-8] >= 2:                        #   if length >= 2: insertion sort
+            m[-2] = m[-6] + 1
+            while m[-2] < m[-7]:
+                m[-4] = m[m[-2]]              #     v = out[j]
+                m[-3] = m[-2] - 1
+                while m[-3] >= m[-6]:         #     shift larger values right
+                    if m[m[-3]] <= m[-4]:
+                        break
+                    m[m[-3] + 1] = m[m[-3]]
+                    m[-3] = m[-3] - 1
+                m[m[-3] + 1] = m[-4]          #     place v
+                m[-2] = m[-2] + 1
+        m[-1] = m[-1] + 1
+
+    # copy the output buffer back over the input area
     m[-1] = 0
     while m[-1] < 13000:
-        m[-5] = m[m[-1]] // 2251799813685248
-        m[13000 + m[-1]] = m[39000 + m[-5]]   # next-pointer of element i
-        m[39000 + m[-5]] = m[-1] + 1          # bucket head (index+1, 0 = empty)
+        m[m[-1]] = m[26000 + m[-1]]
         m[-1] = m[-1] + 1
-    # walk buckets in order, copy out, insertion-sort runs of length >= 2
-    ...
 ```
 
 The submissions between 13,000 and 20,448 are refinements of this scheme (the one outlier, 16,384, already belongs to the bigint phase below):
@@ -381,21 +420,45 @@ Best of this family: **score 20,448 at 999,973 cycles**. The ceiling here is set
 
 After the competition, pitust on Discord pointed out that because the keys are uniformly distributed 64-bit random numbers, we can use each value's own top bits as its address in a large sparse table, and on collision do hash-table linear probing **with a sorted swap**: when a new value lands on an occupied slot, if the new value is smaller, swap it with the occupant and continue probing with the (larger) displaced value. Every probe run therefore stays sorted, and when all values are inserted, scanning the table left to right yields the sorted order.
 
-My implementation uses `table[i] = value // RADIX + N` with the table size and RADIX tuned so the probe index never overflows the table, and inserts 8 values per loop iteration:
+My implementation uses `table[i] = value // RADIX + N` with the table size and RADIX tuned so the probe index never overflows the table. The submitted source unrolls the insert block 8× per loop iteration (batch indices `m[-2]..m[-9]`) and the copy-out scan 12×; the single-value form below is the equivalent, readable version:
 
 ```python
-# score 23,000 (sorted-swap probing, 8 values per iteration)
+# score 23,000 (sorted-swap probing)
+# sparse table of 65,538 cells at m[23000 .. 88537]:
+#   slot = 23000 + value // 2^48   (the top 16 bits of the value pick the slot;
+#                                   the table has 2^16 slots plus two slack
+#                                   cells, so linear probing never runs off
+#                                   the end)
+# registers: m[-12] = value being inserted, m[-10] = slot address,
+#            m[-11] = current occupant,  m[-14] = copy-out write pointer
 def f(m):
-    m[-2] = 0;m[-3] = 1;...;m[-9] = 7
-    while m[-2] < 22993:
-        m[-12] = m[m[-2]];m[-10] = 23000 + m[-12] // 281474976710656;m[-11] = m[m[-10]]
-        while m[-11] != 0:
-            if m[-12] < m[-11]:
-                m[m[-10]] = m[-12];m[-12] = m[-11]
-            m[-10] = m[-10] + 1;m[-11] = m[m[-10]]
-        m[m[-10]] = m[-12]
-        ...  # repeated for m[-3]..m[-9]
+    m[-2] = 0
+    while m[-2] < 23000:
+        # insert a[m[-2]] with sorted-swap linear probing:
+        m[-12] = m[m[-2]]                            # v = a[i]
+        m[-10] = 23000 + m[-12] // 281474976710656   # slot = N + top16(v)
+        m[-11] = m[m[-10]]                           # occ = table[slot]
+        while m[-11] != 0:                           # probe while the slot is full
+            if m[-12] < m[-11]:                      #   if v < occ:
+                m[m[-10]] = m[-12]                   #     table[slot] = v
+                m[-12] = m[-11]                      #     v = occ
+            m[-10] = m[-10] + 1                      #   slot = slot + 1
+            m[-11] = m[m[-10]]                       #   occ = table[slot]
+        m[m[-10]] = m[-12]                           # empty slot found: table[slot] = v
+        m[-2] = m[-2] + 1
+
+    # every probe run stayed sorted, so a left-to-right scan of the table
+    # yields the sorted array: copy the non-zero cells back to the front
+    m[-14] = 0
+    m[-2] = 23000
+    while m[-2] < 88538:
+        if m[m[-2]] != 0:
+            m[m[-14]] = m[m[-2]]
+            m[-14] = m[-14] + 1
+        m[-2] = m[-2] + 1
 ```
+
+(Reformatted for readability; the 8× unrolling of the insert block and the 12× unrolling of the scan are the only differences from the submitted code.)
 
 The score growth 23,000 → 23,570 → 23,760 → 23,850 → 23,870 → 24,040 → 24,048 → 25,800 → 26,200 → 26,278 → 26,358 → 26,412 → 26,416 → 26,440 → 26,520 → 26,560 → 26,640 → **26,670** came from:
 
@@ -444,5 +507,176 @@ The second fix was to **batch the unpack**: mask off the low 16 lanes with one `
 The intermediate milestones in this push were 57,600 (999,343), 57,632 (999,879), 59,000 (999,433) and 61,440 (984,626), each a different N/P split that had to obey the batch alignment (8 or 16 lanes, depending on the version) and stay under 1e6 cycles.
 
 **Final submission: score 65,536 at 997,852 cycles, 4,081 bytes.** Four bigints of 16,384 lanes each; the constants (masks, powers) live in cells just above the input, and the multiplier/divisor cells use negative indices to keep the code under the 4,096-byte cap. It runs in ~5.7 s locally.
+
+For reference, here is the final code, reformatted from the 4,081-byte submission; comments are restored and the pack statement chain is spread over its 16 lanes:
+
+```python
+# score 65,536 (final submission), reformatted for readability:
+# four bigints of 16,384 lanes live in m[-30 .. -27]; every lane holds one
+# 65-bit value (64 value bits + 1 spare high bit).  C = 2^65; the masks and
+# lane powers are built once into m[80002 .. 80031] and the negative-index
+# register cells.
+def f(m):
+    # ---- constants ----
+    # M = C^16384 - 1: a mask with all 65 bits set in all 16,384 lanes
+    m[-39] = 0x20000000000000000               # C
+    m[-11] = 0
+    while m[-11] < 14:                         # square 14x: C, C^2, C^4, ..., C^16384
+        m[-39] = m[-39] * m[-39]
+        m[-11] = m[-11] + 1
+    m[-39] = m[-39] - 1                        # M (all-lanes mask)
+    m[-40] = (m[-39] // 0x1ffffffffffffffff) * 0x10000000000000000
+                                               # H: bit 64 set in every lane (sign bit)
+
+    m[80002] = 0x20000000000000000             # m[80002 + k] = C^(2^k), k = 0..14
+    m[-11] = 1
+    while m[-11] < 15:
+        m[80002 + m[-11]] = m[80002 + m[-11] - 1] * m[80002 + m[-11] - 1]
+        m[-11] = m[-11] + 1
+
+    m[-12] = 0x1ffffffffffffffff               # C - 1 (the 65 low bits of lane 0)
+    m[80017] = (m[-39] // (m[80002 + 1] - 1)) * 0x1ffffffffffffffff
+    m[-11] = 1
+    while m[-11] < 14:                         # m[80017 + k] = half-block mask k:
+        m[-12] = m[-12] | m[-12] * m[80002 + m[-11] - 1]     # pattern doubling
+        m[80017 + m[-11]] = (m[-39] // (m[80002 + m[-11] + 1] - 1)) * m[-12]
+        m[-11] = m[-11] + 1
+    m[80017 + 14] = m[-39]                     # m[80017 + 14] = M
+
+    m[-76] = 0x20000000000000000               # m[-76 + k] = C^(k+1), k = 0..15
+    m[-11] = 1
+    while m[-11] < 16:
+        m[-76 + m[-11]] = m[-76 + m[-11] - 1] * 0x20000000000000000
+        m[-11] = m[-11] + 1
+    m[-60] = m[-76 + 15] - 1                   # C^16 - 1: mask of the low 16 lanes
+    m[-59] = 0x10000000000000000               # 2^64: normalizes the sign borrow
+
+    # ---- pack: 65,536 values -> 4 bigints x 16,384 lanes, 16 lanes/statement ----
+    m[-3] = 0                                  # bigint index
+    m[-11] = 0                                 # input index
+    while m[-3] < 4:
+        m[-6] = 0                              # accumulator (the bigint)
+        m[-5] = 0
+        while m[-5] < 16384:
+            # one statement packs 16 consecutive values into the low lanes;
+            # the pre-computed lane powers m[-76 + k] = C^(k+1) do the shifting
+            m[-6] = (
+                m[-6] * m[-76 + 15]
+                + m[m[-11]]
+                + m[m[-11] + 1] * m[-76]
+                + m[m[-11] + 2] * m[-75]
+                + m[m[-11] + 3] * m[-74]
+                + m[m[-11] + 4] * m[-73]
+                + m[m[-11] + 5] * m[-72]
+                + m[m[-11] + 6] * m[-71]
+                + m[m[-11] + 7] * m[-70]
+                + m[m[-11] + 8] * m[-69]
+                + m[m[-11] + 9] * m[-68]
+                + m[m[-11] + 10] * m[-67]
+                + m[m[-11] + 11] * m[-66]
+                + m[m[-11] + 12] * m[-65]
+                + m[m[-11] + 13] * m[-64]
+                + m[m[-11] + 14] * m[-63]
+                + m[m[-11] + 15] * m[-62]
+            )
+            m[-5] = m[-5] + 16
+            m[-11] = m[-11] + 16
+        m[-30 + m[-3]] = m[-6]                 # bigint b stored at m[-30 + b]
+        m[-3] = m[-3] + 1
+
+    # ---- bitonic sorting network ----
+    # m[-1] = subarray size (2, 4, ..., 65536), m[-2] = compare-swap distance,
+    # m[-16] = log2(size), m[-14] = index of the mask for this distance
+    m[-1] = 2; m[-16] = 1
+    while m[-1] <= 65536:
+        m[-2] = m[-1] // 2
+        m[-14] = m[-16] - 1
+        while m[-2] > 0:
+            if m[-2] >= 16384:
+                # distance spans whole bigints: compare-swap pairs of bigints.
+                # m[-5] = partner bigint; direction comes from (m[-4] & m[-1]).
+                m[-3] = 0; m[-4] = 0
+                while m[-3] < 4:
+                    m[-5] = m[-3] ^ (m[-2] // 16384)
+                    if m[-5] > m[-3]:
+                        m[-6] = m[-30 + m[-3]]
+                        m[-7] = m[-30 + m[-5]]
+                        # lane-wise sign of (lo - hi), one bit per lane:
+                        m[-8] = m[-6] - m[-7]      # borrows from the spare bit
+                        m[-8] = m[-8] & m[-40]     # keep only the sign bits
+                        m[-8] = m[-8] - (m[-8] // m[-59])  # 0x1..1 where lo < hi
+                        m[-13] = m[-39] ^ m[-8]    # NOT of the sign mask
+                        m[-9] = (m[-6] & m[-8]) | (m[-7] & m[-13])   # lane-wise min
+                        m[-10] = (m[-6] & m[-13]) | (m[-7] & m[-8])  # lane-wise max
+                        if (m[-4] & m[-1]) == 0:
+                            m[-30 + m[-3]] = m[-9]
+                            m[-30 + m[-5]] = m[-10]
+                        else:
+                            m[-30 + m[-3]] = m[-10]
+                            m[-30 + m[-5]] = m[-9]
+                    m[-4] = m[-4] + 16384
+                    m[-3] = m[-3] + 1
+            else:
+                # intra-bigint compare-swap at distance m[-2] (< 16384).
+                # m[-13] = half-block mask, m[-15] = C^d, m[-17] = direction
+                m[-13] = m[80017 + m[-14]]
+                m[-15] = m[80002 + m[-14]]
+                m[-17] = m[80017 + m[-14]] & m[80017 + m[-16]]
+                m[-18] = m[-39] ^ m[-13]
+                m[-3] = 0; m[-4] = 0
+                while m[-3] < 4:
+                    if m[-1] >= 16384:
+                        # subarray spans bigints: direction alternates per block
+                        m[-17] = m[-13] * (1 - (m[-4] & m[-1]) // m[-1])
+                    m[-6] = m[-30 + m[-3]]
+                    m[-7] = m[-6] & m[-18]       # hi half (upper d lanes of each block)
+                    m[-7] = m[-7] // m[-15]      # shift it down by d lanes
+                    m[-6] = m[-6] & m[-13]       # lo half
+                    m[-8] = m[-6] - m[-7]        # lane-wise sign of lo - hi
+                    m[-8] = m[-8] & m[-40]
+                    m[-8] = m[-8] - (m[-8] // m[-59])
+                    m[-9] = m[-39] ^ m[-8]
+                    m[-10] = (m[-6] & m[-8]) | (m[-7] & m[-9])      # min
+                    m[-9] = (m[-6] & m[-9]) | (m[-7] & m[-8])       # max
+                    m[-12] = m[-13] ^ m[-17]     # blend mask for this direction
+                    m[-8] = (m[-10] & m[-17]) | (m[-9] & m[-12])
+                    m[-9] = (m[-9] & m[-17]) | (m[-10] & m[-12])
+                    m[-10] = m[-9] * m[-15]      # shift the upper half back up
+                    m[-30 + m[-3]] = m[-8] | m[-10]
+                    m[-4] = m[-4] + 16384
+                    m[-3] = m[-3] + 1
+            m[-2] = m[-2] // 2
+            m[-14] = m[-14] - 1
+        m[-1] = m[-1] * 2
+        m[-16] = m[-16] + 1
+
+    # ---- unpack: 16 lanes per iteration ----
+    m[-3] = 0; m[-11] = 0
+    while m[-3] < 4:
+        m[-6] = m[-30 + m[-3]]
+        m[-5] = 0
+        while m[-5] < 16384:
+            m[-7] = m[-6] & m[-60]               # peel off the low 16 lanes
+            m[-6] = m[-6] // m[-76 + 15]         # shift the bigint down 16 lanes
+            m[m[-11]] = m[-7] & 0xffffffffffffffff
+            m[m[-11] + 1] = (m[-7] // m[-76]) & 0xffffffffffffffff
+            m[m[-11] + 2] = (m[-7] // m[-75]) & 0xffffffffffffffff
+            m[m[-11] + 3] = (m[-7] // m[-74]) & 0xffffffffffffffff
+            m[m[-11] + 4] = (m[-7] // m[-73]) & 0xffffffffffffffff
+            m[m[-11] + 5] = (m[-7] // m[-72]) & 0xffffffffffffffff
+            m[m[-11] + 6] = (m[-7] // m[-71]) & 0xffffffffffffffff
+            m[m[-11] + 7] = (m[-7] // m[-70]) & 0xffffffffffffffff
+            m[m[-11] + 8] = (m[-7] // m[-69]) & 0xffffffffffffffff
+            m[m[-11] + 9] = (m[-7] // m[-68]) & 0xffffffffffffffff
+            m[m[-11] + 10] = (m[-7] // m[-67]) & 0xffffffffffffffff
+            m[m[-11] + 11] = (m[-7] // m[-66]) & 0xffffffffffffffff
+            m[m[-11] + 12] = (m[-7] // m[-65]) & 0xffffffffffffffff
+            m[m[-11] + 13] = (m[-7] // m[-64]) & 0xffffffffffffffff
+            m[m[-11] + 14] = (m[-7] // m[-63]) & 0xffffffffffffffff
+            m[m[-11] + 15] = (m[-7] // m[-62]) & 0xffffffffffffffff
+            m[-11] = m[-11] + 16
+            m[-5] = m[-5] + 16
+        m[-3] = m[-3] + 1
+```
 
 This is the end of the road for this particular platform: the score is capped at 65,536 because the sort needs a power-of-two size and the next power of two would exceed the 1e6-cycle budget. Reaching it required combining the two Discord-suggested ideas (sorted-swap probing, and the SIMD bigint bitonic sort) with batching to fix wall-clock time and the cycle-level micro-optimizations above; all of the implementation and verification was done by the AI agent.
