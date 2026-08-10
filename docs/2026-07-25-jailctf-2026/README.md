@@ -15,3 +15,7 @@ Solved Challenges:
 - [collatz](collatz.md)
 - [format](format.md)
 - [cyclegolf](cyclegolf.md)
+
+Not solved in competition:
+
+- [shelminning](shellminning.md)
