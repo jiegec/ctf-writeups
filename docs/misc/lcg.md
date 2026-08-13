@@ -91,7 +91,7 @@ $v_3 = (0, 0, p, 0, \cdots, 0)$
 
 ...
 
-$v_n = (0, p, 0, 0, \cdots, p)$
+$v_n = (0, 0, 0, 0, \cdots, p)$
 
 If there is a linear combination of these vectors using integer coefficients:
 
