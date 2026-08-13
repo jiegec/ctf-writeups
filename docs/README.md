@@ -4,6 +4,7 @@ My individual team: <https://ctftime.org/team/208389>
 
 ## Writeups by CTF Event
 
+* [2026.08.08 **scriptCTF 2026**](2026-08-08-scriptctf-2026/README.md)
 * [2026.07.25 **jailCTF 2026**](2026-07-25-jailctf-2026/README.md)
 * [2026.07.23 **Codegate CTF 2026 Finals**](2026-07-23-codegate-2026-finals/README.md)
 * [2026.03.28 **Codegate CTF 2026 Preliminary**](2026-03-28-codegate-2026-preliminary/README.md)
