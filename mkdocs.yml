@@ -13,6 +13,9 @@ theme:
   custom_dir: overrides
   icon:
     repo: fontawesome/brands/github
+  features:
+    - content.code.copy
+    - content.action.edit
 plugins:
   - glightbox
 use_directory_urls: false
