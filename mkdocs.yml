@@ -1,8 +1,8 @@
 site_name: CTF Writeups by @jiegec
 site_description: CTF Writeups by @jiegec
 site_url: https://jia.je/ctf-writeups
-copyright: Copyright &copy; 2025-2026 Jiajie Chen
 repo_url: https://github.com/jiegec/ctf-writeups
+copyright: Copyright &copy; 2025-2026 Jiajie Chen
 nav:
   - Home: README.md
   - Writeups by Solution: misc/solution.md
@@ -14,10 +14,15 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
-    - content.code.copy
+    - content.action.copy
     - content.action.edit
+    - content.code.copy
 plugins:
   - glightbox
+  - llmstxt:
+      sections:
+        Writeups:
+        - "*.md"
 use_directory_urls: false
 markdown_extensions:
   - pymdownx.superfences
@@ -27,5 +32,10 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jiegec/ctf-writeups
+    - icon: fontawesome/solid/robot
+      link: /ctf-writeups/llms.txt
   analytics:
     provider: custom
