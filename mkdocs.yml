@@ -10,6 +10,7 @@ nav:
   - Redbud Puppeteer: puppeteer/index.md
   - Redbud Summer 2026: summer2026/index.md
 theme:
+  font: false
   custom_dir: overrides
   icon:
     repo: fontawesome/brands/github
