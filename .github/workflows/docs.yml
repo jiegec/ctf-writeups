@@ -17,6 +17,8 @@ jobs:
     steps:
       - uses: actions/configure-pages@v6
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # for git history
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
